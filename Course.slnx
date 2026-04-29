@@ -1,3 +1,19 @@
 <Solution>
-  <Project Path="Course/Course.csproj" />
+  <Folder Name="/Application/">
+    <Project Path="Application/Application.csproj" Id="1e5674b5-b449-42c8-8642-8733d8310730" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="Domain/Domain.csproj" Id="a29e4483-a7e4-4a66-82e0-84b214bfe3ad" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="Infrastructure.Repository/Infrastructure.Repository.csproj" Id="4185b6b4-f12e-4fd7-8011-8a11acb081f7" />
+    <Project Path="Infrastructure.Service/Infrastructure.Service.csproj" Id="71858b6b-2908-4236-8eb8-308d2fa1dab5" />
+  </Folder>
+  <Folder Name="/Presentatiob/">
+    <Project Path="Course/Course.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yml" />
+    <File Path="local-docker-compose.yml" />
+  </Folder>
 </Solution>

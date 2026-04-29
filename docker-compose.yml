@@ -6,3 +6,14 @@ services:
             dockerfile: Course/Dockerfile
         ports:
             - "5005:8080"
+        depends_on:
+            - db
+
+    db:
+        image: postgres:latest
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: 76127612
+            POSTGRES_DB: Trainee

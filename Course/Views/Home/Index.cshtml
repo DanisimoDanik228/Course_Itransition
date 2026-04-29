@@ -1,5 +1,46 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Domain.Models
+@model IEnumerable<Inventory>
+
+@foreach (var item in Model)
+{
+    <div> @item.Id </div>
+    <div> @item.Name </div>
 }
 
-<div>Hello world</div>
+<form asp-controller="Home" asp-action="Inventory" method="get">
+    <input name="idInventory" type="number">
+    <button type="submit">Go to inventory</button>
+</form>
+
+<div>
+    <input id="idInventory" type="number">
+    <input id="nameInventory" type="text">
+    <button onclick="addInventory()" type="submit">Add inventory</button>
+</div>
+
+<script>
+    const idInventory = document.getElementById('idInventory');
+    const nameInventory = document.getElementById('nameInventory');
+
+    async function addInventory()
+    {
+        const id = idInventory.value;
+        const name = nameInventory.value;
+
+        const item = {
+            id:id,
+            name:name
+        };
+
+        const response = await fetch('/Home/AddInventory',{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item)
+        });
+
+        const result = await response.json();
+        console.log(result);
+    }
+</script>

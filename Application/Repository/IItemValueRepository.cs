@@ -1,0 +1,15 @@
+﻿using Domain.Models;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Application.Repository
+{
+    public interface IItemValueRepository
+    {
+        Task<IEnumerable<ItemValue>> GetAllAsync();
+        Task<ItemValue?> AddAsync(ItemValue item);
+        Task<ItemValue?> UpdateAsync(ItemValue item);
+        Task<ItemValue?> DeleteAsync(ItemValue item);
+    }
+}
