@@ -9,11 +9,11 @@ using System.Text;
 
 namespace Infrastructure.Repository.Repository
 {
-    public class Repository : IRepository
+    public class InventoryRepository : IInventoryRepository
     {
         private readonly AppDbContext _context;
 
-        public Repository(AppDbContext context)
+        public InventoryRepository(AppDbContext context)
         {
             _context = context;
         }
@@ -26,9 +26,22 @@ namespace Infrastructure.Repository.Repository
             return res.Entity;
         }
 
+        public async Task<Inventory?> DeleteAsync(Inventory item)
+        {
+            var res = _context.Inventory.Remove(item);
+            await _context.SaveChangesAsync();
+            return res.Entity;
+        }
+
         public async Task<IEnumerable<Inventory>> GetAllAsync()
         {
             return _context.Inventory.AsNoTracking().AsEnumerable();
+        }
+
+        public async Task<Inventory?> UpdateAsync(Inventory item)
+        {
+           var res = _context.Inventory.Update(item);
+            return res.Entity;
         }
     }
 }

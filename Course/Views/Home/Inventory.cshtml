@@ -1,0 +1,24 @@
+﻿@using Domain.Models
+@model IEnumerable<Item>
+
+@foreach (var item in Model)
+{
+    <div> @item.Id </div>
+    <div> @item.InventoryId</div>
+    @foreach (var item1 in item.ItemValue)
+    {
+        <div> @item1.Value : @item1.Type</div>
+    }
+}
+
+<div>
+    <input id="idItem" type="number">
+    <input id="nameInventory" type="text">
+    <button onclick="addInventory()" type="submit">Add Item</button>
+</div>
+
+<div>
+    <input id="valueField" type="text">
+    <input id="typeField" type="text">
+    <button onclick="addInventory()" type="submit">Add Value</button>
+</div>

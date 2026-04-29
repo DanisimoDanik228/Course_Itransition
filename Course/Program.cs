@@ -14,21 +14,25 @@ builder.Services.AddDbContext<AppDbContext>(o =>
         o.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"));
     });
 
-builder.Services.AddScoped<IRepository,Repository>();
+builder.Services.AddScoped<IInventoryRepository,InventoryRepository>();
+builder.Services.AddScoped<IItemRepository,ItemRepository>();
+builder.Services.AddScoped<IItemValueRepository,ItemValueRepository>();
+builder.Services.AddScoped<IInventoryTypeRepository, InventoryTypeRepository>();
 builder.Services.AddScoped<IService,Service>();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    Console.WriteLine("Sleep");
-    Thread.Sleep(5000);
-    Console.WriteLine("Wake up");
+if(false)
+    using (var scope = app.Services.CreateScope())
+    {
+        Console.WriteLine("Sleep");
+        Thread.Sleep(5000);
+        Console.WriteLine("Wake up");
 
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureDeleted();
-    db.Database.EnsureCreated();
-}
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.EnsureDeleted();
+        db.Database.EnsureCreated();
+    }
 
 app.UseHttpsRedirection();
 app.UseRouting();

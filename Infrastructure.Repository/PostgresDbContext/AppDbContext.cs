@@ -14,10 +14,28 @@ namespace Infrastructure.Repository.PostgresDbContext
         }
 
         public DbSet<Inventory> Inventory => Set<Inventory>();
+        public DbSet<Item> Items => Set<Item>();
+        public DbSet<ItemValue> ItemValue => Set<ItemValue>();
+        public DbSet<InventoryType> InventoryType => Set<InventoryType>();
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnConfiguring(optionsBuilder);
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Inventory>()
+                .HasMany(i => i.Items)
+                .WithOne(i => i.Inventory)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Inventory>()
+                .HasMany(i => i.InventoryType)
+                .WithOne(it => it.Inventory)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Item>()
+                .HasMany(i => i.ItemValue)
+                .WithOne(iv => iv.Item)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
