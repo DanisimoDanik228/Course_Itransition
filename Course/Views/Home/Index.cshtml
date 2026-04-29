@@ -1,5 +1,17 @@
-﻿@{
+﻿@using Domain.Models
+@model IEnumerable<Inventory>
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div>Hello world</div>
+@foreach(var item in Model)
+{
+    <div> @item.Name </div>
+    <div> @item.Price </div>
+}
+
+<form asp-controller="Home" asp-action="AddItem">
+    <input name="Name" type="text"> 
+    <input name="Price"  type="number">
+    <button type="submit">Add</button>
+</form>
