@@ -1,0 +1,8 @@
+services:
+    course:
+        image: ghcr.io/danisimodanik228/course_itransition:latest 
+        build:
+            context: .
+            dockerfile: Course/Dockerfile
+        ports:
+            - "5005:8080"

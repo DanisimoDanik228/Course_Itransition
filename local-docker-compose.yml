@@ -1,0 +1,8 @@
+services:
+    course:
+        image: local_course
+        build:
+            context: .
+            dockerfile: Course/Dockerfile
+        ports:
+            - "5005:8080"
