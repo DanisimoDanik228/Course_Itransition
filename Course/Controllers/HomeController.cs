@@ -1,7 +1,10 @@
 using Application.Dto.Request;
+using Application.Dto.Response;
+using Application.Dto.Response.Full;
 using Application.Service;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.Diagnostics;
 
 namespace Course.Controllers
@@ -22,6 +25,37 @@ namespace Course.Controllers
         public async Task<IActionResult> Inventory(long idInventory)
         {
             var res = await _service.GetFullInventoryByIdAsync(idInventory);
+
+            res.InventoryType.Sort((a,b) => string.Compare(a.Name,b.Name));
+
+            foreach (var item in res.InventoryType)
+            {
+                Console.WriteLine(item.Name + " __ " + item.Type);
+            }
+            Console.WriteLine();
+
+            for (int i = 0; i < res.Items.Count; i++)
+            {
+                var item = res.Items[i];
+                item.ItemValue.Sort((a, b) => string.Compare(a.Name, b.Name));
+
+                int indexInventoryType = 0;
+                var newListItenValue = new List<ItemValueResponseDto>();
+
+                for (int j = 0; j < item.ItemValue.Count(); j++)
+                {
+                    var item1 = item.ItemValue[j];
+
+                    if (item1.Name == res.InventoryType[indexInventoryType].Name)
+                    {
+                        newListItenValue.Add(item1);
+                        indexInventoryType++;
+                    }
+                }
+
+                item.ItemValue = newListItenValue;
+            }
+            
             return View(res);
         }
 

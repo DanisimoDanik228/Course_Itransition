@@ -1,24 +1,33 @@
-﻿@using Domain.Models
-@model Inventory
+﻿@using Application.Dto.Response.Full
+@model InventoryFullResponseDto
 
-@foreach (var item in Model.Items)
-{
-    <div> @item.Id </div>
-    <div> @item.InventoryId</div>
-    @foreach (var item1 in item.ItemValue)
-    {
-        <div> @item1.Value : @item1.Type</div>
-    }
-}
+<table>
+    <thead>
+        <tr>
+            @foreach (var item in Model.InventoryType)
+            {
+                <th> @item.Name </th>
+                <th> @item.Type </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                @foreach (var item1 in item.ItemValue)
+                {
+                    <td>@item1.Name</td>
+                    <td>@item1.Value</td>
+             
+                }
+            </tr>
+        }
+    </tbody>
+</table>
 
 <div>
     <input id="idItem" type="number">
     <input id="nameInventory" type="text">
     <button onclick="addInventory()" type="submit">Add Item</button>
-</div>
-
-<div>
-    <input id="valueField" type="text">
-    <input id="typeField" type="text">
-    <button onclick="addInventory()" type="submit">Add Value</button>
 </div>

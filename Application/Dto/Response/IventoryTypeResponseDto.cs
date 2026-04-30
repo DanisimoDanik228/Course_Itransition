@@ -5,12 +5,10 @@ using System.Text;
 
 namespace Application.Dto.Response
 {
-    public class ItemResponseDto
+    public class IventoryTypeResponseDto
     {
         public long Id { get; set; }
-
-        public ICollection<ItemValue> ItemValue { get; set; }
-
-        public long InventoryId { get; set; }
+        public string Type { get; set; }
+        public string Name { get; set; }
     }
 }

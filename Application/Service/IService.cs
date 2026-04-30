@@ -1,4 +1,5 @@
 ﻿using Application.Dto.Response;
+using Application.Dto.Response.Full;
 using Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Application.Service
     {
         Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync(long idInventory);
         Task<IEnumerable<Inventory>> GetAllInventoryAsync();
-        Task<Inventory?> GetFullInventoryByIdAsync(long Id);
+        Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id);
         Task<InventoryResponseDto?> AddInventoryAsync(Inventory item);
     }
 }

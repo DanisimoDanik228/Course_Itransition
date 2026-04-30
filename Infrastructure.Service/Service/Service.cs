@@ -1,4 +1,5 @@
 ﻿using Application.Dto.Response;
+using Application.Dto.Response.Full;
 using Application.Repository;
 using Application.Service;
 using Domain.Models;
@@ -37,9 +38,41 @@ namespace Infrastructure.Service.Service
             return await _itemRepository.GetAllFromInventoryAsync(idInventory);
         }
 
-        public async Task<Inventory?> GetFullInventoryByIdAsync(long Id)
+        public async Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id)
         {
-            return await _inventoryRepository.GetFullByIdAsync(Id);
+            return ParseInventoryToFull(await _inventoryRepository.GetFullByIdAsync(Id));
+        }
+
+        public InventoryFullResponseDto ParseInventoryToFull(Inventory inventory)
+        {
+            return new InventoryFullResponseDto
+            {
+                Id = inventory.Id,
+                Name = inventory.Name,
+
+                Items = inventory.Items?.Select(item => ParseItemToFull(item)).ToList() ?? new(),
+
+                InventoryType = inventory.InventoryType?.Select(it => new IventoryTypeResponseDto
+                {
+                    Id = it.Id,
+                    Type = it.Type,
+                    Name = it.Name
+                }).ToList() ?? new()
+            };
+        }
+        public static ItemFullResponseDto ParseItemToFull(Item item)
+        {
+            return new ItemFullResponseDto
+            {
+                Id = item.Id,
+                ItemValue = item.ItemValue?.Select(iv => new ItemValueResponseDto
+                {
+                    Id = iv.Id,
+                    Value = iv.Value,
+                    Type = iv.Type,
+                    Name = iv.Name
+                }).ToList() ?? new()
+            };
         }
     }
 }
