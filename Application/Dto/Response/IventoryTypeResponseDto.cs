@@ -10,5 +10,6 @@ namespace Application.Dto.Response
         public long Id { get; set; }
         public string Type { get; set; }
         public string Name { get; set; }
+        public long InventoryId { get; set; }
     }
 }

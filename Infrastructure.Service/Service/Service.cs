@@ -14,12 +14,15 @@ namespace Infrastructure.Service.Service
     {
         private readonly IInventoryRepository _inventoryRepository;
         private readonly IItemRepository _itemRepository;
+        private readonly IInventoryTypeRepository _inventoryTypeRepository;
         public Service(
             IInventoryRepository inventoryRepository,
-            IItemRepository itemRepository)
+            IItemRepository itemRepository,
+            IInventoryTypeRepository inventoryTypeRepository)
         {
             _inventoryRepository = inventoryRepository;
             _itemRepository = itemRepository;
+            _inventoryTypeRepository = inventoryTypeRepository;
         }
         public async Task<InventoryResponseDto?> AddInventoryAsync(Inventory item)
         {
@@ -79,6 +82,24 @@ namespace Infrastructure.Service.Service
         public async Task<ItemFullResponseDto?> AddItemAsync(ItemFullResponseDto item)
         {
             return ParseItemToFull(await _itemRepository.AddAsync(a(item)));
+        }
+
+        public async Task<IventoryTypeResponseDto?> AddFieldAsync(IventoryTypeResponseDto item)
+        {
+            var r = new InventoryType()
+            {
+                Id = 0,
+                InventoryId=item.InventoryId,
+                Name = item.Name,
+                Type = item.Type
+            };
+            var t = await _inventoryTypeRepository.AddAsync(r);
+            return new IventoryTypeResponseDto()
+            {
+                Id = t.Id,
+                Name = t.Name,
+                Type = t.Type
+            };
         }
 
         public static Item a(ItemFullResponseDto ass)

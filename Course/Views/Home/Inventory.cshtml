@@ -35,7 +35,18 @@
     <button onclick="addItem()" type="submit">Add Item</button>
 </div>
 
+<div>
+    <div>Name:</div>
+    <input id="fieldName" type="text">
+    <div>Type:</div>
+    <input id="fieldType" type="text">
+    <button onclick="addField()" type="submit">Add Item</button>
+</div>
+
 <script>
+    const fieldName = document.getElementById('fieldName');
+    const fieldType = document.getElementById('fieldType');
+
     async function addItem() {
         const values = document.getElementsByClassName('addItem');
         
@@ -49,7 +60,7 @@
             let subItem = {
                 id: 0,
                 value: field.value,
-                type: "type_lol",
+                type: "string",
                 name: field.dataset.typeId
             };
 
@@ -59,6 +70,30 @@
         console.log(item);
 
         const response = await fetch(`/Home/AddItem?idInventory=${@Model.Id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item)
+        });
+
+        const result = await response.json();
+        console.log(result);
+    }
+
+    async function addField() {
+        const values = document.getElementsByClassName('addItem');
+
+        let item = {};
+
+        item.id = 0;
+        item.inventoryId = @Model.Id;
+        item.name = fieldName.value;
+        item.type = fieldType.value;
+
+        console.log(item);
+
+        const response = await fetch(`/Home/AddField`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

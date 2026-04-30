@@ -14,5 +14,6 @@ namespace Application.Service
         Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id);
         Task<InventoryResponseDto?> AddInventoryAsync(Inventory item);
         Task<ItemFullResponseDto?> AddItemAsync(ItemFullResponseDto item);
+        Task<IventoryTypeResponseDto?> AddFieldAsync(IventoryTypeResponseDto item);
     }
 }

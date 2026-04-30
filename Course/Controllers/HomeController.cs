@@ -46,7 +46,15 @@ namespace Course.Controllers
                 {
                     var item1 = item.ItemValue[j];
 
-                    if (item1.Name == res.InventoryType[indexInventoryType].Name)
+                    while (indexInventoryType < res.InventoryType.Count() && 
+                        0 > string.Compare(item1.Name,res.InventoryType[indexInventoryType].Name))
+                    {
+
+                        indexInventoryType++;
+                    }
+
+                    if (indexInventoryType < res.InventoryType.Count() && 
+                        item1.Name == res.InventoryType[indexInventoryType].Name)
                     {
                         newListItenValue.Add(item1);
                         indexInventoryType++;
@@ -89,6 +97,12 @@ namespace Course.Controllers
         public async Task<IActionResult> AddItem(long idInventory, [FromBody] ItemFullResponseDto item)
         {
             return Json(await _service.AddItemAsync(item));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddField([FromBody] IventoryTypeResponseDto item)
+        {
+            return Json(await _service.AddFieldAsync(item));
         }
     }
 }
