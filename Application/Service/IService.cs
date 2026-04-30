@@ -13,5 +13,6 @@ namespace Application.Service
         Task<IEnumerable<Inventory>> GetAllInventoryAsync();
         Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id);
         Task<InventoryResponseDto?> AddInventoryAsync(Inventory item);
+        Task<ItemFullResponseDto?> AddItemAsync(ItemFullResponseDto item);
     }
 }

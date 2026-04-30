@@ -62,16 +62,16 @@ namespace Course.Controllers
         [HttpPost]
         public async Task<IActionResult> AddInventory([FromBody] InventoryRequestDto inventory)
         {
-            var it1 = new InventoryType() {Id=1, Type="string", Name="Name" };
-            var it2 = new InventoryType() {Id=2, Type="int",Name="Age" };
+            var it1 = new InventoryType() {Id=0, Type="string", Name="Name" };
+            var it2 = new InventoryType() {Id=0, Type="int",Name="Age" };
 
-            var iv1 = new ItemValue() {Id=1,Value="19",Type="int", Name = "Age" };
-            var iv2 = new ItemValue() {Id=2,Value="danila",Type="string", Name = "Name" };
-            var iv3 = new ItemValue() {Id=3,Value="23",Type="int",Name="Age" };
-            var iv4 = new ItemValue() {Id=4,Value="kirill",Type= "string", Name="Name" };
+            var iv1 = new ItemValue() {Id=0,Value="19",Type="int", Name = "Age" };
+            var iv2 = new ItemValue() {Id=0,Value="danila",Type="string", Name = "Name" };
+            var iv3 = new ItemValue() {Id=0,Value="23",Type="int",Name="Age" };
+            var iv4 = new ItemValue() {Id=0,Value="kirill",Type= "string", Name="Name" };
 
-            var i1 = new Item() { Id = 1, ItemValue = [iv1,iv2] };
-            var i2 = new Item() { Id = 2, ItemValue = [iv3,iv4] };
+            var i1 = new Item() { Id = 0, ItemValue = [iv1,iv2] };
+            var i2 = new Item() { Id = 0, ItemValue = [iv3,iv4] };
 
             i1.ItemValue = [iv1, iv2];
             i2.ItemValue = [iv3, iv4];
@@ -83,6 +83,12 @@ namespace Course.Controllers
 
             var res = await _service.AddInventoryAsync(i);
             return Json(res);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddItem(long idInventory, [FromBody] ItemFullResponseDto item)
+        {
+            return Json(await _service.AddItemAsync(item));
         }
     }
 }

@@ -27,7 +27,46 @@
 </table>
 
 <div>
-    <input id="idItem" type="number">
-    <input id="nameInventory" type="text">
-    <button onclick="addInventory()" type="submit">Add Item</button>
+    @foreach (var item in Model.InventoryType)
+    {
+        <div>@item.Name</div>
+        <input class="addItem" data-type-id="@item.Name" type="text">
+    }
+    <button onclick="addItem()" type="submit">Add Item</button>
 </div>
+
+<script>
+    async function addItem() {
+        const values = document.getElementsByClassName('addItem');
+        
+        let item = {};
+        
+        item.id = 0;
+        item.inventoryId = @Model.Id;
+        item.itemValue = [];
+
+        for (let field of values) { 
+            let subItem = {
+                id: 0,
+                value: field.value,
+                type: "type_lol",
+                name: field.dataset.typeId
+            };
+
+            item.itemValue.push(subItem);
+        }
+
+        console.log(item);
+
+        const response = await fetch(`/Home/AddItem?idInventory=${@Model.Id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item)
+        });
+
+        const result = await response.json();
+        console.log(result);
+    }
+</script>

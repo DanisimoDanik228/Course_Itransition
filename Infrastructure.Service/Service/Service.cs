@@ -65,6 +65,7 @@ namespace Infrastructure.Service.Service
             return new ItemFullResponseDto
             {
                 Id = item.Id,
+                InventoryId = item.InventoryId,
                 ItemValue = item.ItemValue?.Select(iv => new ItemValueResponseDto
                 {
                     Id = iv.Id,
@@ -72,6 +73,25 @@ namespace Infrastructure.Service.Service
                     Type = iv.Type,
                     Name = iv.Name
                 }).ToList() ?? new()
+            };
+        }
+
+        public async Task<ItemFullResponseDto?> AddItemAsync(ItemFullResponseDto item)
+        {
+            return ParseItemToFull(await _itemRepository.AddAsync(a(item)));
+        }
+
+        public static Item a(ItemFullResponseDto ass)
+        {
+            return new Item()
+            {
+                InventoryId = ass.InventoryId,
+                ItemValue = ass.ItemValue.Select(v => new ItemValue
+                {
+                    Value = v.Value,
+                    Type = v.Type,
+                    Name = v.Name
+                }).ToList()
             };
         }
     }
