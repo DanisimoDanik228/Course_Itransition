@@ -10,6 +10,7 @@ namespace Application.Service
     {
         Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync(long idInventory);
         Task<IEnumerable<Inventory>> GetAllInventoryAsync();
+        Task<Inventory?> GetFullInventoryByIdAsync(long Id);
         Task<InventoryResponseDto?> AddInventoryAsync(Inventory item);
     }
 }

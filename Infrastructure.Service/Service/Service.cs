@@ -36,5 +36,10 @@ namespace Infrastructure.Service.Service
         {
             return await _itemRepository.GetAllFromInventoryAsync(idInventory);
         }
+
+        public async Task<Inventory?> GetFullInventoryByIdAsync(long Id)
+        {
+            return await _inventoryRepository.GetFullByIdAsync(Id);
+        }
     }
 }

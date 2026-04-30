@@ -1,7 +1,7 @@
 ﻿@using Domain.Models
-@model IEnumerable<Item>
+@model Inventory
 
-@foreach (var item in Model)
+@foreach (var item in Model.Items)
 {
     <div> @item.Id </div>
     <div> @item.InventoryId</div>

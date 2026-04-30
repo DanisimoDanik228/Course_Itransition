@@ -38,6 +38,16 @@ namespace Infrastructure.Repository.Repository
             return _context.Inventory.AsNoTracking().AsEnumerable();
         }
 
+        public Task<Inventory?> GetFullByIdAsync(long Id)
+        {
+            return _context.Inventory
+                .Include(i => i.InventoryType)
+                .Include(i => i.Items)
+                .ThenInclude(i => i.ItemValue)
+                .AsNoTracking()
+                .FirstAsync(i => i.Id == Id);
+        }
+
         public async Task<Inventory?> UpdateAsync(Inventory item)
         {
            var res = _context.Inventory.Update(item);
