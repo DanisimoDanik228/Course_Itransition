@@ -1,4 +1,5 @@
 using Application.Dto.Request;
+using Application.Dto.Request.Full;
 using Application.Dto.Response;
 using Application.Dto.Response.Full;
 using Application.Service;
@@ -26,43 +27,7 @@ namespace Course.Controllers
         {
             var res = await _service.GetFullInventoryByIdAsync(idInventory);
 
-            res.InventoryType.Sort((a,b) => string.Compare(a.Name,b.Name));
-
-            foreach (var item in res.InventoryType)
-            {
-                Console.WriteLine(item.Name + " __ " + item.Type);
-            }
-            Console.WriteLine();
-
-            for (int i = 0; i < res.Items.Count; i++)
-            {
-                var item = res.Items[i];
-                item.ItemValue.Sort((a, b) => string.Compare(a.Name, b.Name));
-
-                int indexInventoryType = 0;
-                var newListItenValue = new List<ItemValueResponseDto>();
-
-                for (int j = 0; j < item.ItemValue.Count(); j++)
-                {
-                    var item1 = item.ItemValue[j];
-
-                    while (indexInventoryType < res.InventoryType.Count() && 
-                        0 > string.Compare(item1.Name,res.InventoryType[indexInventoryType].Name))
-                    {
-
-                        indexInventoryType++;
-                    }
-
-                    if (indexInventoryType < res.InventoryType.Count() && 
-                        item1.Name == res.InventoryType[indexInventoryType].Name)
-                    {
-                        newListItenValue.Add(item1);
-                        indexInventoryType++;
-                    }
-                }
-
-                item.ItemValue = newListItenValue;
-            }
+            res = _service.PrepareFullInventoryToShow(res);
             
             return View(res);
         }
@@ -94,13 +59,13 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddItem(long idInventory, [FromBody] ItemFullResponseDto item)
+        public async Task<IActionResult> AddItem(long idInventory, [FromBody] ItemFullRequestDto item)
         {
             return Json(await _service.AddItemAsync(item));
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddField([FromBody] IventoryTypeResponseDto item)
+        public async Task<IActionResult> AddField([FromBody] InventoryTypeRequestDto item)
         {
             return Json(await _service.AddFieldAsync(item));
         }

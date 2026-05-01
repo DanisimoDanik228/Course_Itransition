@@ -9,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddAutoMapper(typeof(Application.Mapping.MappingProfile));
+
 builder.Services.AddDbContext<AppDbContext>(o =>
     {
         o.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"));

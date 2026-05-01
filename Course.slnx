@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Application/">
+    <Project Path="Application.Mapping/Application.Mapping.csproj" Id="2c2181b6-7726-40a4-8d3e-bb9e6eabc5a6" />
     <Project Path="Application/Application.csproj" Id="1e5674b5-b449-42c8-8642-8733d8310730" />
   </Folder>
   <Folder Name="/Domain/">

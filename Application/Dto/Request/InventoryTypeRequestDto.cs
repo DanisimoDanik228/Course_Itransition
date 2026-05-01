@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Dto.Response
+namespace Application.Dto.Request
 {
-    public class IventoryTypeResponseDto
+    public class InventoryTypeRequestDto
     {
         public long Id { get; set; }
         public string Type { get; set; }

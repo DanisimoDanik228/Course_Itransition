@@ -10,6 +10,6 @@ namespace Application.Dto.Response.Full
         public long Id { get; set; }
         public string Name { get; set; }
         public List<ItemFullResponseDto> Items { get; set; }
-        public List<IventoryTypeResponseDto> InventoryType { get; set; }
+        public List<InventoryTypeResponseDto> InventoryType { get; set; }
     }
 }

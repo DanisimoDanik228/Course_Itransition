@@ -1,7 +1,10 @@
-﻿using Application.Dto.Response;
+﻿using Application.Dto.Request;
+using Application.Dto.Request.Full;
+using Application.Dto.Response;
 using Application.Dto.Response.Full;
 using Application.Repository;
 using Application.Service;
+using AutoMapper;
 using Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -15,20 +18,22 @@ namespace Infrastructure.Service.Service
         private readonly IInventoryRepository _inventoryRepository;
         private readonly IItemRepository _itemRepository;
         private readonly IInventoryTypeRepository _inventoryTypeRepository;
+        private readonly IMapper _mapper;
         public Service(
             IInventoryRepository inventoryRepository,
             IItemRepository itemRepository,
-            IInventoryTypeRepository inventoryTypeRepository)
+            IInventoryTypeRepository inventoryTypeRepository,
+            IMapper mapper )
         {
             _inventoryRepository = inventoryRepository;
             _itemRepository = itemRepository;
             _inventoryTypeRepository = inventoryTypeRepository;
+            _mapper = mapper;
         }
         public async Task<InventoryResponseDto?> AddInventoryAsync(Inventory item)
         {
             var res = await _inventoryRepository.AddAsync(item);
-            var res1 = new InventoryResponseDto() {Id=res.Id,Name=res.Name};
-            return res1;
+            return _mapper.Map<Inventory, InventoryResponseDto>(res);
         }
 
         public async Task<IEnumerable<Inventory>> GetAllInventoryAsync()
@@ -43,77 +48,59 @@ namespace Infrastructure.Service.Service
 
         public async Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id)
         {
-            return ParseInventoryToFull(await _inventoryRepository.GetFullByIdAsync(Id));
+            var res = await _inventoryRepository.GetFullByIdAsync(Id);
+            return _mapper.Map<Inventory,InventoryFullResponseDto>(res);
         }
 
-        public InventoryFullResponseDto ParseInventoryToFull(Inventory inventory)
+        public async Task<ItemFullResponseDto?> AddItemAsync(ItemFullRequestDto item)
         {
-            return new InventoryFullResponseDto
+            var itemFull = _mapper.Map<ItemFullRequestDto,Item>(item);
+            var res = await _itemRepository.AddAsync(itemFull);
+            return _mapper.Map<Item, ItemFullResponseDto>(res);
+        }
+
+        public async Task<InventoryTypeResponseDto?> AddFieldAsync(InventoryTypeRequestDto item)
+        {
+            var inventoryType = _mapper.Map<InventoryTypeRequestDto, InventoryType>(item);
+            var res = await _inventoryTypeRepository.AddAsync(inventoryType);
+            return _mapper.Map<InventoryType,InventoryTypeResponseDto>(res);
+        }
+
+        public InventoryFullResponseDto PrepareFullInventoryToShow(InventoryFullResponseDto inventory)
+        {
+            inventory.InventoryType.Sort((a, b) => string.Compare(a.Name, b.Name));
+
+            for (int i = 0; i < inventory.Items.Count; i++)
             {
-                Id = inventory.Id,
-                Name = inventory.Name,
+                var item = inventory.Items[i];
+                item.ItemValue.Sort((a, b) => string.Compare(a.Name, b.Name));
 
-                Items = inventory.Items?.Select(item => ParseItemToFull(item)).ToList() ?? new(),
+                int indexInventoryType = 0;
+                var newListItenValue = new List<ItemValueResponseDto>();
 
-                InventoryType = inventory.InventoryType?.Select(it => new IventoryTypeResponseDto
+                for (int j = 0; j < item.ItemValue.Count(); j++)
                 {
-                    Id = it.Id,
-                    Type = it.Type,
-                    Name = it.Name
-                }).ToList() ?? new()
-            };
-        }
-        public static ItemFullResponseDto ParseItemToFull(Item item)
-        {
-            return new ItemFullResponseDto
-            {
-                Id = item.Id,
-                InventoryId = item.InventoryId,
-                ItemValue = item.ItemValue?.Select(iv => new ItemValueResponseDto
-                {
-                    Id = iv.Id,
-                    Value = iv.Value,
-                    Type = iv.Type,
-                    Name = iv.Name
-                }).ToList() ?? new()
-            };
-        }
+                    var item1 = item.ItemValue[j];
 
-        public async Task<ItemFullResponseDto?> AddItemAsync(ItemFullResponseDto item)
-        {
-            return ParseItemToFull(await _itemRepository.AddAsync(a(item)));
-        }
+                    while (indexInventoryType < inventory.InventoryType.Count() &&
+                        0 > string.Compare(item1.Name, inventory.InventoryType[indexInventoryType].Name))
+                    {
 
-        public async Task<IventoryTypeResponseDto?> AddFieldAsync(IventoryTypeResponseDto item)
-        {
-            var r = new InventoryType()
-            {
-                Id = 0,
-                InventoryId=item.InventoryId,
-                Name = item.Name,
-                Type = item.Type
-            };
-            var t = await _inventoryTypeRepository.AddAsync(r);
-            return new IventoryTypeResponseDto()
-            {
-                Id = t.Id,
-                Name = t.Name,
-                Type = t.Type
-            };
-        }
+                        indexInventoryType++;
+                    }
 
-        public static Item a(ItemFullResponseDto ass)
-        {
-            return new Item()
-            {
-                InventoryId = ass.InventoryId,
-                ItemValue = ass.ItemValue.Select(v => new ItemValue
-                {
-                    Value = v.Value,
-                    Type = v.Type,
-                    Name = v.Name
-                }).ToList()
-            };
+                    if (indexInventoryType < inventory.InventoryType.Count() &&
+                        item1.Name == inventory.InventoryType[indexInventoryType].Name)
+                    {
+                        newListItenValue.Add(item1);
+                        indexInventoryType++;
+                    }
+                }
+
+                item.ItemValue = newListItenValue;
+            }
+
+            return inventory;
         }
     }
 }
