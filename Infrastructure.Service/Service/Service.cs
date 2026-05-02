@@ -68,6 +68,10 @@ namespace Infrastructure.Service.Service
 
         public InventoryFullResponseDto PrepareFullInventoryToShow(InventoryFullResponseDto inventory)
         {
+            var nullItemValue = new ItemValueResponseDto();
+            nullItemValue.Name = "Null_name";
+            nullItemValue.Value = "Null";
+
             inventory.InventoryType.Sort((a, b) => string.Compare(a.Name, b.Name));
 
             for (int i = 0; i < inventory.Items.Count; i++)
@@ -83,9 +87,10 @@ namespace Infrastructure.Service.Service
                     var item1 = item.ItemValue[j];
 
                     while (indexInventoryType < inventory.InventoryType.Count() &&
-                        0 > string.Compare(item1.Name, inventory.InventoryType[indexInventoryType].Name))
+                        0 < string.Compare(item1.Name, inventory.InventoryType[indexInventoryType].Name))
                     {
 
+                        newListItenValue.Add(nullItemValue);
                         indexInventoryType++;
                     }
 
@@ -95,6 +100,13 @@ namespace Infrastructure.Service.Service
                         newListItenValue.Add(item1);
                         indexInventoryType++;
                     }
+                }
+
+                while (indexInventoryType < inventory.InventoryType.Count())
+                {
+
+                    newListItenValue.Add(nullItemValue);
+                    indexInventoryType++;
                 }
 
                 item.ItemValue = newListItenValue;
