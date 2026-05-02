@@ -2,17 +2,15 @@
 <div id="inventoryTable"></div>
 
 <div id="listItemField">
-
-    
     <button onclick="addItem()" type="submit">Add Item</button>
 </div>
 
 <div>
-    <div>Name:</div>
-    <input id="fieldName" type="text">
-    <div>Type:</div>
-    <input id="fieldType" type="text">
     <button onclick="addField()" type="submit">Add Field</button>
+    <div>Name</div>
+    <input id="fieldName" type="text">
+    <div>Type</div>
+    <input id="fieldType" type="text">
 </div>
 
 <script>
@@ -89,7 +87,7 @@
 
         const table = document.createElement('table');
         const thead = document.createElement('thead');
-        const headRow = document.createElement('th');
+        const headRow = document.createElement('tr');
         const tbody = document.createElement('tbody');
 
         for (let item of result.inventoryType) {
