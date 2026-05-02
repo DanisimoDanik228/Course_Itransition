@@ -1,9 +1,8 @@
 ﻿@Model long
 <div id="inventoryTable"></div>
 
-<div id="listItemField">
-    <button onclick="addItem()" type="submit">Add Item</button>
-</div>
+<button onclick="addItem()" type="submit">Add Item</button>
+<div id="listItemField"></div>
 
 <div>
     <button onclick="addField()" type="submit">Add Field</button>
@@ -54,10 +53,10 @@
         const result = await response.json();
         console.log("additem",result);
         inventory.items.push(result);
+        loadFullInventory();
     }
 
     async function addField() {
-        console.log('inventory1', inventory);
         const values = document.getElementsByClassName('addItem');
 
         let item = {};
@@ -77,9 +76,13 @@
 
         const result = await response.json();
         inventory.inventoryType.push(result);
+
+        loadFullInventory();
     }
 
     async function loadFullInventory() {
+        inventoryTable.innerHTML = '';
+
         const response = await fetch(`/Home/GetFullInventory?idInventory=${@Model}`);
         const result = await response.json();
 
@@ -111,15 +114,16 @@
 
         table.appendChild(thead);
         table.appendChild(tbody);
-
+        
         inventoryTable?.appendChild(table);
 
         loadAddItem();
     }
 
     function loadAddItem() {
-        console.log('inventory2',inventory);
-        listItemField.innerHtml = '';
+        while (listItemField?.firstChild) {
+            listItemField.removeChild(listItemField?.firstChild);
+        }
 
         for (let item of inventory.inventoryType) {
             const div = document.createElement('div');
