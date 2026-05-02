@@ -20,16 +20,12 @@ namespace Course.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _service.GetAllInventoryAsync());
+            return View();
         }
         
         public async Task<IActionResult> Inventory(long idInventory)
-        {
-            var res = await _service.GetFullInventoryByIdAsync(idInventory);
-
-            res = _service.PrepareFullInventoryToShow(res);
-            
-            return View(res);
+        {            
+            return View(idInventory);
         }
 
         [HttpPost]
@@ -68,6 +64,21 @@ namespace Course.Controllers
         public async Task<IActionResult> AddField([FromBody] InventoryTypeRequestDto item)
         {
             return Json(await _service.AddFieldAsync(item));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllInventory()
+        {
+            return Json(await _service.GetAllInventoryAsync());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFullInventory(long idInventory)
+        {
+            var res = await _service.GetFullInventoryByIdAsync(idInventory);
+
+            res = _service.PrepareFullInventoryToShow(res);
+            return Json(res);
         }
     }
 }

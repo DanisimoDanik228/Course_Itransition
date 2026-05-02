@@ -1,37 +1,9 @@
-﻿@using Application.Dto.Response.Full
-@model InventoryFullResponseDto
+﻿@Model long
+<div id="inventoryTable"></div>
 
-<table>
-    <thead>
-        <tr>
-            @foreach (var item in Model.InventoryType)
-            {
-                <th> @item.Name </th>
-                <th> @item.Type </th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Items)
-        {
-            <tr>
-                @foreach (var item1 in item.ItemValue)
-                {
-                    <td>@item1.Name</td>
-                    <td>@item1.Value</td>
-             
-                }
-            </tr>
-        }
-    </tbody>
-</table>
+<div id="listItemField">
 
-<div>
-    @foreach (var item in Model.InventoryType)
-    {
-        <div>@item.Name</div>
-        <input class="addItem" data-type-id="@item.Name" type="text">
-    }
+    
     <button onclick="addItem()" type="submit">Add Item</button>
 </div>
 
@@ -40,12 +12,18 @@
     <input id="fieldName" type="text">
     <div>Type:</div>
     <input id="fieldType" type="text">
-    <button onclick="addField()" type="submit">Add Item</button>
+    <button onclick="addField()" type="submit">Add Field</button>
 </div>
 
 <script>
     const fieldName = document.getElementById('fieldName');
     const fieldType = document.getElementById('fieldType');
+    const inventoryTable = document.getElementById('inventoryTable');
+    const listItemField = document.getElementById('listItemField');
+
+    let inventory = {};
+
+    loadFullInventory();
 
     async function addItem() {
         const values = document.getElementsByClassName('addItem');
@@ -53,7 +31,7 @@
         let item = {};
         
         item.id = 0;
-        item.inventoryId = @Model.Id;
+        item.inventoryId = @Model;
         item.itemValue = [];
 
         for (let field of values) { 
@@ -67,9 +45,7 @@
             item.itemValue.push(subItem);
         }
 
-        console.log(item);
-
-        const response = await fetch(`/Home/AddItem?idInventory=${@Model.Id}`, {
+        const response = await fetch(`/Home/AddItem?idInventory=${@Model}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -78,20 +54,20 @@
         });
 
         const result = await response.json();
-        console.log(result);
+        console.log("additem",result);
+        inventory.items.push(result);
     }
 
     async function addField() {
+        console.log('inventory1', inventory);
         const values = document.getElementsByClassName('addItem');
 
         let item = {};
 
         item.id = 0;
-        item.inventoryId = @Model.Id;
+        item.inventoryId = @Model;
         item.name = fieldName.value;
         item.type = fieldType.value;
-
-        console.log(item);
 
         const response = await fetch(`/Home/AddField`, {
             method: 'POST',
@@ -102,6 +78,62 @@
         });
 
         const result = await response.json();
-        console.log(result);
+        inventory.inventoryType.push(result);
+    }
+
+    async function loadFullInventory() {
+        const response = await fetch(`/Home/GetFullInventory?idInventory=${@Model}`);
+        const result = await response.json();
+
+        inventory = result;
+
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const headRow = document.createElement('th');
+        const tbody = document.createElement('tbody');
+
+        for (let item of result.inventoryType) {
+            const th = document.createElement('th');
+            th.textContent = item.name;
+            headRow.appendChild(th);
+        }
+        thead.appendChild(headRow);
+
+        for (let item of result.items) {
+            const tr = document.createElement('tr');
+
+            for (let item1 of item.itemValue) { 
+                const td = document.createElement('td');
+                td.textContent = item1.value;
+                tr.appendChild(td);
+            }
+
+            tbody.appendChild(tr);
+        }
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+
+        inventoryTable?.appendChild(table);
+
+        loadAddItem();
+    }
+
+    function loadAddItem() {
+        console.log('inventory2',inventory);
+        listItemField.innerHtml = '';
+
+        for (let item of inventory.inventoryType) {
+            const div = document.createElement('div');
+            const input = document.createElement('input');
+
+            input.className = 'addItem';
+            input.setAttribute('data-type-id', item.name);
+            input.type = 'text';
+
+            div.innerText = item.name;
+            listItemField.appendChild(div);
+            listItemField.appendChild(input);
+        }
     }
 </script>
