@@ -24,7 +24,7 @@
         inventoryList.innerHTML = '';
 
         for (let item of allInventory) { 
-            inventoryList.innerHTML += `<div>${item.name} : ${item.id}</div>`;
+            inventoryList.innerHTML += `<a href="/Home/Inventory?idInventory=${item.id}">${item.name}</a>`;
         }
     }
 
