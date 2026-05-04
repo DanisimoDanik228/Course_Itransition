@@ -1,8 +1,9 @@
-using Application.Repository;
+﻿using Application.Repository;
 using Application.Service;
 using Infrastructure.Repository.PostgresDbContext;
 using Infrastructure.Repository.Repository;
 using Infrastructure.Service.Service;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,27 @@ builder.Services.AddDbContext<AppDbContext>(o =>
         o.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"));
     });
 
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.Zero;
+});
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.Password.RequiredLength = 4;
+    options.Password.RequireDigit = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+})
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
+
 builder.Services.AddScoped<IInventoryRepository,InventoryRepository>();
 builder.Services.AddScoped<IItemRepository,ItemRepository>();
 builder.Services.AddScoped<IItemValueRepository,ItemValueRepository>();
@@ -24,25 +46,50 @@ builder.Services.AddScoped<IService,Service>();
 
 var app = builder.Build();
 
+//using (var scope = app.Services.CreateScope())
+//{
+//    Thread.Sleep(5000);
+//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//    db.Database.EnsureDeleted();
+//    db.Database.EnsureCreated();
+//}
+
 using (var scope = app.Services.CreateScope())
 {
-    Thread.Sleep(5000);
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureDeleted();
-    db.Database.EnsureCreated();
+    var nameAdmin = "werty";
+    var passAdmin = "1111";
+
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+    string[] roleNames = { "Admin", "Registered" };
+
+    foreach (var roleName in roleNames)
+    {
+        if (!await roleManager.RoleExistsAsync(roleName))
+        {
+            await roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+    }
+
+    if (await userManager.FindByNameAsync(nameAdmin) == null)
+    {
+        var admin = new IdentityUser { UserName = nameAdmin, Email = nameAdmin };
+        await userManager.CreateAsync(admin, passAdmin);
+        await userManager.AddToRoleAsync(admin, "Admin");
+    }
 }
 
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+    pattern: "{controller=Account}/{action=Register}/{id?}");
 
 app.Run();

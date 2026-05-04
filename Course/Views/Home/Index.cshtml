@@ -1,9 +1,17 @@
 ﻿<div id="inventoryList"></div>
 
+<h3>@User.Identity.Name</h3>
+<h3>@User.IsInRole("Admin")</h3>
+<h3>@User.IsInRole("Registered")</h3>
+
+<form asp-controller="Account" asp-action="Logout" method="post">
+    <button type="submit">Logout</button>
+</form>
+
 <form asp-controller="Home" asp-action="Inventory" method="get">
     <input name="idInventory" type="number">
     <button type="submit">Go to inventory</button>
-</form>
+</form> 
 
 <div>
     <input id="idInventory" type="number">
