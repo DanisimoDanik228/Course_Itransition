@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Models
+namespace Application.Dto.Request
 {
-    public class InventoryType
+    public class ItemValueRequestDto
     {
         public long Id { get; set; }
+
+        public string Value { get; set; }
         public string Type { get; set; }
         public string Name { get; set; }
-        public long InventoryId { get; set; }
-        public Inventory Inventory { get; set; }
     }
 }

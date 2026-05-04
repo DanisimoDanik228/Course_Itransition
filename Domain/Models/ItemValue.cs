@@ -10,6 +10,7 @@ namespace Domain.Models
 
         public string Value { get; set; }
         public string Type { get; set; }
+        public string Name { get; set; }
 
         public Item Item { get; set; }
     }

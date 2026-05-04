@@ -3,14 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Dto.Response
+namespace Application.Dto.Request
 {
-    public class ItemResponseDto
+    public class InventoryTypeRequestDto
     {
         public long Id { get; set; }
-
-        public ICollection<ItemValue> ItemValue { get; set; }
-
+        public string Type { get; set; }
+        public string Name { get; set; }
         public long InventoryId { get; set; }
     }
 }

@@ -1,24 +1,141 @@
-﻿@using Domain.Models
-@model IEnumerable<Item>
+﻿@Model long
+<div id="inventoryTable"></div>
 
-@foreach (var item in Model)
-{
-    <div> @item.Id </div>
-    <div> @item.InventoryId</div>
-    @foreach (var item1 in item.ItemValue)
-    {
-        <div> @item1.Value : @item1.Type</div>
+<button onclick="addItem()" type="submit">Add Item</button>
+<div id="listItemField"></div>
+
+<div>
+    <button onclick="addField()" type="submit">Add Field</button>
+    <div>Name</div>
+    <input id="fieldName" type="text">
+    <div>Type</div>
+    <input id="fieldType" type="text">
+</div>
+
+<script>
+    const fieldName = document.getElementById('fieldName');
+    const fieldType = document.getElementById('fieldType');
+    const inventoryTable = document.getElementById('inventoryTable');
+    const listItemField = document.getElementById('listItemField');
+
+    let inventory = {};
+
+    loadFullInventory();
+
+    async function addItem() {
+        const values = document.getElementsByClassName('addItem');
+        
+        let item = {};
+        
+        item.id = 0;
+        item.inventoryId = @Model;
+        item.itemValue = [];
+
+        for (let field of values) { 
+            let subItem = {
+                id: 0,
+                value: field.value,
+                type: "string",
+                name: field.dataset.typeId
+            };
+
+            item.itemValue.push(subItem);
+        }
+
+        const response = await fetch(`/Home/AddItem?idInventory=${@Model}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item)
+        });
+
+        const result = await response.json();
+        console.log("additem",result);
+        inventory.items.push(result);
+        loadFullInventory();
     }
-}
 
-<div>
-    <input id="idItem" type="number">
-    <input id="nameInventory" type="text">
-    <button onclick="addInventory()" type="submit">Add Item</button>
-</div>
+    async function addField() {
+        const values = document.getElementsByClassName('addItem');
 
-<div>
-    <input id="valueField" type="text">
-    <input id="typeField" type="text">
-    <button onclick="addInventory()" type="submit">Add Value</button>
-</div>
+        let item = {};
+
+        item.id = 0;
+        item.inventoryId = @Model;
+        item.name = fieldName.value;
+        item.type = fieldType.value;
+
+        const response = await fetch(`/Home/AddField`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item)
+        });
+
+        const result = await response.json();
+        inventory.inventoryType.push(result);
+
+        loadFullInventory();
+    }
+
+    async function loadFullInventory() {
+        inventoryTable.innerHTML = '';
+
+        const response = await fetch(`/Home/GetFullInventory?idInventory=${@Model}`);
+        const result = await response.json();
+
+        inventory = result;
+
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const headRow = document.createElement('tr');
+        const tbody = document.createElement('tbody');
+
+        for (let item of result.inventoryType) {
+            const th = document.createElement('th');
+            th.textContent = item.name;
+            headRow.appendChild(th);
+        }
+        thead.appendChild(headRow);
+
+        for (let item of result.items) {
+            const tr = document.createElement('tr');
+
+            for (let item1 of item.itemValue) { 
+                const td = document.createElement('td');
+                td.textContent = item1.value;
+                tr.appendChild(td);
+            }
+
+            tbody.appendChild(tr);
+        }
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        
+        inventoryTable?.appendChild(table);
+
+        loadAddItem();
+    }
+
+    function loadAddItem() {
+        while (listItemField?.firstChild) {
+            listItemField.removeChild(listItemField?.firstChild);
+        }
+
+        for (let item of inventory.inventoryType) {
+            const div = document.createElement('div');
+            const input = document.createElement('input');
+
+            input.className = 'addItem';
+            input.setAttribute('data-type-id', item.name);
+            input.type = 'text';
+
+            div.innerText = item.name;
+            listItemField.appendChild(div);
+            listItemField.appendChild(input);
+        }
+    }
+</script>

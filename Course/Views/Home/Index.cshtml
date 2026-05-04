@@ -1,11 +1,4 @@
-﻿@using Domain.Models
-@model IEnumerable<Inventory>
-
-@foreach (var item in Model)
-{
-    <div> @item.Id </div>
-    <div> @item.Name </div>
-}
+﻿<div id="inventoryList"></div>
 
 <form asp-controller="Home" asp-action="Inventory" method="get">
     <input name="idInventory" type="number">
@@ -21,6 +14,19 @@
 <script>
     const idInventory = document.getElementById('idInventory');
     const nameInventory = document.getElementById('nameInventory');
+    const inventoryList = document.getElementById('inventoryList');
+
+    loadInventory();
+
+    let allInventory = [];
+
+    function updateInventoryList() { 
+        inventoryList.innerHTML = '';
+
+        for (let item of allInventory) { 
+            inventoryList.innerHTML += `<a href="/Home/Inventory?idInventory=${item.id}">${item.name}</a>`;
+        }
+    }
 
     async function addInventory()
     {
@@ -42,5 +48,15 @@
 
         const result = await response.json();
         console.log(result);
+        allInventory.push(result);
+        updateInventoryList();
+    }
+
+    async function loadInventory() { 
+        let response = await fetch('/Home/GetAllInventory');
+        const result = await response.json();
+        console.log(result);
+        allInventory = result;
+        updateInventoryList();
     }
 </script>

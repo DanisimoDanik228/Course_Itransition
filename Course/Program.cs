@@ -9,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddAutoMapper(typeof(Application.Mapping.MappingProfile));
+
 builder.Services.AddDbContext<AppDbContext>(o =>
     {
         o.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"));
@@ -24,10 +26,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    Console.WriteLine("Sleep");
     Thread.Sleep(5000);
-    Console.WriteLine("Wake up");
-
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureDeleted();
     db.Database.EnsureCreated();
