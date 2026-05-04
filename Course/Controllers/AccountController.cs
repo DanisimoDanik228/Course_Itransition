@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Course.Request;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Course.Controllers
@@ -64,6 +66,24 @@ namespace Course.Controllers
         public IActionResult AccessDenied()
         {
             return StatusCode(403);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AllUsers()
+        {
+            var users = _userManager.Users.ToList(); 
+            var userRolesViewModel = new List<UserRequest>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var responseUser = new UserRequest{ Email = user.Email, Role = roles };
+
+                userRolesViewModel.Add(responseUser);
+            }
+
+            return View(userRolesViewModel);
         }
     }
 }

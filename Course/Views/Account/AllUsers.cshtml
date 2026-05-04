@@ -1,0 +1,25 @@
+﻿@using Course.Request
+@model IEnumerable<UserRequest>
+
+<table>
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Email</td>
+                <td>
+                    @foreach (var item1 in item.Role)
+                    {
+                        @item1
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
