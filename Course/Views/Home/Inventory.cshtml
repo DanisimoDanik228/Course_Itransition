@@ -12,6 +12,7 @@
     <input id="fieldType" type="text">
 </div>
 
+<script src="~/js/CreateTable.js"></script>
 <script>
     const fieldName = document.getElementById('fieldName');
     const fieldType = document.getElementById('fieldType');
@@ -88,33 +89,17 @@
 
         inventory = result;
 
-        const table = document.createElement('table');
-        const thead = document.createElement('thead');
-        const headRow = document.createElement('tr');
-        const tbody = document.createElement('tbody');
+        let data = {
+            head:[],
+            body:[]
+        };
 
-        for (let item of result.inventoryType) {
-            const th = document.createElement('th');
-            th.textContent = item.name;
-            headRow.appendChild(th);
-        }
-        thead.appendChild(headRow);
-
+        data.head = result.inventoryType.map(i => i.name);
         for (let item of result.items) {
-            const tr = document.createElement('tr');
-
-            for (let item1 of item.itemValue) { 
-                const td = document.createElement('td');
-                td.textContent = item1.value;
-                tr.appendChild(td);
-            }
-
-            tbody.appendChild(tr);
+            data.body.push(item.itemValue.map(i => i.value));
         }
-
-        table.appendChild(thead);
-        table.appendChild(tbody);
         
+        const table = createTable(data);
         inventoryTable?.appendChild(table);
 
         loadAddItem();

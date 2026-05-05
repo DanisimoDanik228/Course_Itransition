@@ -46,6 +46,7 @@ builder.Services.AddScoped<IService,Service>();
 
 var app = builder.Build();
 
+app.UseStaticFiles();
 //using (var scope = app.Services.CreateScope())
 //{
 //    Thread.Sleep(5000);

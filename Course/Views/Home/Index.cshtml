@@ -21,6 +21,7 @@
     <button onclick="addInventory()" type="submit">Add inventory</button>
 </div>
 
+<script src="~/js/CreateTable.js"></script>
 <script>
     const idInventory = document.getElementById('idInventory');
     const nameInventory = document.getElementById('nameInventory');
@@ -33,9 +34,24 @@
     function updateInventoryList() { 
         inventoryList.innerHTML = '';
 
-        for (let item of allInventory) { 
-            inventoryList.innerHTML += `<a href="/Home/Inventory?idInventory=${item.id}">${item.name}</a>`;
+        let data = {
+            head:[],
+            body:[]
+        };
+        data.head = ['Name','Items'];
+        for (let item of allInventory) {
+            let count = 0;
+            if (item.items != null) { 
+                count = item.items.length;
+            }
+
+            const link = `<a href="/Home/Inventory?idInventory=${item.id}">${item.name}</a>`;
+
+            data.body.push([link,count]);
         }
+        
+        const table = createTable(data);
+        inventoryList.appendChild(table);
     }
 
     async function addInventory()
