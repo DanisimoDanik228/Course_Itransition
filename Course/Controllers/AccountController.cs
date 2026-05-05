@@ -69,21 +69,39 @@ namespace Course.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> AllUsers()
+        public async Task<IActionResult> GetAllUsers()
         {
-            var users = _userManager.Users.ToList(); 
+            var users = _userManager.Users.ToList();
             var userRolesViewModel = new List<UserRequest>();
 
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-                var responseUser = new UserRequest{ Email = user.Email, Role = roles };
+                var responseUser = new UserRequest {Id = user.Id, Email = user.Email, Role = roles };
 
                 userRolesViewModel.Add(responseUser);
             }
 
-            return View(userRolesViewModel);
+            return Json(userRolesViewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AllUsers()
+        {
+            return View();
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUsers([FromBody] string[] Ids)
+        {
+            foreach (var item in Ids)
+            {
+                var user = await _userManager.FindByIdAsync(item);
+                await _userManager.DeleteAsync(user);
+            }
+
+            return StatusCode(204);
         }
     }
 }

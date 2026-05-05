@@ -1,5 +1,4 @@
-﻿@Model long
-<div id="inventoryTable"></div>
+﻿<div id="inventoryTable"></div>
 
 <button onclick="addItem()" type="submit">Add Item</button>
 <div id="listItemField"></div>
@@ -99,7 +98,7 @@
             data.body.push(item.itemValue.map(i => i.value));
         }
         
-        const table = createTable(data);
+    const table = createTable(data, 'checkboxInventoryList', 'selectAll');
         inventoryTable?.appendChild(table);
 
         loadAddItem();

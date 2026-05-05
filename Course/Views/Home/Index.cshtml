@@ -38,19 +38,14 @@
             head:[],
             body:[]
         };
-        data.head = ['Name','Items'];
+        data.head = ['Name','Id'];
         for (let item of allInventory) {
-            let count = 0;
-            if (item.items != null) { 
-                count = item.items.length;
-            }
-
             const link = `<a href="/Home/Inventory?idInventory=${item.id}">${item.name}</a>`;
 
-            data.body.push([link,count]);
+            data.body.push([link,item.id]);
         }
         
-        const table = createTable(data);
+        const table = createTable(data,'checkboxInventoryList','selectAll');
         inventoryList.appendChild(table);
     }
 

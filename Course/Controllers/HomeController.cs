@@ -35,7 +35,7 @@ namespace Course.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddInventory([FromBody] InventoryRequestDto inventory)
         {
-            var i = new Inventory() { Id = inventory.Id, Name = inventory.Name};
+            var i = new Inventory() { Id = inventory.Id, Name = inventory.Name, InventoryType = [], Items = [] };
 
             var res = await _service.AddInventoryAsync(i);
             return Json(res);
