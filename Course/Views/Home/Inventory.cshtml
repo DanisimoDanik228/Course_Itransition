@@ -95,10 +95,10 @@
 
         data.head = result.inventoryType.map(i => i.name);
         for (let item of result.items) {
-            data.body.push(item.itemValue.map(i => i.value));
+            data.body.push({ id: item.id, field: item.itemValue.map(i => i.value) });
         }
         
-    const table = createTable(data, 'checkboxInventoryList', 'selectAll');
+        const table = createTable(data, 'checkboxInventoryList', 'selectAll', DeleteItem);
         inventoryTable?.appendChild(table);
 
         loadAddItem();
@@ -121,5 +121,17 @@
             listItemField.appendChild(div);
             listItemField.appendChild(input);
         }
+    }
+
+    async function DeleteItem(itemsId) { 
+        await fetch(`/Home/DeleteItems?idInventory=${@Model}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(itemsId)
+        });
+
+        loadFullInventory();
     }
 </script>

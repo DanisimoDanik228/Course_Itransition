@@ -42,7 +42,6 @@
         for (let item of allInventory) {
             const link = `<a href="/Home/Inventory?idInventory=${item.id}">${item.name}</a>`;
 
-            //data.body.push([link,item.id]);
             data.body.push({ id: item.id, field: [link,item.id] });
         }
         
