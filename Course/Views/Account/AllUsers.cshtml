@@ -5,7 +5,8 @@
     const userList = document.getElementById('userList');
     loadUser();
 
-    async function loadUser() { 
+    async function loadUser() {
+        userList.innerHTML = '';
         const response = await fetch('/Account/GetAllUsers');
         const result = await response.json();
 
@@ -13,11 +14,53 @@
         data.head = [];
         data.body = [];
 
-        data.head = ['Email','Role']
-        data.body = result.map(i => ({ id: i.id, field: [i.email, i.role] }));
+        data.head = ['Email','Role','StatusBlock']
+        data.body = result.map(i => ({ id: i.id, field: [i.email, i.role,i.isBlocked] }));
 
-        const table = createTable(data,'checkboxUserList','selectAll',deleteUsers);
+        const table = createTable(data, 'selectAll', 'checkboxUserList', deleteUsers);
         userList?.appendChild(table);
+
+        const btnBlock = document.createElement('button');
+        btnBlock.textContent = 'Block';
+        btnBlock.addEventListener('click', async () => {
+            const res = document.getElementsByClassName('checkboxUserList');
+            const userIds = Array.from(res)
+                .filter(i => i.checked)
+                .map(i => i.dataset.id);
+
+            const response = await fetch(`/Account/BlockUsers`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userIds)
+            }); 
+
+            loadUser();
+        });
+
+        const btnUnblock = document.createElement('button');
+        btnUnblock.textContent = 'Unblock';
+        btnUnblock.addEventListener('click', async () => {
+            const res = document.getElementsByClassName('checkboxUserList');
+            const userIds = Array.from(res)
+                .filter(i => i.checked)
+                .map(i => i.dataset.id);
+
+            const response = await fetch(`/Account/UnblockUsers`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userIds)
+            });
+
+            loadUser();
+        });
+
+        userList?.appendChild(table);
+        userList?.appendChild(btnBlock);
+        userList?.appendChild(btnUnblock);
     }
 
     async function deleteUsers(usersId) { 
@@ -29,7 +72,6 @@
             body: JSON.stringify(usersId)
         });
 
-        userList.innerHTML = '';
         loadUser();
     }
 </script>

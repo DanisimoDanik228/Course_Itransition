@@ -7,10 +7,13 @@ namespace Application.Service
 {
     public interface IAccountService
     {
-        Task<bool> Register(string email, string password);
-        Task<bool> Login(string email, string password);
-        Task Logout();
-        Task<IEnumerable<UserRequest>> GetAllUsers();
-        Task DeleteUsers(string[] Ids);
+        Task<bool> RegisterAsync(string email, string password);
+        Task<bool> LoginAsync(string email, string password);
+        Task LogoutAsync();
+        Task<IEnumerable<UserRequest>> GetAllUsersAsync();
+        Task DeleteUsersAsync(string[] Ids);
+        Task BlockUserAsync(string[] Ids);
+        Task UnblockUserAsync(string[] Ids);
+        Task SetUserStatusAsync(string[] userId, string status);
     }
 }
