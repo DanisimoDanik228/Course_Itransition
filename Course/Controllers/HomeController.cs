@@ -5,6 +5,7 @@ using Application.Dto.Response.Full;
 using Application.Service;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.Diagnostics;
@@ -70,6 +71,15 @@ namespace Course.Controllers
 
             res = _service.PrepareFullInventoryToShow(res);
             return Json(res);
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteInventory([FromBody] long[] Ids)
+        {
+            await _service.DeleteInventoryAsync(Ids);
+
+            return StatusCode(204);
         }
     }
 }

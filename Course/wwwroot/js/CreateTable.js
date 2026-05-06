@@ -71,11 +71,11 @@ function createButtonDelete(checkBoxClassName,actionDeleteUsers) {
 
     btnDelete.addEventListener('click', async () => {
         const selectedBox = document.getElementsByClassName(checkBoxClassName);
-        const usersId = Array.from(selectedBox)
+        const Ids = Array.from(selectedBox)
             .filter(i => i.checked)
             .map(i => i.dataset.id);
 
-        await actionDeleteUsers(usersId);
+        await actionDeleteUsers(Ids);
     });
 
     return btnDelete;
