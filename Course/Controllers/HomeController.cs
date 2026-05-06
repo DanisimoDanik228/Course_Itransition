@@ -5,6 +5,7 @@ using Application.Dto.Response.Full;
 using Application.Service;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.Diagnostics;
@@ -35,7 +36,7 @@ namespace Course.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddInventory([FromBody] InventoryRequestDto inventory)
         {
-            var i = new Inventory() { Id = inventory.Id, Name = inventory.Name};
+            var i = new Inventory() { Id = inventory.Id, Name = inventory.Name, InventoryType = [], Items = [] };
 
             var res = await _service.AddInventoryAsync(i);
             return Json(res);
@@ -70,6 +71,33 @@ namespace Course.Controllers
 
             res = _service.PrepareFullInventoryToShow(res);
             return Json(res);
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteInventory([FromBody] long[] Ids)
+        {
+            await _service.DeleteInventoryAsync(Ids);
+
+            return StatusCode(204);
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> DeleteItems(long idInventory, [FromBody] long[] Ids)
+        {
+            await _service.DeleteItemsAsync(idInventory, Ids);
+
+            return StatusCode(204);
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> DeleteField(long idInventory, [FromBody] long[] Ids)
+        {
+            await _service.DeleteFieldAsync(idInventory, Ids);
+
+            return StatusCode(204);
         }
     }
 }

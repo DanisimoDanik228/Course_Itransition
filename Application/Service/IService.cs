@@ -15,7 +15,10 @@ namespace Application.Service
         InventoryFullResponseDto PrepareFullInventoryToShow(InventoryFullResponseDto item);
         Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync(long idInventory);
         Task<IEnumerable<Inventory>> GetAllInventoryAsync();
+        Task<int> DeleteInventoryAsync(long[] idInventory);
         Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id);
+        Task<int> DeleteItemsAsync(long idInventory, long[] itemsId);
+        Task<int> DeleteFieldAsync(long idInventory, long[] fieldsId);
         Task<InventoryResponseDto?> AddInventoryAsync(Inventory item);
         Task<ItemFullResponseDto?> AddItemAsync(ItemFullRequestDto item);
         Task<InventoryTypeResponseDto?> AddFieldAsync(InventoryTypeRequestDto item);

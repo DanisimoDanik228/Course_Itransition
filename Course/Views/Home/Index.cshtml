@@ -38,20 +38,29 @@
             head:[],
             body:[]
         };
-        data.head = ['Name','Items'];
+        data.head = ['Name','Id'];
         for (let item of allInventory) {
-            let count = 0;
-            if (item.items != null) { 
-                count = item.items.length;
-            }
-
             const link = `<a href="/Home/Inventory?idInventory=${item.id}">${item.name}</a>`;
 
-            data.body.push([link,count]);
+            data.body.push({ id: item.id, field: [link,item.id] });
         }
         
-        const table = createTable(data);
+        const table = createTable(data, 'checkboxInventoryList', 'selectAll', inventoryDelete);
         inventoryList.appendChild(table);
+    }
+
+    async function inventoryDelete(inventoryIds)
+    {
+        await fetch('/Home/DeleteInventory', {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(inventoryIds)
+        });
+
+        inventoryList.innerHTML = '';
+        loadInventory();
     }
 
     async function addInventory()
@@ -81,7 +90,6 @@
     async function loadInventory() { 
         let response = await fetch('/Home/GetAllInventory');
         const result = await response.json();
-        console.log(result);
         allInventory = result;
         updateInventoryList();
     }
