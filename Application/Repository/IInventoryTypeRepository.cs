@@ -11,5 +11,6 @@ namespace Application.Repository
         Task<InventoryType?> AddAsync(InventoryType item);
         Task<InventoryType?> UpdateAsync(InventoryType item);
         Task<InventoryType?> DeleteAsync(InventoryType item);
+        Task<int> DeleteAsync(long[] Ids);
     }
 }

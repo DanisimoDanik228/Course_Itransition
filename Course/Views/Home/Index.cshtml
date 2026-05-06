@@ -1,9 +1,32 @@
-﻿<div id="inventoryList"></div>
+﻿<h3>Your name is @User.Identity.Name</h3>
+@if (@User.IsInRole("Admin"))
+{
+    <h3>Your role is Admin</h3>
+}
+else
+{
+    @if (@User.IsInRole("Registered"))
+    {
+        <h3>Your role is Registered</h3>
+    }
+    else
+    {
+        <h3>Your role is Anonym</h3>
+    }
+}
+
+<div id="inventoryList" class="bg-info"></div>
+
+<a href="/Account/AllUsers">All User</a>
+
+<form asp-controller="Account" asp-action="Logout" method="post">
+    <button type="submit">Logout</button>
+</form>
 
 <form asp-controller="Home" asp-action="Inventory" method="get">
     <input name="idInventory" type="number">
     <button type="submit">Go to inventory</button>
-</form>
+</form> 
 
 <div>
     <input id="idInventory" type="number">
@@ -11,6 +34,7 @@
     <button onclick="addInventory()" type="submit">Add inventory</button>
 </div>
 
+<script src="~/js/CreateTable.js"></script>
 <script>
     const idInventory = document.getElementById('idInventory');
     const nameInventory = document.getElementById('nameInventory');
@@ -23,9 +47,33 @@
     function updateInventoryList() { 
         inventoryList.innerHTML = '';
 
-        for (let item of allInventory) { 
-            inventoryList.innerHTML += `<a href="/Home/Inventory?idInventory=${item.id}">${item.name}</a>`;
+        let data = {
+            head:[],
+            body:[]
+        };
+        data.head = ['Name','Id'];
+        for (let item of allInventory) {
+            const link = `<a href="/Home/Inventory?idInventory=${item.id}">${item.name}</a>`;
+
+            data.body.push({ id: item.id, field: [link,item.id] });
         }
+        
+        const table = createTable(data, 'checkboxInventoryList', 'selectAll', inventoryDelete);
+        inventoryList.appendChild(table);
+    }
+
+    async function inventoryDelete(inventoryIds)
+    {
+        await fetch('/Home/DeleteInventory', {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(inventoryIds)
+        });
+
+        inventoryList.innerHTML = '';
+        loadInventory();
     }
 
     async function addInventory()
@@ -55,7 +103,6 @@
     async function loadInventory() { 
         let response = await fetch('/Home/GetAllInventory');
         const result = await response.json();
-        console.log(result);
         allInventory = result;
         updateInventoryList();
     }

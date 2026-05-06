@@ -114,5 +114,20 @@ namespace Infrastructure.Service.Service
 
             return inventory;
         }
+
+        public async Task<int> DeleteInventoryAsync(long[] idInventory)
+        {
+            return await _inventoryRepository.DeleteAsync(idInventory);
+        }
+
+        public async Task<int> DeleteItemsAsync(long idInventory, long[] itemsId)
+        {
+            return await _itemRepository.DeleteAsync(itemsId);
+        }
+
+        public async Task<int> DeleteFieldAsync(long idInventory, long[] fieldsId)
+        {
+            return await _inventoryTypeRepository.DeleteAsync(fieldsId);
+        }
     }
 }

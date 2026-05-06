@@ -33,6 +33,11 @@ namespace Infrastructure.Repository.Repository
             return res.Entity;
         }
 
+        public async Task<int> DeleteAsync(long[] Ids)
+        {
+            return await _context.Inventory.Where(i => Ids.Contains(i.Id)).ExecuteDeleteAsync();
+        }
+
         public async Task<IEnumerable<Inventory>> GetAllAsync()
         {
             return _context.Inventory.AsNoTracking().AsEnumerable();

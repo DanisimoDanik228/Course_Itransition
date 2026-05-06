@@ -12,5 +12,6 @@ namespace Application.Repository
         Task<Item?> AddAsync(Item item);
         Task<Item?> UpdateAsync(Item item);
         Task<Item?> DeleteAsync(Item item);
+        Task<int> DeleteAsync(long[] Ids);
     }
 }

@@ -1,0 +1,35 @@
+﻿<div id="userList"></div>
+
+<script src="~/js/CreateTable.js"></script>
+<script>
+    const userList = document.getElementById('userList');
+    loadUser();
+
+    async function loadUser() { 
+        const response = await fetch('/Account/GetAllUsers');
+        const result = await response.json();
+
+        let data = {};
+        data.head = [];
+        data.body = [];
+
+        data.head = ['Email','Role']
+        data.body = result.map(i => ({ id: i.id, field: [i.email, i.role] }));
+
+        const table = createTable(data,'checkboxUserList','selectAll',deleteUsers);
+        userList?.appendChild(table);
+    }
+
+    async function deleteUsers(usersId) { 
+        await fetch('/Account/DeleteUsers', {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(usersId)
+        });
+
+        userList.innerHTML = '';
+        loadUser();
+    }
+</script>
