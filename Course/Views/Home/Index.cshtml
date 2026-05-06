@@ -1,8 +1,21 @@
-﻿<div id="inventoryList"></div>
+﻿<h3>Your name is @User.Identity.Name</h3>
+@if (@User.IsInRole("Admin"))
+{
+    <h3>Your role is Admin</h3>
+}
+else
+{
+    @if (@User.IsInRole("Registered"))
+    {
+        <h3>Your role is Registered</h3>
+    }
+    else
+    {
+        <h3>Your role is Anonym</h3>
+    }
+}
 
-<h3>@User.Identity.Name</h3>
-<h3>@User.IsInRole("Admin")</h3>
-<h3>@User.IsInRole("Registered")</h3>
+<div id="inventoryList"></div>
 
 <a href="/Account/AllUsers">All User</a>
 
