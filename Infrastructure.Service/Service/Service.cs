@@ -124,5 +124,10 @@ namespace Infrastructure.Service.Service
         {
             return await _itemRepository.DeleteAsync(itemsId);
         }
+
+        public async Task<int> DeleteFieldAsync(long idInventory, long[] fieldsId)
+        {
+            return await _inventoryTypeRepository.DeleteAsync(fieldsId);
+        }
     }
 }

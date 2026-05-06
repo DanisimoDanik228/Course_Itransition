@@ -51,9 +51,49 @@
         });
 
         const result = await response.json();
-        console.log("additem",result);
         inventory.items.push(result);
         loadFullInventory();
+    }
+
+    function addFieldCheckbox(Ids) { 
+        const thead = inventoryTable.querySelector('thead');
+        const tr = document.createElement('tr');
+
+        const th = document.createElement('th');
+        tr.appendChild(th);
+
+        for (let id of Ids) {
+            const th = document.createElement('th');
+            const checkBox = document.createElement('input');
+            checkBox.type = 'checkbox';
+            checkBox.className = 'checkboxFieldList';
+            checkBox.dataset.id = id;
+            th.appendChild(checkBox);
+
+            tr.appendChild(th);
+        }
+
+        const btn = document.createElement('button');
+        btn.textContent = 'Delete field';
+        btn.addEventListener('click', async () => {
+            const res = document.getElementsByClassName('checkboxFieldList');
+            const fieldIds = Array.from(res)
+                .filter(i => i.checked)
+                .map(i => i.dataset.id);
+
+            const response = await fetch(`/Home/DeleteField?idInventory=${@Model}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(fieldIds)
+            }); 
+
+            loadFullInventory();
+        });
+
+        thead.insertBefore(tr, thead.firstChild);
+        inventoryTable.appendChild(btn);
     }
 
     async function addField() {
@@ -101,6 +141,7 @@
         const table = createTable(data, 'checkboxInventoryList', 'selectAll', DeleteItem);
         inventoryTable?.appendChild(table);
 
+        addFieldCheckbox(inventory.inventoryType.map(i => i.id));
         loadAddItem();
     }
 

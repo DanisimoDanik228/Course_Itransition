@@ -32,6 +32,11 @@ namespace Infrastructure.Repository.Repository
             return res.Entity;
         }
 
+        public async Task<int> DeleteAsync(long[] Ids)
+        {
+            return await _context.InventoryType.Where(i => Ids.Contains(i.Id)).ExecuteDeleteAsync();
+        }
+
         public async Task<IEnumerable<InventoryType>> GetAllAsync()
         {
             return _context.InventoryType.AsNoTracking().AsEnumerable();

@@ -90,5 +90,14 @@ namespace Course.Controllers
 
             return StatusCode(204);
         }
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> DeleteField(long idInventory, [FromBody] long[] Ids)
+        {
+            await _service.DeleteFieldAsync(idInventory, Ids);
+
+            return StatusCode(204);
+        }
     }
 }
