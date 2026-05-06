@@ -1,4 +1,4 @@
-﻿namespace Course.Request
+﻿namespace Application.Dto.Request
 {
     public class UserRequest
     {

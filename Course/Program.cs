@@ -43,6 +43,7 @@ builder.Services.AddScoped<IItemRepository,ItemRepository>();
 builder.Services.AddScoped<IItemValueRepository,ItemValueRepository>();
 builder.Services.AddScoped<IInventoryTypeRepository, InventoryTypeRepository>();
 builder.Services.AddScoped<IService,Service>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 var app = builder.Build();
 

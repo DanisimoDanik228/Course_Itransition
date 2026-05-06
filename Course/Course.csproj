@@ -11,4 +11,8 @@
     <ProjectReference Include="..\Infrastructure.Service\Infrastructure.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Request\" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,5 @@
-﻿using Course.Request;
+﻿using Application.Dto.Request;
+using Application.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -7,13 +8,11 @@ namespace Course.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IAccountService _accountService;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(IAccountService accountService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _accountService = accountService;
         }
 
         [HttpGet]
@@ -25,13 +24,10 @@ namespace Course.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(string email, string password)
         {
-            var user = new IdentityUser { UserName = email, Email = email };
-            var result = await _userManager.CreateAsync(user, password);
+            var res = await _accountService.Register(email,password);
 
-            if (result.Succeeded)
+            if (res)
             {
-                await _userManager.AddToRoleAsync(user, "Registered");
-
                 return RedirectToAction("Login", "Account");
             }
             return View();
@@ -45,9 +41,9 @@ namespace Course.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password)
         {
-            var result = await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
+            var res = await _accountService.Login(email, password);
 
-            if (result.Succeeded)
+            if (res)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -58,7 +54,8 @@ namespace Course.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            await _accountService.Logout();
+
             return RedirectToAction("Login", "Account");
         }
 
@@ -71,18 +68,9 @@ namespace Course.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = _userManager.Users.ToList();
-            var userRolesViewModel = new List<UserRequest>();
+            var users = await _accountService.GetAllUsers();
 
-            foreach (var user in users)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                var responseUser = new UserRequest {Id = user.Id, Email = user.Email, Role = roles };
-
-                userRolesViewModel.Add(responseUser);
-            }
-
-            return Json(userRolesViewModel);
+            return Json(users);
         }
 
         [HttpGet]
@@ -95,11 +83,7 @@ namespace Course.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUsers([FromBody] string[] Ids)
         {
-            foreach (var item in Ids)
-            {
-                var user = await _userManager.FindByIdAsync(item);
-                await _userManager.DeleteAsync(user);
-            }
+            await _accountService.DeleteUsers(Ids);
 
             return StatusCode(204);
         }
