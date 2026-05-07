@@ -1,6 +1,8 @@
 ﻿using Application.Dto.Request;
 using Application.Service;
+using Infrastructure.Repository.PostgresDbContext;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,11 +13,16 @@ namespace Infrastructure.Service.Service
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly AppDbContext _context;
 
-        public AccountService(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountService(
+            UserManager<IdentityUser> userManager, 
+            SignInManager<IdentityUser> signInManager,
+            AppDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
         public async Task DeleteUsersAsync(string[] Ids)
@@ -29,21 +36,19 @@ namespace Infrastructure.Service.Service
 
         public async Task<IEnumerable<UserRequest>> GetAllUsersAsync()
         {
-            var users = _userManager.Users.ToList();
-            var userRoles = new List<UserRequest>();
-
-            foreach (var user in users)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                var responseUser = new UserRequest { 
-                    Id = user.Id, 
-                    Email = user.Email, 
-                    Role = roles,
-                    IsBlocked = user.LockoutEnd > DateTimeOffset.UtcNow
-                };
-
-                userRoles.Add(responseUser);
-            }
+            var userRoles = 
+                await _context.Users
+                    .Select(user => new UserRequest
+                    {
+                        Id = user.Id,
+                        Email = user.Email,
+                        IsBlocked = user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow,
+                        Role = _context.UserRoles
+                            .Where(ur => ur.UserId == user.Id)
+                            .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r.Name)
+                            .ToList()
+                    })
+                    .ToListAsync();
 
             return userRoles;
         }
