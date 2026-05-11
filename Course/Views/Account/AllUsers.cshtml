@@ -19,14 +19,75 @@
 
         const table = createTable(data, 'selectAll', 'checkboxUserList', deleteUsers);
         userList?.appendChild(table);
+        
+        const btnBlock = createBtnBlock();
+        const btnUnblock = createBtnUnblock();
+        const btnMakeAdmin = createBtnMakeAdmin();
+        const btnRemoveAdmin = createBtnRemoveAdmin();
 
+        userList?.appendChild(table);
+        userList?.appendChild(btnBlock);
+        userList?.appendChild(btnUnblock);
+        userList?.appendChild(btnMakeAdmin);
+        userList?.appendChild(btnRemoveAdmin);
+    }
+
+    
+    function createBtnRemoveAdmin() { 
+        const btnRemoveAdmin = document.createElement('button');
+        btnRemoveAdmin.textContent = 'RemoveAdmin';
+        btnRemoveAdmin.addEventListener('click', async () => {
+            const userIds = getSelected();
+
+            const request = {
+                ids: userIds,
+                status: 'Registered',
+            };
+
+            const response = await fetch(`/Account/SetStatus`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body:  JSON.stringify(request)
+            }); 
+
+            loadUser();
+        });
+
+        return btnRemoveAdmin;
+    }
+
+    function createBtnMakeAdmin() { 
+        const btnMakeAdmin = document.createElement('button');
+        btnMakeAdmin.textContent = 'MakeAdmin';
+        btnMakeAdmin.addEventListener('click', async () => {
+            const userIds = getSelected();
+
+            const request = {
+                ids: userIds,
+                status: 'Admin',
+            };
+
+            const response = await fetch(`/Account/SetStatus`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body:  JSON.stringify(request)
+            }); 
+
+            loadUser();
+        });
+
+        return btnMakeAdmin;
+    }
+
+    function createBtnBlock() { 
         const btnBlock = document.createElement('button');
         btnBlock.textContent = 'Block';
         btnBlock.addEventListener('click', async () => {
-            const res = document.getElementsByClassName('checkboxUserList');
-            const userIds = Array.from(res)
-                .filter(i => i.checked)
-                .map(i => i.dataset.id);
+            const userIds = getSelected();
 
             const response = await fetch(`/Account/BlockUsers`, {
                 method: 'POST',
@@ -39,13 +100,14 @@
             loadUser();
         });
 
+        return btnBlock;
+    }
+
+    function createBtnUnblock() { 
         const btnUnblock = document.createElement('button');
         btnUnblock.textContent = 'Unblock';
         btnUnblock.addEventListener('click', async () => {
-            const res = document.getElementsByClassName('checkboxUserList');
-            const userIds = Array.from(res)
-                .filter(i => i.checked)
-                .map(i => i.dataset.id);
+            const userIds = getSelected();
 
             const response = await fetch(`/Account/UnblockUsers`, {
                 method: 'POST',
@@ -58,9 +120,16 @@
             loadUser();
         });
 
-        userList?.appendChild(table);
-        userList?.appendChild(btnBlock);
-        userList?.appendChild(btnUnblock);
+        return btnUnblock;
+    }
+
+    function getSelected() {
+        const res = document.getElementsByClassName('checkboxUserList');
+        const userIds = Array.from(res)
+            .filter(i => i.checked)
+            .map(i => i.dataset.id);
+
+        return userIds;
     }
 
     async function deleteUsers(usersId) { 
