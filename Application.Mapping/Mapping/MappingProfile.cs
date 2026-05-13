@@ -15,21 +15,18 @@ namespace Application.Mapping
             CreateMap<InventoryRequestDto, Inventory>()
                 .ForMember(dest => dest.Items, opt => opt.Ignore())
                 .ForMember(dest => dest.InventoryType, opt => opt.Ignore());
-            CreateMap<Inventory, InventoryFullResponseDto>()
-                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items))
-                .ForMember(dest => dest.InventoryType, opt => opt.MapFrom(src => src.InventoryType));
+            CreateMap<Inventory, InventoryFullResponseDto>();
 
-            CreateMap<InventoryType, InventoryTypeResponseDto>().ReverseMap();
+            CreateMap<InventoryType, InventoryTypeResponseDto>();
             CreateMap<InventoryTypeRequestDto, InventoryType>().ReverseMap();
 
-            CreateMap<ItemValue, ItemValueResponseDto>().ReverseMap();
+            CreateMap<ItemValue, ItemValueResponseDto>()
+                .ForMember(dest => dest.Name,opt => opt.MapFrom(src => src.InventoryType.Name))
+                .ForMember(dest => dest.Type,opt => opt.MapFrom(src => src.InventoryType.Type));
             CreateMap<ItemValueRequestDto, ItemValue>().ReverseMap();
 
-            CreateMap<Item, ItemFullResponseDto>()
-                .ForMember(dest => dest.ItemValue, opt => opt.MapFrom(src => src.ItemValue));
-
-            CreateMap<ItemFullRequestDto, Item>()
-                .ForMember(dest => dest.ItemValue, opt => opt.MapFrom(src => src.ItemValue));
+            CreateMap<Item, ItemFullResponseDto>();
+            CreateMap<ItemFullRequestDto, Item>();
         }
     }
 }

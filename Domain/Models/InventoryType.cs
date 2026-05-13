@@ -11,5 +11,6 @@ namespace Domain.Models
         public string Name { get; set; }
         public long InventoryId { get; set; }
         public Inventory Inventory { get; set; }
+        public ICollection<ItemValue> ItemValue { get; set; }
     }
 }

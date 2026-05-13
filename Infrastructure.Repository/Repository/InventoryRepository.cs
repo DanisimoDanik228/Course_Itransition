@@ -66,6 +66,7 @@ namespace Infrastructure.Repository.Repository
                 .Skip((page - 1) * countItem)
                 .Take(countItem)
                 .Include(i => i.ItemValue)
+                .ThenInclude(i => i.InventoryType)
                 .AsNoTracking()
                 .ToListAsync();
 

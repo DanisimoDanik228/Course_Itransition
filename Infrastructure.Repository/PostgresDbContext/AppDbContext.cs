@@ -38,6 +38,11 @@ namespace Infrastructure.Repository.PostgresDbContext
                 .HasMany(i => i.ItemValue)
                 .WithOne(iv => iv.Item)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<InventoryType>()
+                .HasMany(i => i.ItemValue)
+                .WithOne(iv => iv.InventoryType)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

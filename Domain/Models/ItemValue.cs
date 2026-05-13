@@ -7,11 +7,9 @@ namespace Domain.Models
     public class ItemValue
     {
         public long Id { get; set; }
-
         public string Value { get; set; }
-        public string Type { get; set; }
-        public string Name { get; set; }
-
+        public long InventoryTypeId { get; set; }
+        public InventoryType InventoryType { get; set; }
         public Item Item { get; set; }
     }
 }

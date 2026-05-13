@@ -37,8 +37,7 @@
             let subItem = {
                 id: 0,
                 value: field.value,
-                type: "string",
-                name: field.dataset.typeId
+                inventoryTypeId: field.dataset.id
             };
 
             item.itemValue.push(subItem);
@@ -125,7 +124,7 @@
      async function loadInventory() {
         inventoryTable.innerHTML = '';
 
-    const response = await fetch(`/Home/GetPartInventory?Id=${@Model}&Page=${@ViewBag.Page}&Count=${@ViewBag.Count}`);
+        const response = await fetch(`/Home/GetPartInventory?Id=${@Model}&Page=${@ViewBag.Page}&Count=${@ViewBag.Count}`);
         const result = await response.json();
 
         inventory = result;
@@ -184,7 +183,7 @@
             const input = document.createElement('input');
 
             input.className = 'addItem';
-            input.setAttribute('data-type-id', item.name);
+            input.setAttribute('data-id', item.id);
             input.type = 'text';
 
             div.innerText = item.name;
