@@ -122,7 +122,34 @@
         loadFullInventory();
     }
 
+     async function loadInventory() {
+        inventoryTable.innerHTML = '';
+
+    const response = await fetch(`/Home/GetPartInventory?Id=${@Model}&Page=${@ViewBag.Page}&Count=${@ViewBag.Count}`);
+        const result = await response.json();
+
+        inventory = result;
+
+        const data = {
+            head:[],
+            body:[]
+        };
+
+        data.head = result.inventoryType.map(i => i.name);
+        for (let item of result.items) {
+            data.body.push({ id: item.id, field: item.itemValue.map(i => i.value) });
+        }
+        
+        const table = createTable(data, 'checkboxInventoryList', 'selectAll', DeleteItem);
+        inventoryTable?.appendChild(table);
+
+        addFieldCheckbox(inventory.inventoryType.map(i => i.id));
+        loadAddItem();
+    }
+
     async function loadFullInventory() {
+        loadInventory();
+        return;
         inventoryTable.innerHTML = '';
 
         const response = await fetch(`/Home/GetFullInventory?idInventory=${@Model}`);

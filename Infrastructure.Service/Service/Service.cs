@@ -6,6 +6,7 @@ using Application.Repository;
 using Application.Service;
 using AutoMapper;
 using Domain.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -52,6 +53,11 @@ namespace Infrastructure.Service.Service
             return _mapper.Map<Inventory,InventoryFullResponseDto>(res);
         }
 
+        public async Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page)
+        {
+            var res = await _inventoryRepository.GetPartByIdAsync(Id, Page, Count);
+            return _mapper.Map<Inventory, InventoryFullResponseDto>(res);
+        }
         public async Task<ItemFullResponseDto?> AddItemAsync(ItemFullRequestDto item)
         {
             var itemFull = _mapper.Map<ItemFullRequestDto,Item>(item);

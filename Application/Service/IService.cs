@@ -17,6 +17,7 @@ namespace Application.Service
         Task<IEnumerable<Inventory>> GetAllInventoryAsync();
         Task<int> DeleteInventoryAsync(long[] idInventory);
         Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id);
+        Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page);
         Task<int> DeleteItemsAsync(long idInventory, long[] itemsId);
         Task<int> DeleteFieldAsync(long idInventory, long[] fieldsId);
         Task<InventoryResponseDto?> AddInventoryAsync(Inventory item);

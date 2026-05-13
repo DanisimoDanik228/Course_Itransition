@@ -53,7 +53,7 @@ else
         };
         data.head = ['Name','Id'];
         for (let item of allInventory) {
-            const link = `<a href="/Home/Inventory?idInventory=${item.id}">${item.name}</a>`;
+            const link = `<a href="/Home/Inventory?Id=${item.id}&Page=1&Count=5">${item.name}</a>`;
 
             data.body.push({ id: item.id, field: [link,item.id] });
         }

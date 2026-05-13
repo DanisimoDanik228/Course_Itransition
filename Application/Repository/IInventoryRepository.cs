@@ -9,6 +9,7 @@ namespace Application.Repository
     {
         Task<IEnumerable<Inventory>> GetAllAsync();
         Task<Inventory?> GetFullByIdAsync(long Id);
+        Task<Inventory?> GetPartByIdAsync(long Id, int page, int countItem);
         Task<Inventory?> AddAsync(Inventory item);
         Task<Inventory?> UpdateAsync(Inventory item);
         Task<Inventory?> DeleteAsync(Inventory item);

@@ -53,6 +53,25 @@ namespace Infrastructure.Repository.Repository
                 .FirstAsync(i => i.Id == Id);
         }
 
+        public async Task<Inventory?> GetPartByIdAsync(long Id, int page, int countItem)
+        {
+            var inventory = await _context.Inventory
+                .Include(i => i.InventoryType)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == Id);
+
+            inventory.Items = await _context.Items
+                .Where(i => i.InventoryId == Id)
+                .OrderBy(i => i.Id)
+                .Skip((page - 1) * countItem)
+                .Take(countItem)
+                .Include(i => i.ItemValue)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return inventory;
+        }
+
         public async Task<Inventory?> UpdateAsync(Inventory item)
         {
            var res = _context.Inventory.Update(item);

@@ -27,9 +27,11 @@ namespace Course.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Inventory(long idInventory)
-        {            
-            return View(idInventory);
+        public async Task<IActionResult> Inventory(long Id, int Count, int Page)
+        {
+            ViewBag.Count = Count;
+            ViewBag.Page = Page;
+            return View(Id);
         }
 
         [HttpPost]
@@ -68,6 +70,16 @@ namespace Course.Controllers
         public async Task<IActionResult> GetFullInventory(long idInventory)
         {
             var res = await _service.GetFullInventoryByIdAsync(idInventory);
+
+            res = _service.PrepareFullInventoryToShow(res);
+            return Json(res);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPartInventory(long Id, int Count, int Page)
+        {
+            var res = await _service.GetPartInventoryAsync(Id, Count, Page);
 
             res = _service.PrepareFullInventoryToShow(res);
             return Json(res);
