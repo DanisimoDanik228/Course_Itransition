@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Course.Controllers
 {
-    public class AccountController : Controller
+    public class UserController : Controller
     {
-        private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
 
-        public AccountController(IAccountService accountService)
+        public UserController(IUserService accountService)
         {
-            _accountService = accountService;
+            _userService = accountService;
         }
 
         [HttpGet]
@@ -24,11 +24,11 @@ namespace Course.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(string email, string password)
         {
-            var res = await _accountService.RegisterAsync(email,password);
+            var res = await _userService.RegisterAsync(email,password);
 
             if (res)
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "User");
             }
             return View();
         }
@@ -41,7 +41,7 @@ namespace Course.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password)
         {
-            var res = await _accountService.LoginAsync(email, password);
+            var res = await _userService.LoginAsync(email, password);
 
             if (res)
             {
@@ -54,9 +54,9 @@ namespace Course.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await _accountService.LogoutAsync();
+            await _userService.LogoutAsync();
 
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Login", "User");
         }
 
         [HttpGet]
@@ -68,7 +68,7 @@ namespace Course.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _accountService.GetAllUsersAsync();
+            var users = await _userService.GetAllUsersAsync();
 
             return Json(users);
         }
@@ -83,7 +83,7 @@ namespace Course.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUsers([FromBody] string[] Ids)
         {
-            await _accountService.DeleteUsersAsync(Ids);
+            await _userService.DeleteUsersAsync(Ids);
 
             return StatusCode(204);
         }
@@ -92,7 +92,7 @@ namespace Course.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> BlockUsers([FromBody] string[] Ids)
         {
-            await _accountService.BlockUserAsync(Ids);
+            await _userService.BlockUserAsync(Ids);
 
             return StatusCode(204);
         }
@@ -101,7 +101,7 @@ namespace Course.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UnblockUsers([FromBody] string[] Ids)
         {
-            await _accountService.UnblockUserAsync(Ids);
+            await _userService.UnblockUserAsync(Ids);
 
             return StatusCode(204);
         }

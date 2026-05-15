@@ -1,4 +1,4 @@
-﻿using Application.Repository;
+﻿using Application.Repository.Tables;
 using Domain.Models;
 using Infrastructure.Repository.PostgresDbContext;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Repository.Repository
+namespace Infrastructure.Repository.Repository.Tables
 {
     public class ItemRepository : IItemRepository
     {

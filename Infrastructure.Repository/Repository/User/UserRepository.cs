@@ -1,5 +1,5 @@
-﻿using Application.Dto.Request;
-using Application.Service;
+﻿using Application.Dto.Response;
+using Application.Repository.User;
 using Domain.Models;
 using Infrastructure.Repository.PostgresDbContext;
 using Microsoft.AspNetCore.Identity;
@@ -8,16 +8,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Infrastructure.Service.Service
+namespace Infrastructure.Repository.Repository.User
 {
-    public class AccountService : IAccountService
+    public class UserRepository : IUserRepository
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly AppDbContext _context;
 
-        public AccountService(
-            UserManager<AppUser> userManager, 
+        public UserRepository(
+            UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             AppDbContext context)
         {
@@ -28,18 +28,14 @@ namespace Infrastructure.Service.Service
 
         public async Task DeleteUsersAsync(string[] Ids)
         {
-            foreach (var item in Ids)
-            {
-                var user = await _userManager.FindByIdAsync(item);
-                await _userManager.DeleteAsync(user);
-            }
+            await _userManager.Users.Where(u => Ids.Contains(u.Id)).ExecuteDeleteAsync();
         }
 
-        public async Task<IEnumerable<UserRequest>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserResponse>> GetAllUsersAsync()
         {
-            var userRoles = 
+            var userRoles =
                 await _context.Users
-                    .Select(user => new UserRequest
+                    .Select(user => new UserResponse
                     {
                         Id = user.Id,
                         Email = user.Email,

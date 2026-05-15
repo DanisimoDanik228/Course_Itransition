@@ -2,7 +2,7 @@
 using Application.Dto.Request.Full;
 using Application.Dto.Response;
 using Application.Dto.Response.Full;
-using Application.Repository;
+using Application.Repository.Tables;
 using Application.Service;
 using AutoMapper;
 using Domain.Models;

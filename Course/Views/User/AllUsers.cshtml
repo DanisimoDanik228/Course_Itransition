@@ -7,7 +7,7 @@
 
     async function loadUser() {
         userList.innerHTML = '';
-        const response = await fetch('/Account/GetAllUsers');
+    const response = await fetch('/User/GetAllUsers');
         const result = await response.json();
 
         let data = {};
@@ -89,7 +89,7 @@
         btnBlock.addEventListener('click', async () => {
             const userIds = getSelected();
 
-            const response = await fetch(`/Account/BlockUsers`, {
+    const response = await fetch(`/User/BlockUsers`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -109,7 +109,7 @@
         btnUnblock.addEventListener('click', async () => {
             const userIds = getSelected();
 
-            const response = await fetch(`/Account/UnblockUsers`, {
+            const response = await fetch(`/User/UnblockUsers`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -133,7 +133,7 @@
     }
 
     async function deleteUsers(usersId) { 
-        await fetch('/Account/DeleteUsers', {
+    await fetch('/User/DeleteUsers', {
             method: 'DELETE',
             headers: {
                 'Content-type': 'application/json'

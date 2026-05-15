@@ -1,8 +1,10 @@
-﻿using Application.Repository;
+﻿using Application.Repository.Tables;
+using Application.Repository.User;
 using Application.Service;
 using Domain.Models;
 using Infrastructure.Repository.PostgresDbContext;
-using Infrastructure.Repository.Repository;
+using Infrastructure.Repository.Repository.Tables;
+using Infrastructure.Repository.Repository.User;
 using Infrastructure.Service.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +27,7 @@ builder.Services.Configure<SecurityStampValidatorOptions>(options =>
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.AccessDeniedPath = "/User/AccessDenied";
 });
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -43,19 +45,21 @@ builder.Services.AddScoped<IInventoryRepository,InventoryRepository>();
 builder.Services.AddScoped<IItemRepository,ItemRepository>();
 builder.Services.AddScoped<IItemValueRepository,ItemValueRepository>();
 builder.Services.AddScoped<IInventoryTypeRepository, InventoryTypeRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddScoped<IService,Service>();
-builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
 app.UseStaticFiles();
-using (var scope = app.Services.CreateScope())
-{
-    Thread.Sleep(5000);
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureDeleted();
-    db.Database.EnsureCreated();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    Thread.Sleep(5000);
+//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//    db.Database.EnsureDeleted();
+//    db.Database.EnsureCreated();
+//}
 
 using (var scope = app.Services.CreateScope())
 {
@@ -92,6 +96,6 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Register}/{id?}");
+    pattern: "{controller=User}/{action=Register}/{id?}");
 
 app.Run();
