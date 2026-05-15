@@ -1,5 +1,5 @@
 ﻿using Application;
-using Application.Repository;
+using Application.Repository.Tables;
 using Domain.Models;
 using Infrastructure.Repository.PostgresDbContext;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Infrastructure.Repository.Repository
+namespace Infrastructure.Repository.Repository.Tables
 {
     public class InventoryRepository : IInventoryRepository
     {

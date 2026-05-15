@@ -7,7 +7,7 @@
 
     async function loadUser() {
         userList.innerHTML = '';
-        const response = await fetch('/Account/GetAllUsers');
+    const response = await fetch('/User/GetAllUsers');
         const result = await response.json();
 
         let data = {};
@@ -28,7 +28,7 @@
                 .filter(i => i.checked)
                 .map(i => i.dataset.id);
 
-            const response = await fetch(`/Account/BlockUsers`, {
+    const response = await fetch(`/User/BlockUsers`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -47,7 +47,7 @@
                 .filter(i => i.checked)
                 .map(i => i.dataset.id);
 
-            const response = await fetch(`/Account/UnblockUsers`, {
+            const response = await fetch(`/User/UnblockUsers`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,7 +64,7 @@
     }
 
     async function deleteUsers(usersId) { 
-        await fetch('/Account/DeleteUsers', {
+    await fetch('/User/DeleteUsers', {
             method: 'DELETE',
             headers: {
                 'Content-type': 'application/json'

@@ -1,9 +1,9 @@
-﻿using Application.Repository;
+﻿using Application.Repository.Tables;
 using Domain.Models;
 using Infrastructure.Repository.PostgresDbContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repository.Repository
+namespace Infrastructure.Repository.Repository.Tables
 {
     public class ItemValueRepository : IItemValueRepository
     {

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -9,10 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Infrastructure.Repository\Infrastructure.Repository.csproj" />
     <ProjectReference Include="..\Infrastructure.Service\Infrastructure.Service.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Request\" />
   </ItemGroup>
 
 </Project>
