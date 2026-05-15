@@ -1,4 +1,6 @@
-﻿<div id="inventoryTable"></div>
+﻿<h3 id="inventoryInfo"></h3>
+
+<div id="inventoryTable"></div>
 
 <div class="bg-success bg-opacity-50">
     <button onclick="addItem()" type="submit">Add Item</button>
@@ -15,6 +17,7 @@
 
 <script src="~/js/CreateTable.js"></script>
 <script>
+    const inventoryInfo = document.getElementById('inventoryInfo');
     const fieldName = document.getElementById('fieldName');
     const fieldType = document.getElementById('fieldType');
     const inventoryTable = document.getElementById('inventoryTable');
@@ -22,7 +25,7 @@
 
     let inventory = {};
 
-    loadFullInventory();
+    loadInventory();
 
     async function addItem() {
         const values = document.getElementsByClassName('addItem');
@@ -53,7 +56,7 @@
 
         const result = await response.json();
         inventory.items.push(result);
-        loadFullInventory();
+        loadInventory();
     }
 
     function addFieldCheckbox(Ids) { 
@@ -90,7 +93,7 @@
                 body: JSON.stringify(fieldIds)
             }); 
 
-            loadFullInventory();
+            loadInventory();
         });
 
         thead.insertBefore(tr, thead.firstChild);
@@ -118,13 +121,13 @@
         const result = await response.json();
         inventory.inventoryType.push(result);
 
-        loadFullInventory();
+        loadInventory();
     }
 
      async function loadInventory() {
         inventoryTable.innerHTML = '';
 
-        const response = await fetch(`/Home/GetPartInventory?Id=${@Model}&Page=${@ViewBag.Page}&Count=${@ViewBag.Count}`);
+        const response = await fetch(`/Home/GetPartInventory?idInventory=${@Model}&Page=${@ViewBag.Page}&Count=${@ViewBag.Count}`);
         const result = await response.json();
 
         inventory = result;
@@ -144,33 +147,8 @@
 
         addFieldCheckbox(inventory.inventoryType.map(i => i.id));
         loadAddItem();
-    }
-
-    async function loadFullInventory() {
-        loadInventory();
-        return;
-        inventoryTable.innerHTML = '';
-
-        const response = await fetch(`/Home/GetFullInventory?idInventory=${@Model}`);
-        const result = await response.json();
-
-        inventory = result;
-
-        let data = {
-            head:[],
-            body:[]
-        };
-
-        data.head = result.inventoryType.map(i => i.name);
-        for (let item of result.items) {
-            data.body.push({ id: item.id, field: item.itemValue.map(i => i.value) });
-        }
         
-        const table = createTable(data, 'checkboxInventoryList', 'selectAll', DeleteItem);
-        inventoryTable?.appendChild(table);
-
-        addFieldCheckbox(inventory.inventoryType.map(i => i.id));
-        loadAddItem();
+        inventoryInfo.innerText = `Название: ${inventory.name} | Создатель: ${inventory.creatorName}`;
     }
 
     function loadAddItem() {
@@ -201,6 +179,6 @@
             body: JSON.stringify(itemsId)
         });
 
-        loadFullInventory();
+        loadInventory();
     }
 </script>

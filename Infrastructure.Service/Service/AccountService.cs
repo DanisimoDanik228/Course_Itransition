@@ -1,5 +1,6 @@
 ﻿using Application.Dto.Request;
 using Application.Service;
+using Domain.Models;
 using Infrastructure.Repository.PostgresDbContext;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,13 +12,13 @@ namespace Infrastructure.Service.Service
 {
     public class AccountService : IAccountService
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
         private readonly AppDbContext _context;
 
         public AccountService(
-            UserManager<IdentityUser> userManager, 
-            SignInManager<IdentityUser> signInManager,
+            UserManager<AppUser> userManager, 
+            SignInManager<AppUser> signInManager,
             AppDbContext context)
         {
             _userManager = userManager;
@@ -67,7 +68,7 @@ namespace Infrastructure.Service.Service
 
         public async Task<bool> RegisterAsync(string email, string password)
         {
-            var user = new IdentityUser { UserName = email, Email = email };
+            var user = new AppUser { UserName = email, Email = email };
             var result = await _userManager.CreateAsync(user, password);
 
             if (result.Succeeded)

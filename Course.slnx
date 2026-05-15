@@ -10,7 +10,7 @@
     <Project Path="Infrastructure.Repository/Infrastructure.Repository.csproj" Id="4185b6b4-f12e-4fd7-8011-8a11acb081f7" />
     <Project Path="Infrastructure.Service/Infrastructure.Service.csproj" Id="71858b6b-2908-4236-8eb8-308d2fa1dab5" />
   </Folder>
-  <Folder Name="/Presentatiob/">
+  <Folder Name="/Presentation/">
     <Project Path="Course/Course.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
