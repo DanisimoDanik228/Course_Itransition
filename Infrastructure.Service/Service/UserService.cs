@@ -56,9 +56,14 @@ namespace Infrastructure.Service.Service
             await _userRepository.UnblockUserAsync(Ids);
         }
 
-        public async Task SetUserStatusAsync(string[] userId, string status)
+        public async Task MakeAdminRoleAsync(string[] userId)
         {
-            await _userRepository.SetUserStatusAsync(userId, status);
+            await _userRepository.MakeAdminAsync(userId);
+        }
+
+        public async Task RemoveAdminRoleAsync(string[] userId)
+        {
+            await _userRepository.RemoveAdminAsync(userId);
         }
     }
 }

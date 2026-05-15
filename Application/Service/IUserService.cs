@@ -15,6 +15,7 @@ namespace Application.Service
         Task DeleteUsersAsync(string[] Ids);
         Task BlockUserAsync(string[] Ids);
         Task UnblockUserAsync(string[] Ids);
-        Task SetUserStatusAsync(string[] userId, string status);
+        Task MakeAdminRoleAsync(string[] userId);
+        Task RemoveAdminRoleAsync(string[] userId);
     }
 }

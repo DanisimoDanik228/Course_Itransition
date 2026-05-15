@@ -16,7 +16,8 @@ namespace Application.Repository.User
         Task<bool> RegisterAsync(string email, string password);
         Task BlockUserAsync(string[] Ids);
         Task UnblockUserAsync(string[] Ids);
-        Task SetUserStatusAsync(string[] userId, string status);
+        Task MakeAdminAsync(string[] userId);
+        Task RemoveAdminAsync(string[] userId);
         Task DeleteUsersAsync(string[] Ids);
     }
 }

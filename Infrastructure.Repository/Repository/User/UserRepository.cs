@@ -91,15 +91,31 @@ namespace Infrastructure.Repository.Repository.User
             await _userManager.UpdateSecurityStampAsync(user);
         }
 
-        public async Task SetUserStatusAsync(string[] userId, string status)
+        public async Task MakeAdminAsync(string[] userId)
         {
-            var user = await _userManager.FindByIdAsync(userId[0]);
-            var roles = await _userManager.GetRolesAsync(user);
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
 
-            await _userManager.RemoveFromRolesAsync(user,roles);
+            await _context.UserRoles
+                .AddRangeAsync(
+                    userId.Select(uId => 
+                        new IdentityUserRole<string>()
+                        {
+                            UserId = uId,
+                            RoleId = role.Id
+                        }
+                    )
+                );
+            
+            await _context.SaveChangesAsync();
+        }
 
-            await _userManager.AddToRoleAsync(user, status);
-            await _signInManager.RefreshSignInAsync(user);
+        public async Task RemoveAdminAsync(string[] userId)
+        {
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
+
+            await _context.UserRoles
+                .Where(ur => userId.Contains(ur.UserId) && ur.RoleId == role.Id)
+                .ExecuteDeleteAsync();
         }
     }
 }

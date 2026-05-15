@@ -108,9 +108,18 @@ namespace Course.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> SetStatus([FromBody] SetStatusRequest request)
+        public async Task<IActionResult> MakeAdmin([FromBody] AdminRoleRequest request)
         {
-            await _userService.SetUserStatusAsync(request.Ids, request.Status);
+            await _userService.MakeAdminRoleAsync(request.Ids);
+
+            return StatusCode(204);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RemoveAdmin([FromBody] AdminRoleRequest request)
+        {
+            await _userService.RemoveAdminRoleAsync(request.Ids);
 
             return StatusCode(204);
         }

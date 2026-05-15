@@ -40,11 +40,10 @@
             const userIds = getSelected();
 
             const request = {
-                ids: userIds,
-                status: 'Registered',
+                ids: userIds
             };
 
-            const response = await fetch(`/User/SetStatus`, {
+            const response = await fetch(`/User/RemoveAdmin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -65,11 +64,10 @@
             const userIds = getSelected();
 
             const request = {
-                ids: userIds,
-                status: 'Admin',
+                ids: userIds
             };
 
-            const response = await fetch(`/User/SetStatus`, {
+            const response = await fetch(`/User/MakeAdmin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

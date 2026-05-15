@@ -4,9 +4,8 @@ using System.Text;
 
 namespace Application.Dto.Request
 {
-    public class SetStatusRequest
+    public class AdminRoleRequest
     {
-        public string Status { get; set; }
         public string[] Ids { get; set; }
     }
 }
