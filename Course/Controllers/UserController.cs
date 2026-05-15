@@ -110,7 +110,7 @@ namespace Course.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SetStatus([FromBody] SetStatusRequest request)
         {
-            await _accountService.SetUserStatusAsync(request.Ids, request.Status);
+            await _userService.SetUserStatusAsync(request.Ids, request.Status);
 
             return StatusCode(204);
         }

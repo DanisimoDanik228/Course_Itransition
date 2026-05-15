@@ -44,7 +44,7 @@
                 status: 'Registered',
             };
 
-            const response = await fetch(`/Account/SetStatus`, {
+            const response = await fetch(`/User/SetStatus`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -69,7 +69,7 @@
                 status: 'Admin',
             };
 
-            const response = await fetch(`/Account/SetStatus`, {
+            const response = await fetch(`/User/SetStatus`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
