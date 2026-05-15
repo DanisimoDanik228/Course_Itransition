@@ -105,5 +105,14 @@ namespace Course.Controllers
 
             return StatusCode(204);
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SetStatus([FromBody] SetStatusRequest request)
+        {
+            await _accountService.SetUserStatusAsync(request.Ids, request.Status);
+
+            return StatusCode(204);
+        }
     }
 }

@@ -97,7 +97,12 @@ namespace Infrastructure.Service.Service
         public async Task SetUserStatusAsync(string[] userId, string status)
         {
             var user = await _userManager.FindByIdAsync(userId[0]);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            await _userManager.RemoveFromRolesAsync(user,roles);
+
             await _userManager.AddToRoleAsync(user, status);
+            await _signInManager.RefreshSignInAsync(user);
         }
     }
 }
