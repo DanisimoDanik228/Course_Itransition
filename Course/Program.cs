@@ -1,5 +1,6 @@
 ﻿using Application.Repository;
 using Application.Service;
+using Domain.Models;
 using Infrastructure.Repository.PostgresDbContext;
 using Infrastructure.Repository.Repository;
 using Infrastructure.Service.Service;
@@ -27,7 +28,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
     options.Password.RequiredLength = 4;
     options.Password.RequireDigit = false;
@@ -60,11 +61,10 @@ using (var scope = app.Services.CreateScope())
 {
     var nameAdmin = "werty";
     var passAdmin = "1111";
+    string[] roleNames = { "Admin", "Registered" };
 
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-    string[] roleNames = { "Admin", "Registered" };
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
 
     foreach (var roleName in roleNames)
     {
@@ -76,7 +76,7 @@ using (var scope = app.Services.CreateScope())
 
     if (await userManager.FindByNameAsync(nameAdmin) == null)
     {
-        var admin = new IdentityUser { UserName = nameAdmin, Email = nameAdmin };
+        var admin = new AppUser { UserName = nameAdmin, Email = nameAdmin };
         await userManager.CreateAsync(admin, passAdmin);
         await userManager.AddToRoleAsync(admin, "Admin");
     }

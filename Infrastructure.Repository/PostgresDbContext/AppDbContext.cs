@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Infrastructure.Repository.PostgresDbContext
 {
-    public class AppDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -42,6 +42,12 @@ namespace Infrastructure.Repository.PostgresDbContext
             modelBuilder.Entity<InventoryType>()
                 .HasMany(i => i.ItemValue)
                 .WithOne(iv => iv.InventoryType)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Inventory>()
+                .HasOne(i => i.Creator)
+                .WithMany(c => c.CreatedInventory)
+                .HasForeignKey(i => i.CreatorId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

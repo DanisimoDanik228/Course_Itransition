@@ -31,9 +31,10 @@ namespace Infrastructure.Service.Service
             _inventoryTypeRepository = inventoryTypeRepository;
             _mapper = mapper;
         }
-        public async Task<InventoryResponseDto?> AddInventoryAsync(Inventory item)
+        public async Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item)
         {
-            var res = await _inventoryRepository.AddAsync(item);
+            var inventory = _mapper.Map<InventoryRequestDto, Inventory>(item);
+            var res = await _inventoryRepository.AddAsync(inventory);
             return _mapper.Map<Inventory, InventoryResponseDto>(res);
         }
 
@@ -69,7 +70,7 @@ namespace Infrastructure.Service.Service
         {
             var inventoryType = _mapper.Map<InventoryTypeRequestDto, InventoryType>(item);
             var res = await _inventoryTypeRepository.AddAsync(inventoryType);
-            return _mapper.Map<InventoryType,InventoryTypeResponseDto>(res);
+            return _mapper.Map<InventoryType, InventoryTypeResponseDto>(res);
         }
 
         public InventoryFullResponseDto PrepareFullInventoryToShow(InventoryFullResponseDto inventory)
@@ -134,6 +135,18 @@ namespace Infrastructure.Service.Service
         public async Task<int> DeleteFieldAsync(long idInventory, long[] fieldsId)
         {
             return await _inventoryTypeRepository.DeleteAsync(fieldsId);
+        }
+
+        public async Task<IEnumerable<InventoryResponseDto>> GetAllInventoryUserAsync(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return [];    
+            }
+
+            var inventories = await _inventoryRepository.GetAllInventoryUserAsync(userId);
+
+            return inventories.Select(i => _mapper.Map<Inventory,InventoryResponseDto>(i));
         }
     }
 }

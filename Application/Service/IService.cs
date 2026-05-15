@@ -20,9 +20,10 @@ namespace Application.Service
         Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page);
         Task<int> DeleteItemsAsync(long idInventory, long[] itemsId);
         Task<int> DeleteFieldAsync(long idInventory, long[] fieldsId);
-        Task<InventoryResponseDto?> AddInventoryAsync(Inventory item);
+        Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item);
         Task<ItemFullResponseDto?> AddItemAsync(ItemFullRequestDto item);
         Task<InventoryTypeResponseDto?> AddFieldAsync(InventoryTypeRequestDto item);
+        Task<IEnumerable<InventoryResponseDto>> GetAllInventoryUserAsync(string userId);
     }
 }
  

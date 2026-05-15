@@ -35,12 +35,10 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Registered")]
         public async Task<IActionResult> AddInventory([FromBody] InventoryRequestDto inventory)
         {
-            var i = new Inventory() { Id = inventory.Id, Name = inventory.Name, InventoryType = [], Items = [] };
-
-            var res = await _service.AddInventoryAsync(i);
+            var res = await _service.AddInventoryAsync(inventory);
             return Json(res);
         }
 
@@ -77,9 +75,9 @@ namespace Course.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetPartInventory(long Id, int Count, int Page)
+        public async Task<IActionResult> GetPartInventory(long idInventory, int Count, int Page)
         {
-            var res = await _service.GetPartInventoryAsync(Id, Count, Page);
+            var res = await _service.GetPartInventoryAsync(idInventory, Count, Page);
 
             res = _service.PrepareFullInventoryToShow(res);
             return Json(res);
@@ -110,6 +108,14 @@ namespace Course.Controllers
             await _service.DeleteFieldAsync(idInventory, Ids);
 
             return StatusCode(204);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllUserInventories(string userId)
+        {
+            var inventories = await _service.GetAllInventoryUserAsync(userId);
+            return Json(inventories);
         }
     }
 }

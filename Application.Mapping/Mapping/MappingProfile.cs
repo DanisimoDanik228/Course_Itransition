@@ -15,7 +15,8 @@ namespace Application.Mapping
             CreateMap<InventoryRequestDto, Inventory>()
                 .ForMember(dest => dest.Items, opt => opt.Ignore())
                 .ForMember(dest => dest.InventoryType, opt => opt.Ignore());
-            CreateMap<Inventory, InventoryFullResponseDto>();
+            CreateMap<Inventory, InventoryFullResponseDto>()
+                .ForMember(dest => dest.CreatorName, opt => opt.MapFrom(src => src.Creator.UserName));
 
             CreateMap<InventoryType, InventoryTypeResponseDto>();
             CreateMap<InventoryTypeRequestDto, InventoryType>().ReverseMap();
