@@ -80,3 +80,14 @@ function createButtonDelete(checkBoxClassName,actionDeleteUsers) {
 
     return btnDelete;
 }
+
+function createClickSelectAll(idMainCheckBox, checkBoxClassName) {
+    const checkBox = document.getElementById(idMainCheckBox);
+    const allCheckBoxes = document.getElementsByName(checkBoxClassName);
+
+    checkBox.addEventListener('change', (event) => {
+        for (let item of allCheckBoxes) {
+            item.checked = event.target.checked;
+        }
+    });
+}
