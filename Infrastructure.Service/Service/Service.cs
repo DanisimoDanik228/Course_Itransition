@@ -38,9 +38,9 @@ namespace Infrastructure.Service.Service
             return _mapper.Map<Inventory, InventoryResponseDto>(res);
         }
 
-        public async Task<IEnumerable<Inventory>> GetAllInventoryAsync()
+        public async Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync()
         {
-            return await _inventoryRepository.GetAllAsync();
+            return (await _inventoryRepository.GetAllAsync()).Select(i => _mapper.Map<Inventory,InventoryResponseDto>(i));
         }
 
         public async Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync(long idInventory)

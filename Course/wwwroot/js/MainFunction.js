@@ -56,9 +56,101 @@ async function DeleteUsers(usersId) {
     });
 }
 
+async function DeleteInventory(inventoryIds) {
+    await fetch('/Home/DeleteInventory', {
+        method: 'DELETE',
+        headers: {
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify(inventoryIds)
+    });
+}
+
+async function AddInventory(inventory) {
+    const response = await fetch('/Home/AddInventory', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(inventory)
+    });
+
+    return response;
+}
+
+async function GetAllInventory() {
+    const response = await fetch('/Home/GetAllInventory');
+
+    return response;
+}
+
+async function GetAllUserInventories(userId) {
+    const response = await fetch(`/Home/GetAllUserInventories?userId=${userId}`);
+
+    return response;
+}
+
 async function GetAllUsers(){
     const response = await fetch('/User/GetAllUsers');
     return await response.json();
+}
+
+async function GetPartInventory(id,page,count) {
+    const response = await fetch(`/Home/GetPartInventory?idInventory=${id}&Page=${page}&Count=${count}`);   
+    return response;
+}
+
+async function AddItemOnInventory(id, items) {
+    const response = await fetch(`/Home/AddItem?idInventory=${id}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(items)
+    });
+
+    return response;
+}
+
+async function AddFieldOnInventory(id,fieldName,fieldType){
+    const item = {
+        id: 0,
+        inventoryId: id,
+        name: fieldName,
+        type: fieldType
+    };
+
+    const response = await fetch(`/Home/AddField`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(item)
+    });
+
+    return response;
+}
+
+async function DeleteItemsOnInventory(id, itemsId){
+    await fetch(`/Home/DeleteItems?idInventory=${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify(itemsId)
+    });
+}
+
+async function DeleteFieldOnInventory(id,fieldIds){
+    const response = await fetch(`/Home/DeleteField?idInventory=${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(fieldIds)
+    });
+
+    return response;
 }
 
 function getSelected(className) {
@@ -68,4 +160,16 @@ function getSelected(className) {
         .map(i => i.dataset.id);
 
     return iDs;
+}
+
+function createClickSelectAll(idMainCheckBox, checkBoxClassName) {
+    const checkBox = document.getElementById(idMainCheckBox);
+
+    checkBox.addEventListener('change', (event) => {
+        const allCheckBoxes = document.getElementsByClassName(checkBoxClassName);
+
+        for (let item of allCheckBoxes) {
+            item.checked = event.target.checked;
+        }
+    });
 }

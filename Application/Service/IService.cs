@@ -14,7 +14,7 @@ namespace Application.Service
     {
         InventoryFullResponseDto PrepareFullInventoryToShow(InventoryFullResponseDto item);
         Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync(long idInventory);
-        Task<IEnumerable<Inventory>> GetAllInventoryAsync();
+        Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync();
         Task<int> DeleteInventoryAsync(long[] idInventory);
         Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id);
         Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page);

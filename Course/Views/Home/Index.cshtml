@@ -1,6 +1,14 @@
 ﻿@using Domain.Models
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<AppUser> UserManager
+@{
+    var classNameCheckBox = "checkboxInventoryList";
+}
+
+<a href="/User/AllUsers">All User</a>
+<form asp-controller="User" asp-action="Logout" method="post">
+    <button type="submit">Logout</button>
+</form>
 
 <h3>Your name is @User.Identity.Name</h3>
 @if (@User.IsInRole("Admin"))
@@ -20,18 +28,22 @@ else
 }
 
 <div id="myInventoryList" class="bg-info bg-opacity-50"></div>
-<div id="inventoryList" class="bg-info"></div>
-
-<a href="/User/AllUsers">All User</a>
-
-<form asp-controller="User" asp-action="Logout" method="post">
-    <button type="submit">Logout</button>
-</form>
-
-<form asp-controller="Home" asp-action="Inventory" method="get">
-    <input name="idInventory" type="number">
-    <button type="submit">Go to inventory</button>
-</form> 
+<div class="bg-info">
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="selectAll">
+                </th>
+                <th>Name</th>
+                <th>Id</th>
+            </tr>
+        </thead>
+        <tbody id="inventoryList">
+        </tbody>
+    </table>
+    <button onclick="deleteInventory()">Delete</button>
+</div>
 
 <div>
     <input id="idInventory" type="number">
@@ -39,68 +51,66 @@ else
     <button onclick="addInventory()" type="submit">Add inventory</button>
 </div>
 
-<script src="~/js/CreateTable.js"></script>
+<script src="~/js/MainFunction.js"></script>
 <script>
     const myId = "@UserManager.GetUserId(User)";
-
-    const idInventory = document.getElementById('idInventory');
-    const nameInventory = document.getElementById('nameInventory');
-    const inventoryList = document.getElementById('inventoryList');
-    const myInventoryList = document.getElementById('myInventoryList');
-
-    loadInventory();
-    loadMyInventory();
 
     let allInventory = [];
     let myInventory = [];
 
-    function updateMyInventoryList()
-    {
-        myInventoryList.innerHTML = '';
+    getInventory();
+    getMyInventory();
+    
+    loadInventory();
+    loadMyInventory();
+
+    createClickSelectAll('selectAll','@classNameCheckBox');
+
+    function loadMyInventory() {
+        const myInventoryList = document.getElementById('myInventoryList');
+        let resHtml = "";
 
         for (let item of myInventory) { 
-            const tagA = document.createElement('a');
-            tagA.innerHTML = `<a href="/Home/Inventory?Id=${item.id}&Page=1&Count=5">${item.name}</a>`;
-            myInventoryList?.appendChild(tagA);
+            resHtml += `<a href="/Home/Inventory?Id=${item.id}&Page=1&Count=5">${item.name}</a>`;
         }
+
+        myInventoryList.innerHTML = resHtml;
     }
 
-    function updateInventoryList() { 
-        inventoryList.innerHTML = '';
+    function loadInventory() { 
+        const inventoryList = document.getElementById('inventoryList');
+        let resHtml = "";
 
-        let data = {
-            head:[],
-            body:[]
-        };
-        data.head = ['Name','Id'];
         for (let item of allInventory) {
-            const link = `<a href="/Home/Inventory?Id=${item.id}&Page=1&Count=5">${item.name}</a>`;
-
-            data.body.push({ id: item.id, field: [link,item.id] });
+            resHtml += `
+            <tr>
+                <td>
+                    <input type="checkbox" class="@classNameCheckBox" data-id="123">
+                </td>
+                <td>
+                    <a href="/Home/Inventory?Id=${item.id}&Page=1&Count=5">${item.name}</a>
+                </td>
+            </tr>`;
         }
         
-        const table = createTable(data, 'checkboxInventoryList', 'selectAll', inventoryDelete);
-        inventoryList.appendChild(table);
+        inventoryList.innerHTML = resHtml;
     }
 
-    async function inventoryDelete(inventoryIds)
+    async function deleteInventory()
     {
-        await fetch('/Home/DeleteInventory', {
-            method: 'DELETE',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify(inventoryIds)
-        });
+        const inventoryIds = getSelected('@classNameCheckBox');
+        await DeleteInventory(inventoryIds);
 
-        inventoryList.innerHTML = '';
+        getInventory();
+        getMyInventory()
         loadInventory();
+        loadMyInventory();
     }
 
     async function addInventory()
     {
-        const id = idInventory.value;
-        const name = nameInventory.value;
+        const id = document.getElementById('idInventory').value;
+        const name = document.getElementById('nameInventory').value;
 
         const item = {
             id:id,
@@ -108,32 +118,30 @@ else
             creatorId: myId
         };
 
-        const response = await fetch('/Home/AddInventory',{
-            method: 'POST',
-            headers:{
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(item)
-        });
-
+        const response = await AddInventory(item);
         const result = await response.json();
-        console.log(result);
-        allInventory.push(result);
-        updateInventoryList();
+
+        getInventory();
+        getMyInventory()
+        loadInventory();
+        loadMyInventory();
     }
 
-    async function loadInventory() { 
-        const response = await fetch('/Home/GetAllInventory');
+    async function getInventory() { 
+        const response = await GetAllInventory();
         const result = await response.json();
         allInventory = result;
-        updateInventoryList();
+
+        loadInventory();
+        loadMyInventory();
     }
 
-    async function loadMyInventory() {
-        const response = await fetch(`/Home/GetAllUserInventories?userId=${myId}`);
+    async function getMyInventory() {
+        const response = await GetAllUserInventories(myId);
         const result = await response.json();
-
         myInventory = result;
-        updateMyInventoryList();
+
+        loadInventory();
+        loadMyInventory();
     }
 </script>
