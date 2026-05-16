@@ -1,4 +1,8 @@
-﻿<div>
+﻿@{
+    var classNameCheckBox = "checkboxUserList";
+}
+
+<div>
     <table>
         <thead>
             <tr>
@@ -22,23 +26,25 @@
 
 <script src="~/js/MainFunction.js"></script>
 <script>
-    const classNameChekBoxes = "checkboxUserList";
     const userList = document.getElementById('userList');
+    
+    let allUsers = [];
+    
     loadUser();
 
-    async function loadUser() {
-        if (userList?.firstChild) { 
-            userList?.removeChild(userList.firstChild);
-        }
+    async function getUsers() {
+        allUsers = await GetAllUsers();
+    }
 
-        const allUsers = await GetAllUsers();
+    async function loadUser() {
+        await getUsers();
         let resHtml = "";
 
         for (let user of allUsers) {
                 resHtml +=` 
                 <tr>
                     <td>
-                        <input type="checkbox" class="${classNameChekBoxes}" data-id="${user.id}" >
+                        <input type="checkbox" class="@classNameCheckBox" data-id="${user.id}" >
                     </td>
                     <td > ${user.email} </td>
                     <td > ${user.role.join(', ')} </td>
@@ -46,31 +52,37 @@
                 </tr>`;
         }
 
+        createClickSelectAll('selectAll','@classNameCheckBox');
         userList.innerHTML = resHtml;
     }
 
     async function btnDelete(){ 
-        await DeleteUsers(getSelected(classNameChekBoxes));
+        await DeleteUsers(getSelected('@classNameCheckBox'));
+
         loadUser();
     }
 
     async function btnBlock() {
-        await BlockUsers(getSelected(classNameChekBoxes));
+        await BlockUsers(getSelected('@classNameCheckBox'));
+
         loadUser();
     }
 
     async function btnUnBlock() {
-        await UnblockUsers(getSelected(classNameChekBoxes));
+        await UnblockUsers(getSelected('@classNameCheckBox'));
+
         loadUser();
     }
 
     async function btnMakeAdmin() {
-        await MakeAdmin(getSelected(classNameChekBoxes));
+        await MakeAdmin(getSelected('@classNameCheckBox'));
+
         loadUser();
     }
 
     async function btnRemoveAdmin() {
-        await RemoveAdmin(getSelected(classNameChekBoxes));
+        await RemoveAdmin(getSelected('@classNameCheckBox'));
+        
         loadUser();
     }
 </script>

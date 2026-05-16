@@ -53,13 +53,13 @@ builder.Services.AddScoped<IUserService, UserService>();
 var app = builder.Build();
 
 app.UseStaticFiles();
-//using (var scope = app.Services.CreateScope())
-//{
-//    Thread.Sleep(5000);
-//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//    db.Database.EnsureDeleted();
-//    db.Database.EnsureCreated();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    Thread.Sleep(5000);
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureDeleted();
+    db.Database.EnsureCreated();
+}
 
 using (var scope = app.Services.CreateScope())
 {
@@ -83,6 +83,7 @@ using (var scope = app.Services.CreateScope())
         var admin = new AppUser { UserName = nameAdmin, Email = nameAdmin };
         await userManager.CreateAsync(admin, passAdmin);
         await userManager.AddToRoleAsync(admin, "Admin");
+        await userManager.AddToRoleAsync(admin, "Registered");
     }
 }
 

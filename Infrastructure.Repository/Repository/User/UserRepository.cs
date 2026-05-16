@@ -95,9 +95,14 @@ namespace Infrastructure.Repository.Repository.User
         {
             var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
 
+            var usersWithoutAdmin = await _context.UserRoles
+                .Where(u => u.RoleId != role.Id)
+                .Select(u => u.UserId)
+                .ToListAsync();
+
             await _context.UserRoles
                 .AddRangeAsync(
-                    userId.Select(uId => 
+                    usersWithoutAdmin.Select(uId => 
                         new IdentityUserRole<string>()
                         {
                             UserId = uId,
