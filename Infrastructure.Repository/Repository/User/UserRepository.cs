@@ -31,11 +31,11 @@ namespace Infrastructure.Repository.Repository.User
             await _userManager.Users.Where(u => Ids.Contains(u.Id)).ExecuteDeleteAsync();
         }
 
-        public async Task<IEnumerable<UserResponse>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
         {
             var userRoles =
                 await _context.Users
-                    .Select(user => new UserResponse
+                    .Select(user => new UserResponseDto
                     {
                         Id = user.Id,
                         Email = user.Email,
@@ -95,10 +95,9 @@ namespace Infrastructure.Repository.Repository.User
         {
             var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
 
-            var usersWithoutAdmin = await _context.UserRoles
-                .Where(u => u.RoleId != role.Id)
-                .Select(u => u.UserId)
-                .ToListAsync();
+            var usersWithoutAdmin = _context.UserRoles
+                .Where(u => u.RoleId != role.Id && userId.Contains(u.UserId))
+                .Select(u => u.UserId);
 
             await _context.UserRoles
                 .AddRangeAsync(

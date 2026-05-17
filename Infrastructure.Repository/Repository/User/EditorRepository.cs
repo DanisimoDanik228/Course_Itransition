@@ -1,0 +1,82 @@
+﻿using Application.Dto.Response;
+using Application.Repository.User;
+using Domain.Models;
+using Infrastructure.Repository.PostgresDbContext;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Text;
+
+namespace Infrastructure.Repository.Repository.User
+{
+    public class EditorRepository : IEditorRepository
+    {
+        private readonly AppDbContext _context;
+
+        public EditorRepository(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task MakeEditorAsync(string[] userId, long inventoryId)
+        {
+            var existUser = await _context.EditorInventory
+                .Where(i => i.InventoryId == inventoryId && userId.Contains(i.EditorId))
+                .Select(i => i.EditorId)
+                .ToListAsync();
+
+            userId = userId.Where(u => !existUser.Contains(u)).ToArray();
+
+            var inventory = await _context.Inventory
+                .Include(i => i.Editors)
+                .Where(i => i.Id == inventoryId)
+                .FirstOrDefaultAsync();
+
+            foreach (var item in userId)
+            {
+                inventory.Editors.Add(new EditorInventory() { EditorId = item, InventoryId = inventoryId });
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveEditorAsync(string[] userId, long inventoryId)
+        {
+            await _context.EditorInventory
+                .Where(u => u.InventoryId == inventoryId && userId.Contains(u.EditorId))
+                .ExecuteDeleteAsync();
+        }
+
+        public async Task<List<InventoryEditorResponseDto>> GetEditorInventoryAsync(long inventoryId)
+        {
+            var adminRole = await _context.Roles
+                .Where(r => r.Name == "Admin")
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            var admins = _context.UserRoles
+                .Where(ur => adminRole.Id == ur.RoleId)
+                .Select(ur => ur.UserId);
+
+            var inventory = await _context.Inventory
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == inventoryId);
+
+            var users = await _context.Users
+                .AsNoTracking()
+                .Select(u => new InventoryEditorResponseDto() { 
+                    Id = u.Id,
+                    Email = u.Email,
+                    RoleInventory = (u.Id == inventory.CreatorId) ? ("Creator") : 
+                        ((admins.Any(id => id == u.Id)) ? ("Admin") : 
+                        ((_context.EditorInventory.Any(e => e.InventoryId == inventoryId && e.EditorId == u.Id)) ? ("Editor") : 
+                        ("Anonym")))
+                })
+                .ToListAsync();
+
+            return users;
+        }
+    }
+}

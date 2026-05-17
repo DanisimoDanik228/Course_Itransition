@@ -92,7 +92,7 @@ async function GetAllUserInventories(userId) {
 
 async function GetAllUsers(){
     const response = await fetch('/User/GetAllUsers');
-    return await response.json();
+    return response;
 }
 
 async function GetPartInventory(id,page,count) {
@@ -149,6 +149,32 @@ async function DeleteFieldOnInventory(id,fieldIds){
         },
         body: JSON.stringify(fieldIds)
     });
+
+    return response;
+}
+
+async function MakeEditor(userIds, inventoryId) {
+    await fetch(`/User/MakeEditor?idInventory=${inventoryId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userIds)
+    });
+}
+
+async function RemoveEditor(tableIds, inventoryId) {
+    await fetch(`/User/RemoveEditor?idInventory=${inventoryId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(tableIds)
+    });
+}
+
+async function GetEditorInventory(inventoryId) {
+    const response = await fetch(`/User/GetEditorInventory?idInventory=${inventoryId}`);
 
     return response;
 }

@@ -32,10 +32,6 @@
     
     loadUser();
 
-    async function getUsers() {
-        allUsers = await GetAllUsers();
-    }
-
     async function loadUser() {
         await getUsers();
         let resHtml = "";
@@ -84,5 +80,10 @@
         await RemoveAdmin(getSelected('@classNameCheckBox'));
         
         loadUser();
+    }
+
+    async function getUsers() {
+        response = await GetAllUsers();
+        allUsers = await response.json();
     }
 </script>

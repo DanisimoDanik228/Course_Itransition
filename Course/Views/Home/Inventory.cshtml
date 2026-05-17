@@ -2,6 +2,8 @@
     var classNameFieldCheckBox = "fieldCheckBox";
     var classNameItemCheckBox = "itemCheckBox";
 
+    var classNameUserCheckBox = "userCheckBox";
+
     var classNameAddItem = "itemAdd";
 }
 
@@ -35,34 +37,33 @@
     <button onclick="addField()" type="submit">Add Field</button>
 </div>
 
-<div>
+<div class="bg-info">
     <table>
         <thead>
             <tr>
                 <th>
-                    <input type="checkbox" id="selectAll">
+                    <input type="checkbox" id="selectAllUser">
                 </th>
-                <th>Email</th>
-                <th>CurrentStatus</th>
+                <th>Name</th>
+                <th>Current Role in inventory</th>
             </tr>
         </thead>
         <tbody id="userList">
         </tbody>
     </table>
-    <button onclick="btnSetEditAccess()">Add Edit Access</button>
+    <button onclick="removeCreatorRole()">Remove Creator</button>
+    <button onclick="addCreatorRole()">Make Creator</button>
 </div>
 
 <script src="~/js/MainFunction.js"></script>
 <script>
     let inventory = {};
+    let users = [];
+
+    getUsers();
     loadFullInventory();
 
-    async function getInventory() {
-        const response = await GetPartInventory(@Model,@ViewBag.Page,@ViewBag.Count);
-    
-        const result = await response.json();
-        inventory = result;
-    }
+    createClickSelectAll('selectAllUser', '@classNameUserCheckBox');
 
     async function loadFullInventory() {
         await getInventory();
@@ -129,6 +130,24 @@
         document.getElementById('listItemField').innerHTML = resHtml;
     }
 
+    function loadUsers() {
+        const userList = document.getElementById('userList');
+        let resHtml = "";
+
+        for (let item of users) {
+            resHtml += `
+            <tr>
+                <td>
+                    <input type="checkbox" class="@classNameUserCheckBox" data-id="${item.id}">
+                </td>
+                <td>${item.email}</td>
+                <td>${item.roleInventory}</td>
+            </tr>`;
+        }
+        
+        userList.innerHTML = resHtml;
+    }
+
     async function addItem() {
         const values = document.getElementsByClassName('@classNameAddItem');
 
@@ -187,4 +206,30 @@
         loadBodyTable();
     }
 
+    async function addCreatorRole() { 
+        const items = await getSelected('@classNameUserCheckBox');
+
+        await MakeEditor(items ,@Model);
+    }
+    
+    async function removeCreatorRole(){ 
+        const items = await getSelected('@classNameUserCheckBox');
+
+        await RemoveEditor(items ,@Model);
+    }
+    
+    async function getInventory() {
+        const response = await GetPartInventory(@Model,@ViewBag.Page,@ViewBag.Count);
+    
+        const result = await response.json();
+        inventory = result;
+    }
+
+    async function getUsers() {
+        const response = await GetEditorInventory(@Model);
+        const result = await response.json();
+        users = result;
+    
+        loadUsers();
+    }
 </script>

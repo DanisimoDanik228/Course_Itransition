@@ -3,6 +3,7 @@ using Application.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Course.Controllers
 {
@@ -108,20 +109,47 @@ namespace Course.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> MakeAdmin([FromBody] AdminRoleRequest request)
+        public async Task<IActionResult> MakeAdmin([FromBody] string[] Ids)
         {
-            await _userService.MakeAdminRoleAsync(request.Ids);
+            await _userService.MakeAdminRoleAsync(Ids);
 
             return StatusCode(204);
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> RemoveAdmin([FromBody] AdminRoleRequest request)
+        public async Task<IActionResult> RemoveAdmin([FromBody] string[] Ids)
         {
-            await _userService.RemoveAdminRoleAsync(request.Ids);
+            await _userService.RemoveAdminRoleAsync(Ids);
 
             return StatusCode(204);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> MakeEditor(long idInventory, [FromBody] string[] userIds)
+        {
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            await _userService.MakeEditorRoleAsync(userIds, myId, idInventory);
+
+            return StatusCode(204);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> RemoveEditor(long idInventory, [FromBody] string[] userIds)
+        {
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            await _userService.RemoveEditorRoleAsync(userIds, myId, idInventory);
+
+            return StatusCode(204);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetEditorInventory(long idInventory)
+        {
+            var editors = await _userService.GetEditorInventoryAsync(idInventory);
+            return Json(editors);
         }
     }
 }

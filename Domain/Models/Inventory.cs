@@ -12,6 +12,7 @@ namespace Domain.Models
         public string Name { get; set; }
         public string CreatorId { get; set; }
         public AppUser Creator { get; set; } 
+        public ICollection<EditorInventory> Editors { get; set; }
         public ICollection<Item> Items { get; set; }
         public ICollection<InventoryType> InventoryType { get; set; }
     }

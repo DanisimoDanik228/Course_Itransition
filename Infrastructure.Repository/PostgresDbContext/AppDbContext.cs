@@ -19,10 +19,15 @@ namespace Infrastructure.Repository.PostgresDbContext
         public DbSet<Item> Items => Set<Item>();
         public DbSet<ItemValue> ItemValue => Set<ItemValue>();
         public DbSet<InventoryType> InventoryType => Set<InventoryType>();
+        public DbSet<EditorInventory> EditorInventory => Set<EditorInventory>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
+            modelBuilder.Entity<EditorInventory>()
+                .HasIndex(e => new { e.EditorId, e.InventoryId })
+                .IsUnique();
 
             modelBuilder.Entity<Inventory>()
                 .HasMany(i => i.Items)
@@ -48,6 +53,18 @@ namespace Infrastructure.Repository.PostgresDbContext
                 .HasOne(i => i.Creator)
                 .WithMany(c => c.CreatedInventory)
                 .HasForeignKey(i => i.CreatorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Inventory>()
+                .HasMany(i => i.Editors)
+                .WithOne(u => u.Inventory)
+                .HasForeignKey(i => i.InventoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AppUser>()
+                .HasMany(i => i.EditInventory)
+                .WithOne(u => u.Editor)
+                .HasForeignKey(i => i.EditorId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

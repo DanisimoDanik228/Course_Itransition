@@ -10,7 +10,7 @@ namespace Application.Repository.User
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<UserResponse>> GetAllUsersAsync();
+        Task<IEnumerable<UserResponseDto>> GetAllUsersAsync();
         Task<bool> LoginAsync(string email, string password);
         Task LogoutAsync();
         Task<bool> RegisterAsync(string email, string password);
