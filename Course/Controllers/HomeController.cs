@@ -20,13 +20,11 @@ namespace Course.Controllers
             _service = service;
         }
 
-        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return View();
         }
 
-        [AllowAnonymous]
         public async Task<IActionResult> Inventory(long Id, int Count, int Page)
         {
             ViewBag.Count = Count;
@@ -34,8 +32,37 @@ namespace Course.Controllers
             return View(Id);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllInventory()
+        {
+            return Json(await _service.GetAllInventoryAsync());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFullInventory(long idInventory)
+        {
+            var res = await _service.GetFullInventoryByIdAsync(idInventory);
+
+            return Json(res);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPartInventory(long idInventory, int Count, int Page)
+        {
+            var res = await _service.GetPartInventoryAsync(idInventory, Count, Page);
+
+            return Json(res);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllUserInventories(string userId)
+        {
+            var inventories = await _service.GetAllInventoryUserAsync(userId);
+            return Json(inventories);
+        }
+        
         [HttpPost]
-        [Authorize(Roles = "Admin, Registered")]
+        [Authorize("Admin,Registered")]
         public async Task<IActionResult> AddInventory([FromBody] InventoryRequestDto inventory)
         {
             var res = await _service.AddInventoryAsync(inventory);
@@ -43,48 +70,21 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Registered")]
+        [Authorize("Admin,Registered")]
         public async Task<IActionResult> AddItem(long idInventory, [FromBody] ItemFullRequestDto item)
         {
             return Json(await _service.AddItemAsync(item));
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Registered")]
+        [Authorize("Admin,Registered")]
         public async Task<IActionResult> AddField([FromBody] InventoryTypeRequestDto item)
         {
             return Json(await _service.AddFieldAsync(item));
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAllInventory()
-        {
-            return Json(await _service.GetAllInventoryAsync());
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetFullInventory(long idInventory)
-        {
-            var res = await _service.GetFullInventoryByIdAsync(idInventory);
-
-            res = _service.PrepareFullInventoryToShow(res);
-            return Json(res);
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetPartInventory(long idInventory, int Count, int Page)
-        {
-            var res = await _service.GetPartInventoryAsync(idInventory, Count, Page);
-
-            res = _service.PrepareFullInventoryToShow(res);
-            return Json(res);
-        }
-
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
+        [Authorize("Admin,Registered")]
         public async Task<IActionResult> DeleteInventory([FromBody] long[] Ids)
         {
             await _service.DeleteInventoryAsync(Ids);
@@ -93,7 +93,7 @@ namespace Course.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Admin,Registered")]
+        [Authorize("Admin,Registered")]
         public async Task<IActionResult> DeleteItems(long idInventory, [FromBody] long[] Ids)
         {
             await _service.DeleteItemsAsync(idInventory, Ids);
@@ -102,20 +102,12 @@ namespace Course.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Admin,Registered")]
+        [Authorize("Admin,Registered")]
         public async Task<IActionResult> DeleteField(long idInventory, [FromBody] long[] Ids)
         {
             await _service.DeleteFieldAsync(idInventory, Ids);
 
             return StatusCode(204);
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAllUserInventories(string userId)
-        {
-            var inventories = await _service.GetAllInventoryUserAsync(userId);
-            return Json(inventories);
         }
     }
 }

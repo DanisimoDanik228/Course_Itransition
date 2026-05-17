@@ -27,16 +27,14 @@ namespace Infrastructure.Service.Service
             _editorRepository = editorRepository;
         }
 
-        public async Task DeleteUsersAsync(string[] Ids)
-        {
-            await _userRepository.DeleteUsersAsync(Ids);
-        }
-
         public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
         {
             return await _userRepository.GetAllUsersAsync();
         }
-
+        public async Task<List<InventoryEditorResponseDto>> GetEditorInventoryAsync(long inventoryId)
+        {
+            return await _editorRepository.GetEditorInventoryAsync(inventoryId);
+        }
         public async Task<bool> LoginAsync(string email, string password)
         {
             return await _userRepository.LoginAsync(email, password);
@@ -61,6 +59,10 @@ namespace Infrastructure.Service.Service
         {
             await _userRepository.UnblockUserAsync(Ids);
         }
+        public async Task DeleteUsersAsync(string[] Ids)
+        {
+            await _userRepository.DeleteUsersAsync(Ids);
+        }
 
         public async Task MakeAdminRoleAsync(string[] userId)
         {
@@ -72,19 +74,14 @@ namespace Infrastructure.Service.Service
             await _userRepository.RemoveAdminAsync(userId);
         }
 
-        public async Task MakeEditorRoleAsync(string[] userId, string myId, long inventoryId)
+        public async Task MakeEditorRoleAsync(string[] userId, long inventoryId)
         {
             await _editorRepository.MakeEditorAsync(userId ,inventoryId);
         }
 
-        public async Task RemoveEditorRoleAsync(string[] userId, string myId, long inventoryId)
+        public async Task RemoveEditorRoleAsync(string[] userId, long inventoryId)
         {
             await _editorRepository.RemoveEditorAsync(userId, inventoryId);
-        }
-
-        public async Task<List<InventoryEditorResponseDto>> GetEditorInventoryAsync(long inventoryId)
-        {
-            return await _editorRepository.GetEditorInventoryAsync(inventoryId);
         }
     }
 }

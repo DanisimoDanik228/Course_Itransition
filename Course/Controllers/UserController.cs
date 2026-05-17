@@ -67,6 +67,12 @@ namespace Course.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> AllUsers()
+        {
+            return View();
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
@@ -75,13 +81,15 @@ namespace Course.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AllUsers()
+        public async Task<IActionResult> GetEditorInventory(long idInventory)
         {
-            return View();
+            var editors = await _userService.GetEditorInventoryAsync(idInventory);
+
+            return Json(editors);
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
+        [Authorize("Admin")]
         public async Task<IActionResult> DeleteUsers([FromBody] string[] Ids)
         {
             await _userService.DeleteUsersAsync(Ids);
@@ -90,7 +98,7 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize("Admin")]
         public async Task<IActionResult> BlockUsers([FromBody] string[] Ids)
         {
             await _userService.BlockUserAsync(Ids);
@@ -99,7 +107,7 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize("Admin")]
         public async Task<IActionResult> UnblockUsers([FromBody] string[] Ids)
         {
             await _userService.UnblockUserAsync(Ids);
@@ -108,7 +116,7 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize("Admin")]
         public async Task<IActionResult> MakeAdmin([FromBody] string[] Ids)
         {
             await _userService.MakeAdminRoleAsync(Ids);
@@ -117,39 +125,30 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize("Admin")]
         public async Task<IActionResult> RemoveAdmin([FromBody] string[] Ids)
         {
             await _userService.RemoveAdminRoleAsync(Ids);
 
             return StatusCode(204);
         }
+
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize("Admin,Registered")]
         public async Task<IActionResult> MakeEditor(long idInventory, [FromBody] string[] userIds)
         {
-            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _userService.MakeEditorRoleAsync(userIds, myId, idInventory);
+            await _userService.MakeEditorRoleAsync(userIds, idInventory);
 
             return StatusCode(204);
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize("Admin,Registered")]
         public async Task<IActionResult> RemoveEditor(long idInventory, [FromBody] string[] userIds)
         {
-            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _userService.RemoveEditorRoleAsync(userIds, myId, idInventory);
+            await _userService.RemoveEditorRoleAsync(userIds, idInventory);
 
             return StatusCode(204);
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetEditorInventory(long idInventory)
-        {
-            var editors = await _userService.GetEditorInventoryAsync(idInventory);
-            return Json(editors);
         }
     }
 }

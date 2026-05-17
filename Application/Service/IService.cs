@@ -12,7 +12,6 @@ namespace Application.Service
 {
     public interface IService
     {
-        InventoryFullResponseDto PrepareFullInventoryToShow(InventoryFullResponseDto item);
         Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync(long idInventory);
         Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync();
         Task<int> DeleteInventoryAsync(long[] idInventory);

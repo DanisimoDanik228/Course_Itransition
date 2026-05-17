@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(typeof(Application.Mapping.MappingProfile));
 
 builder.Services.AddDbContext<AppDbContext>(o =>
@@ -48,19 +48,20 @@ builder.Services.AddScoped<IInventoryTypeRepository, InventoryTypeRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEditorRepository, EditorRepository>();
 
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IService,Service>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
 app.UseStaticFiles();
-using (var scope = app.Services.CreateScope())
-{
-    Thread.Sleep(5000);
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureDeleted();
-    db.Database.EnsureCreated();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    Thread.Sleep(5000);
+//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//    db.Database.EnsureDeleted();
+//    db.Database.EnsureCreated();
+//}
 
 using (var scope = app.Services.CreateScope())
 {

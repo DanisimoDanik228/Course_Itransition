@@ -17,8 +17,8 @@ namespace Application.Service
         Task UnblockUserAsync(string[] Ids);
         Task MakeAdminRoleAsync(string[] userId);
         Task RemoveAdminRoleAsync(string[] userId);
-        Task MakeEditorRoleAsync(string[] userId, string myId, long inventoryId);
-        Task RemoveEditorRoleAsync(string[] userId, string myId, long inventoryId);
+        Task MakeEditorRoleAsync(string[] userId, long inventoryId);
+        Task RemoveEditorRoleAsync(string[] userId, long inventoryId);
         Task<List<InventoryEditorResponseDto>> GetEditorInventoryAsync(long inventoryId);
     }
 }
