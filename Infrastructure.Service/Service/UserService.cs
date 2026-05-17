@@ -17,14 +17,17 @@ namespace Infrastructure.Service.Service
     {
         private readonly IUserRepository _userRepository;
         private readonly IEditorRepository _editorRepository;
+        private readonly IAuthenticationService _authenticationService;
 
         public UserService(
             IUserRepository userRepository,
-            IEditorRepository editorRepository
+            IEditorRepository editorRepository,
+            IAuthenticationService authenticationService
             )
         {
             _userRepository = userRepository;
             _editorRepository = editorRepository;
+            _authenticationService = authenticationService;
         }
 
         public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
@@ -74,14 +77,26 @@ namespace Infrastructure.Service.Service
             await _userRepository.RemoveAdminAsync(userId);
         }
 
-        public async Task MakeEditorRoleAsync(string[] userId, long inventoryId)
+        public async Task<bool?> MakeEditorRoleAsync(string[] userId, long inventoryId)
         {
-            await _editorRepository.MakeEditorAsync(userId ,inventoryId);
+            var myId = _authenticationService.MyId();
+            if (!(await _authenticationService.MayDropAndCreateEditor(myId, inventoryId)))
+            {
+                return null;
+            }
+
+            return await _editorRepository.MakeEditorAsync(userId ,inventoryId);
         }
 
-        public async Task RemoveEditorRoleAsync(string[] userId, long inventoryId)
+        public async Task<bool?> RemoveEditorRoleAsync(string[] userId, long inventoryId)
         {
-            await _editorRepository.RemoveEditorAsync(userId, inventoryId);
+            var myId = _authenticationService.MyId();
+            if (!(await _authenticationService.MayDropAndCreateEditor(myId, inventoryId)))
+            {
+                return null;
+            }
+
+            return await _editorRepository.RemoveEditorAsync(userId, inventoryId);
         }
     }
 }

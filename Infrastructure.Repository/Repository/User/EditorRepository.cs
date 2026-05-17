@@ -20,7 +20,7 @@ namespace Infrastructure.Repository.Repository.User
             _context = context;
         }
 
-        public async Task MakeEditorAsync(string[] userId, long inventoryId)
+        public async Task<bool?> MakeEditorAsync(string[] userId, long inventoryId)
         {
             var existUser = await _context.EditorInventory
                 .Where(i => i.InventoryId == inventoryId && userId.Contains(i.EditorId))
@@ -40,13 +40,17 @@ namespace Infrastructure.Repository.Repository.User
             }
 
             await _context.SaveChangesAsync();
+            
+            return true;
         }
 
-        public async Task RemoveEditorAsync(string[] userId, long inventoryId)
+        public async Task<bool?> RemoveEditorAsync(string[] userId, long inventoryId)
         {
             await _context.EditorInventory
                 .Where(u => u.InventoryId == inventoryId && userId.Contains(u.EditorId))
                 .ExecuteDeleteAsync();
+
+            return true;
         }
 
         public async Task<List<InventoryEditorResponseDto>> GetEditorInventoryAsync(long inventoryId)

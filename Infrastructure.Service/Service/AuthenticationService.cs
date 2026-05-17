@@ -25,6 +25,7 @@ namespace Infrastructure.Service.Service
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
         }
+
         public async Task<bool> MayEditInventory(string userId, long inventoryId)
         {
             if (await _userManager.IsInRoleAsync(new AppUser { Id = userId }, "Admin"))
@@ -40,9 +41,44 @@ namespace Infrastructure.Service.Service
             return res;
         }
 
+        public async Task<bool> MayDropAndCreateInventory(string userId, long inventoryId)
+        {
+            if (await _userManager.IsInRoleAsync(new AppUser { Id = userId }, "Admin"))
+            {
+                return true;
+            }
+
+            var res = await _context.Inventory
+                .AnyAsync(i => i.Id == inventoryId &&
+                    (i.CreatorId == userId));
+
+            return res;
+        }
+
+        public async Task<bool> IsAdmin(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            return await _userManager.IsInRoleAsync(user, "Admin");
+        }
+
         public string MyId()
         {
             return _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+
+        public async Task<bool> MayDropAndCreateEditor(string userId, long inventoryId)
+        {
+            if (await _userManager.IsInRoleAsync(new AppUser { Id = userId }, "Admin"))
+            {
+                return true;
+            }
+
+            var res = await _context.Inventory
+                .AnyAsync(i => i.Id == inventoryId &&
+                    (i.CreatorId == userId));
+
+            return res;
         }
     }
 }

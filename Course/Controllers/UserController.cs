@@ -89,7 +89,7 @@ namespace Course.Controllers
         }
 
         [HttpDelete]
-        [Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUsers([FromBody] string[] Ids)
         {
             await _userService.DeleteUsersAsync(Ids);
@@ -98,7 +98,7 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        [Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> BlockUsers([FromBody] string[] Ids)
         {
             await _userService.BlockUserAsync(Ids);
@@ -107,7 +107,7 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        [Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UnblockUsers([FromBody] string[] Ids)
         {
             await _userService.UnblockUserAsync(Ids);
@@ -116,7 +116,7 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        [Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> MakeAdmin([FromBody] string[] Ids)
         {
             await _userService.MakeAdminRoleAsync(Ids);
@@ -125,7 +125,7 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        [Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RemoveAdmin([FromBody] string[] Ids)
         {
             await _userService.RemoveAdminRoleAsync(Ids);
@@ -134,7 +134,7 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        [Authorize("Admin,Registered")]
+        [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> MakeEditor(long idInventory, [FromBody] string[] userIds)
         {
             await _userService.MakeEditorRoleAsync(userIds, idInventory);
@@ -143,7 +143,7 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        [Authorize("Admin,Registered")]
+        [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> RemoveEditor(long idInventory, [FromBody] string[] userIds)
         {
             await _userService.RemoveEditorRoleAsync(userIds, idInventory);

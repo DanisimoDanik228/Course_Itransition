@@ -14,11 +14,11 @@ namespace Application.Service
     {
         Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync(long idInventory);
         Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync();
-        Task<int> DeleteInventoryAsync(long[] idInventory);
+        Task<int?> DeleteInventoryAsync(long[] idInventory);
         Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id);
         Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page);
-        Task<int> DeleteItemsAsync(long idInventory, long[] itemsId);
-        Task<int> DeleteFieldAsync(long idInventory, long[] fieldsId);
+        Task<int?> DeleteItemsAsync(long idInventory, long[] itemsId);
+        Task<int?> DeleteFieldAsync(long idInventory, long[] fieldsId);
         Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item);
         Task<ItemFullResponseDto?> AddItemAsync(ItemFullRequestDto item);
         Task<InventoryTypeResponseDto?> AddFieldAsync(InventoryTypeRequestDto item);

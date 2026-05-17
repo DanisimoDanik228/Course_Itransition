@@ -64,6 +64,11 @@ namespace Infrastructure.Service.Service
 
         public async Task<IEnumerable<InventoryResponseDto>> GetAllInventoryUserAsync(string userId)
         {
+            if (userId == null)
+            {
+                return [];
+            }
+
             var inventories = await _inventoryRepository.GetAllInventoryUserAsync(userId);
 
             return inventories.Select(i => _mapper.Map<Inventory, InventoryResponseDto>(i));
@@ -78,6 +83,12 @@ namespace Infrastructure.Service.Service
 
         public async Task<ItemFullResponseDto?> AddItemAsync(ItemFullRequestDto item)
         {
+            var myId = _authenticationService.MyId();
+            if (!(await _authenticationService.MayEditInventory(myId, item.InventoryId)))
+            {
+                return null;
+            }
+
             var itemFull = _mapper.Map<ItemFullRequestDto, Item>(item);
             var res = await _itemRepository.AddAsync(itemFull);
 
@@ -86,12 +97,55 @@ namespace Infrastructure.Service.Service
 
         public async Task<InventoryTypeResponseDto?> AddFieldAsync(InventoryTypeRequestDto item)
         {
+            var myId = _authenticationService.MyId();
+            if (!(await _authenticationService.MayEditInventory(myId, item.InventoryId)))
+            {
+                return null;
+            }
+
             var inventoryType = _mapper.Map<InventoryTypeRequestDto, InventoryType>(item);
             var res = await _inventoryTypeRepository.AddAsync(inventoryType);
 
             return _mapper.Map<InventoryType, InventoryTypeResponseDto>(res);
         }
 
+        public async Task<int?> DeleteInventoryAsync(long[] idInventory)
+        {
+            int res = 0;
+
+            var myId = _authenticationService.MyId();
+            foreach (var id in idInventory)
+            {
+                if (await _authenticationService.MayDropAndCreateInventory(myId, id))
+                { 
+                    res += await _inventoryRepository.DeleteAsync([id]);
+                }
+            }
+
+            return res;
+        }
+
+        public async Task<int?> DeleteItemsAsync(long idInventory, long[] itemsId)
+        {
+            var myId = _authenticationService.MyId();
+            if (!(await _authenticationService.MayEditInventory(myId, idInventory)))
+            {
+                return null;
+            }
+
+            return await _itemRepository.DeleteAsync(itemsId);
+        }
+
+        public async Task<int?> DeleteFieldAsync(long idInventory, long[] fieldsId)
+        {
+            var myId = _authenticationService.MyId();
+            if (!(await _authenticationService.MayEditInventory(myId, idInventory)))
+            {
+                return null;
+            }
+
+            return await _inventoryTypeRepository.DeleteAsync(fieldsId);
+        }
         private static InventoryFullResponseDto PrepareFullInventoryToShow(InventoryFullResponseDto inventory)
         {
             var nullItemValue = new ItemValueResponseDto();
@@ -139,21 +193,6 @@ namespace Infrastructure.Service.Service
             }
 
             return inventory;
-        }
-
-        public async Task<int> DeleteInventoryAsync(long[] idInventory)
-        {
-            return await _inventoryRepository.DeleteAsync(idInventory);
-        }
-
-        public async Task<int> DeleteItemsAsync(long idInventory, long[] itemsId)
-        {
-            return await _itemRepository.DeleteAsync(itemsId);
-        }
-
-        public async Task<int> DeleteFieldAsync(long idInventory, long[] fieldsId)
-        {
-            return await _inventoryTypeRepository.DeleteAsync(fieldsId);
         }
     }
 }

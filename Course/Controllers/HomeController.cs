@@ -58,33 +58,35 @@ namespace Course.Controllers
         public async Task<IActionResult> GetAllUserInventories(string userId)
         {
             var inventories = await _service.GetAllInventoryUserAsync(userId);
+
             return Json(inventories);
         }
         
         [HttpPost]
-        [Authorize("Admin,Registered")]
+        [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> AddInventory([FromBody] InventoryRequestDto inventory)
         {
             var res = await _service.AddInventoryAsync(inventory);
+
             return Json(res);
         }
 
         [HttpPost]
-        [Authorize("Admin,Registered")]
+        [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> AddItem(long idInventory, [FromBody] ItemFullRequestDto item)
         {
             return Json(await _service.AddItemAsync(item));
         }
 
         [HttpPost]
-        [Authorize("Admin,Registered")]
+        [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> AddField([FromBody] InventoryTypeRequestDto item)
         {
             return Json(await _service.AddFieldAsync(item));
         }
 
         [HttpDelete]
-        [Authorize("Admin,Registered")]
+        [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> DeleteInventory([FromBody] long[] Ids)
         {
             await _service.DeleteInventoryAsync(Ids);
@@ -93,7 +95,7 @@ namespace Course.Controllers
         }
 
         [HttpDelete]
-        [Authorize("Admin,Registered")]
+        [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> DeleteItems(long idInventory, [FromBody] long[] Ids)
         {
             await _service.DeleteItemsAsync(idInventory, Ids);
@@ -102,7 +104,7 @@ namespace Course.Controllers
         }
 
         [HttpDelete]
-        [Authorize("Admin,Registered")]
+        [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> DeleteField(long idInventory, [FromBody] long[] Ids)
         {
             await _service.DeleteFieldAsync(idInventory, Ids);
