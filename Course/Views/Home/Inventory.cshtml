@@ -51,8 +51,8 @@
         <tbody id="userList">
         </tbody>
     </table>
-    <button onclick="removeCreatorRole()">Remove Creator</button>
-    <button onclick="addCreatorRole()">Make Creator</button>
+    <button onclick="removeEditorRole()">Remove Editor</button>
+    <button onclick="addEditorRole()">Make Editor</button>
 </div>
 
 <script src="~/js/MainFunction.js"></script>
@@ -206,16 +206,20 @@
         loadBodyTable();
     }
 
-    async function addCreatorRole() { 
+    async function addEditorRole() {
         const items = await getSelected('@classNameUserCheckBox');
 
-        await MakeEditor(items ,@Model);
+        await MakeEditor(items,@Model);
+
+        getUsers();
     }
     
-    async function removeCreatorRole(){ 
+    async function removeEditorRole(){ 
         const items = await getSelected('@classNameUserCheckBox');
 
         await RemoveEditor(items ,@Model);
+
+        getUsers();
     }
     
     async function getInventory() {
