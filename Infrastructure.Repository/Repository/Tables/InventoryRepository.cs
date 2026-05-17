@@ -1,5 +1,5 @@
 ﻿using Application;
-using Application.Repository;
+using Application.Repository.Tables;
 using Domain.Models;
 using Infrastructure.Repository.PostgresDbContext;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Infrastructure.Repository.Repository
+namespace Infrastructure.Repository.Repository.Tables
 {
     public class InventoryRepository : IInventoryRepository
     {
@@ -43,9 +43,20 @@ namespace Infrastructure.Repository.Repository
             return _context.Inventory.AsNoTracking().AsEnumerable();
         }
 
+        public async Task<IEnumerable<Inventory>> GetAllInventoryUserAsync(string userId)
+        {
+            var inventories = await _context.Users
+                .AsNoTracking()
+                .Include(u => u.CreatedInventory)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+            
+            return inventories.CreatedInventory;
+        }
+
         public Task<Inventory?> GetFullByIdAsync(long Id)
         {
             return _context.Inventory
+                .Include(i => i.Creator)
                 .Include(i => i.InventoryType)
                 .Include(i => i.Items)
                 .ThenInclude(i => i.ItemValue)
@@ -56,6 +67,7 @@ namespace Infrastructure.Repository.Repository
         public async Task<Inventory?> GetPartByIdAsync(long Id, int page, int countItem)
         {
             var inventory = await _context.Inventory
+                .Include(i => i.Creator)
                 .Include(i => i.InventoryType)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == Id);

@@ -20,13 +20,11 @@ namespace Course.Controllers
             _service = service;
         }
 
-        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return View();
         }
 
-        [AllowAnonymous]
         public async Task<IActionResult> Inventory(long Id, int Count, int Page)
         {
             ViewBag.Count = Count;
@@ -34,13 +32,42 @@ namespace Course.Controllers
             return View(Id);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllInventory()
+        {
+            return Json(await _service.GetAllInventoryAsync());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFullInventory(long idInventory)
+        {
+            var res = await _service.GetFullInventoryByIdAsync(idInventory);
+
+            return Json(res);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPartInventory(long idInventory, int Count, int Page)
+        {
+            var res = await _service.GetPartInventoryAsync(idInventory, Count, Page);
+
+            return Json(res);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllUserInventories(string userId)
+        {
+            var inventories = await _service.GetAllInventoryUserAsync(userId);
+
+            return Json(inventories);
+        }
+        
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> AddInventory([FromBody] InventoryRequestDto inventory)
         {
-            var i = new Inventory() { Id = inventory.Id, Name = inventory.Name, InventoryType = [], Items = [] };
+            var res = await _service.AddInventoryAsync(inventory);
 
-            var res = await _service.AddInventoryAsync(i);
             return Json(res);
         }
 
@@ -58,35 +85,8 @@ namespace Course.Controllers
             return Json(await _service.AddFieldAsync(item));
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAllInventory()
-        {
-            return Json(await _service.GetAllInventoryAsync());
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetFullInventory(long idInventory)
-        {
-            var res = await _service.GetFullInventoryByIdAsync(idInventory);
-
-            res = _service.PrepareFullInventoryToShow(res);
-            return Json(res);
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetPartInventory(long Id, int Count, int Page)
-        {
-            var res = await _service.GetPartInventoryAsync(Id, Count, Page);
-
-            res = _service.PrepareFullInventoryToShow(res);
-            return Json(res);
-        }
-
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> DeleteInventory([FromBody] long[] Ids)
         {
             await _service.DeleteInventoryAsync(Ids);

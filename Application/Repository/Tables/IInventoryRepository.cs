@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Repository
+namespace Application.Repository.Tables
 {
     public interface IInventoryRepository
     {
@@ -13,6 +13,7 @@ namespace Application.Repository
         Task<Inventory?> AddAsync(Inventory item);
         Task<Inventory?> UpdateAsync(Inventory item);
         Task<Inventory?> DeleteAsync(Inventory item);
+        Task<IEnumerable<Inventory>> GetAllInventoryUserAsync(string userId);
         Task<int> DeleteAsync(long[] Ids);
     }
 }

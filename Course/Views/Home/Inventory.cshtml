@@ -1,37 +1,161 @@
-﻿<div id="inventoryTable"></div>
+﻿@{
+    var classNameFieldCheckBox = "fieldCheckBox";
+    var classNameItemCheckBox = "itemCheckBox";
+
+    var classNameUserCheckBox = "userCheckBox";
+
+    var classNameAddItem = "itemAdd";
+}
+
+<h3 id="inventoryInfo"></h3>
+
+<div>
+    <table>
+        <thead>
+            <tr id="inventoryTableHeadCheckBoxes">
+            </tr>
+            <tr id="inventoryTableHeadFieldName">
+            </tr>
+        </thead>
+        <tbody id="inventoryTableBody">
+        </tbody>
+    </table>
+    <button onclick="deleteItem()">Delete Item</button>
+    <button onclick="deleteField()">Delete Field</button>
+</div>
 
 <div class="bg-success bg-opacity-50">
-    <button onclick="addItem()" type="submit">Add Item</button>
     <div id ="listItemField"></div>
+    <button onclick="addItem()" type="submit">Add Item</button>
 </div>
 
 <div class="bg-success bg-opacity-75">
-    <button onclick="addField()" type="submit">Add Field</button>
     <div>Name</div>
     <input id="fieldName" type="text">
     <div>Type</div>
     <input id="fieldType" type="text">
+    <button onclick="addField()" type="submit">Add Field</button>
 </div>
 
-<script src="~/js/CreateTable.js"></script>
+<div class="bg-info">
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="selectAllUser">
+                </th>
+                <th>Name</th>
+                <th>Current Role in inventory</th>
+            </tr>
+        </thead>
+        <tbody id="userList">
+        </tbody>
+    </table>
+    <button onclick="removeEditorRole()">Remove Editor</button>
+    <button onclick="addEditorRole()">Make Editor</button>
+</div>
+
+<script src="~/js/MainFunction.js"></script>
 <script>
-    const fieldName = document.getElementById('fieldName');
-    const fieldType = document.getElementById('fieldType');
-    const inventoryTable = document.getElementById('inventoryTable');
-    const listItemField = document.getElementById('listItemField');
-
     let inventory = {};
+    let users = [];
 
+    getUsers();
     loadFullInventory();
 
+    createClickSelectAll('selectAllUser', '@classNameUserCheckBox');
+
+    async function loadFullInventory() {
+        await getInventory();
+
+        loadHeadTable();
+        loadBodyTable();
+        loadItemAdd();
+        inventoryInfo.innerText = `Inventory Name: ${inventory.name} | Creator: ${inventory.creatorName}`;
+    }
+
+    function loadHeadTable() { 
+        let resHtmlField = "<th></th>";
+        for (let field of inventory.inventoryType) {
+            resHtmlField += `
+                <th><input type="checkbox" class="@classNameFieldCheckBox" data-id="${field.id}"> </th>
+            `;
+        }
+        document.getElementById('inventoryTableHeadCheckBoxes').innerHTML = resHtmlField;
+        
+        let resHtmlName = `<th><input type="checkbox" id="selectAll"></th>`;
+        for (let field of inventory.inventoryType) {
+            resHtmlName += `
+                 <th> ${field.name} </th>
+            `;
+        }
+        document.getElementById('inventoryTableHeadFieldName').innerHTML = resHtmlName;
+    }
+
+    function loadBodyTable() {
+        let resHtmlBody = "";
+
+        for(let item of inventory.items){
+            let fields = "";
+
+            for (let field of item.itemValue) { 
+                fields += `
+                    <td>${field.value}</td>
+                `;
+            }
+
+            resHtmlBody += `
+                <tr>
+                    <td><input type="checkbox" class="@classNameItemCheckBox" data-id="${item.id}" > </td>
+                    ${fields}
+                </tr>
+            `;
+        }
+        document.getElementById('inventoryTableBody').innerHTML = resHtmlBody;
+        
+        createClickSelectAll('selectAll','@classNameItemCheckBox');
+
+        loadItemAdd();
+    }
+
+    function loadItemAdd() {
+        let resHtml = "";
+        for (let field of inventory.inventoryType) {
+            resHtml += `
+                <div>${field.name}</div>
+                <input class="@classNameAddItem" data-id="${field.id}" type="text">
+            `;
+        }
+
+        document.getElementById('listItemField').innerHTML = resHtml;
+    }
+
+    function loadUsers() {
+        const userList = document.getElementById('userList');
+        let resHtml = "";
+
+        for (let item of users) {
+            resHtml += `
+            <tr>
+                <td>
+                    <input type="checkbox" class="@classNameUserCheckBox" data-id="${item.id}">
+                </td>
+                <td>${item.email}</td>
+                <td>${item.roleInventory}</td>
+            </tr>`;
+        }
+        
+        userList.innerHTML = resHtml;
+    }
+
     async function addItem() {
-        const values = document.getElementsByClassName('addItem');
-        
-        let item = {};
-        
-        item.id = 0;
-        item.inventoryId = @Model;
-        item.itemValue = [];
+        const values = document.getElementsByClassName('@classNameAddItem');
+
+        const item = {
+            id: 0,
+            inventoryId: @Model,
+            itemValue: []
+        };
 
         for (let field of values) { 
             let subItem = {
@@ -43,164 +167,73 @@
             item.itemValue.push(subItem);
         }
 
-        const response = await fetch(`/Home/AddItem?idInventory=${@Model}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(item)
-        });
-
+        const response = await AddItemOnInventory(@Model,item);        
         const result = await response.json();
         inventory.items.push(result);
-        loadFullInventory();
-    }
-
-    function addFieldCheckbox(Ids) { 
-        const thead = inventoryTable.querySelector('thead');
-        const tr = document.createElement('tr');
-
-        const th = document.createElement('th');
-        tr.appendChild(th);
-
-        for (let id of Ids) {
-            const th = document.createElement('th');
-            const checkBox = document.createElement('input');
-            checkBox.type = 'checkbox';
-            checkBox.className = 'checkboxFieldList';
-            checkBox.dataset.id = id;
-            th.appendChild(checkBox);
-
-            tr.appendChild(th);
-        }
-
-        const btn = document.createElement('button');
-        btn.textContent = 'Delete field';
-        btn.addEventListener('click', async () => {
-            const res = document.getElementsByClassName('checkboxFieldList');
-            const fieldIds = Array.from(res)
-                .filter(i => i.checked)
-                .map(i => i.dataset.id);
-
-            const response = await fetch(`/Home/DeleteField?idInventory=${@Model}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(fieldIds)
-            }); 
-
-            loadFullInventory();
-        });
-
-        thead.insertBefore(tr, thead.firstChild);
-        inventoryTable.appendChild(btn);
+       
+        loadBodyTable();
     }
 
     async function addField() {
-        const values = document.getElementsByClassName('addItem');
-
-        let item = {};
-
-        item.id = 0;
-        item.inventoryId = @Model;
-        item.name = fieldName.value;
-        item.type = fieldType.value;
-
-        const response = await fetch(`/Home/AddField`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(item)
-        });
-
+        const nameField = document.getElementById('fieldName').value;
+        const typeField = document.getElementById('fieldType').value;
+       
+        const response = await AddFieldOnInventory(@Model, nameField, typeField);
         const result = await response.json();
         inventory.inventoryType.push(result);
 
+        // because be null field
         loadFullInventory();
     }
 
-     async function loadInventory() {
-        inventoryTable.innerHTML = '';
-
-        const response = await fetch(`/Home/GetPartInventory?Id=${@Model}&Page=${@ViewBag.Page}&Count=${@ViewBag.Count}`);
-        const result = await response.json();
-
-        inventory = result;
-
-        const data = {
-            head:[],
-            body:[]
-        };
-
-        data.head = result.inventoryType.map(i => i.name);
-        for (let item of result.items) {
-            data.body.push({ id: item.id, field: item.itemValue.map(i => i.value) });
-        }
+    async function deleteField() {
+        const fields = await getSelected('@classNameFieldCheckBox');
+       
+        await DeleteFieldOnInventory(@Model,fields);
         
-        const table = createTable(data, 'checkboxInventoryList', 'selectAll', DeleteItem);
-        inventoryTable?.appendChild(table);
-
-        addFieldCheckbox(inventory.inventoryType.map(i => i.id));
-        loadAddItem();
+        await getInventory();
+        loadHeadTable();
+        loadBodyTable();
+        loadItemAdd();
     }
 
-    async function loadFullInventory() {
-        loadInventory();
-        return;
-        inventoryTable.innerHTML = '';
+    async function deleteItem() {
+        const items = await getSelected('@classNameItemCheckBox');
+       
+        await DeleteItemsOnInventory(@Model,items);
 
-        const response = await fetch(`/Home/GetFullInventory?idInventory=${@Model}`);
+        await getInventory();
+        loadBodyTable();
+    }
+
+    async function addEditorRole() {
+        const items = await getSelected('@classNameUserCheckBox');
+
+        await MakeEditor(items,@Model);
+
+        getUsers();
+    }
+    
+    async function removeEditorRole(){ 
+        const items = await getSelected('@classNameUserCheckBox');
+
+        await RemoveEditor(items ,@Model);
+
+        getUsers();
+    }
+    
+    async function getInventory() {
+        const response = await GetPartInventory(@Model,@ViewBag.Page,@ViewBag.Count);
+    
         const result = await response.json();
-
         inventory = result;
-
-        let data = {
-            head:[],
-            body:[]
-        };
-
-        data.head = result.inventoryType.map(i => i.name);
-        for (let item of result.items) {
-            data.body.push({ id: item.id, field: item.itemValue.map(i => i.value) });
-        }
-        
-        const table = createTable(data, 'checkboxInventoryList', 'selectAll', DeleteItem);
-        inventoryTable?.appendChild(table);
-
-        addFieldCheckbox(inventory.inventoryType.map(i => i.id));
-        loadAddItem();
     }
 
-    function loadAddItem() {
-        while (listItemField?.firstChild) {
-            listItemField.removeChild(listItemField?.firstChild);
-        }
-
-        for (let item of inventory.inventoryType) {
-            const div = document.createElement('div');
-            const input = document.createElement('input');
-
-            input.className = 'addItem';
-            input.setAttribute('data-id', item.id);
-            input.type = 'text';
-
-            div.innerText = item.name;
-            listItemField.appendChild(div);
-            listItemField.appendChild(input);
-        }
-    }
-
-    async function DeleteItem(itemsId) { 
-        await fetch(`/Home/DeleteItems?idInventory=${@Model}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify(itemsId)
-        });
-
-        loadFullInventory();
+    async function getUsers() {
+        const response = await GetEditorInventory(@Model);
+        const result = await response.json();
+        users = result;
+    
+        loadUsers();
     }
 </script>

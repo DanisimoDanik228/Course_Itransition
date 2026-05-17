@@ -1,6 +1,10 @@
-﻿namespace Application.Dto.Request
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Application.Dto.Response
 {
-    public class UserRequest
+    public class UserResponseDto
     {
         public string Id { get; set; }
         public string Email { get; set; }
