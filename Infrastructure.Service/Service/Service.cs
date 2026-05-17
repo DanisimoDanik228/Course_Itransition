@@ -19,18 +19,21 @@ namespace Infrastructure.Service.Service
     public class Service : IService
     {
         private readonly IInventoryRepository _inventoryRepository;
+        private readonly IItemValueRepository _itemValueRepository;
         private readonly IItemRepository _itemRepository;
         private readonly IInventoryTypeRepository _inventoryTypeRepository;
         private readonly IAuthenticationService _authenticationService;
         private readonly IMapper _mapper;
         public Service(
             IInventoryRepository inventoryRepository,
+            IItemValueRepository itemValueRepository,
             IItemRepository itemRepository,
             IInventoryTypeRepository inventoryTypeRepository,
             IAuthenticationService authenticationService,
             IMapper mapper )
         {
             _inventoryRepository = inventoryRepository;
+            _itemValueRepository = itemValueRepository;
             _itemRepository = itemRepository;
             _inventoryTypeRepository = inventoryTypeRepository;
             _authenticationService = authenticationService;
@@ -146,6 +149,18 @@ namespace Infrastructure.Service.Service
 
             return await _inventoryTypeRepository.DeleteAsync(fieldsId);
         }
+        
+        public async Task UpdateItemAsync(UpdateItemRequestDto[] data, long idInventory)
+        {
+            var myId = _authenticationService.MyId();
+            if (!(await _authenticationService.MayEditInventory(myId, idInventory)))
+            {
+                return;
+            }
+
+            await _itemValueRepository.UpdateAsync(data);
+        }
+
         private static InventoryFullResponseDto PrepareFullInventoryToShow(InventoryFullResponseDto inventory)
         {
             var nullItemValue = new ItemValueResponseDto();

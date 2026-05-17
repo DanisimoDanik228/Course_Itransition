@@ -24,7 +24,7 @@
     </table>
     <button onclick="deleteItem()">Delete Item</button>
     <button onclick="deleteField()">Delete Field</button>
-    <button onclick="showChanges()">Show Changes</button>
+    <button onclick="showChanges()">Change</button>
 </div>
 
 <div class="bg-success bg-opacity-50">
@@ -223,14 +223,13 @@
             
             if (originalValue !== currentValue) {
                 changes.push({
-                    itemId: itemId,
                     itemValueId: itemValueId,
-                    oldValue: originalValue,
-                    newValue: currentValue
+                    value: currentValue
                 });
             }
         }
 
+        await UpdateItem(@Model,changes);
         console.log(changes);
     }
 

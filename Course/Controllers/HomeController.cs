@@ -111,5 +111,14 @@ namespace Course.Controllers
 
             return StatusCode(204);
         }
+
+        [HttpPatch]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> UpdateItem(long idInventory, [FromBody] UpdateItemRequestDto[] request)
+        {
+            await _service.UpdateItemAsync(request, idInventory);
+
+            return StatusCode(204);
+        }
     }
 }

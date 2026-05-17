@@ -173,6 +173,16 @@ async function RemoveEditor(tableIds, inventoryId) {
     });
 }
 
+async function UpdateItem(inventoryId, items) {
+    await fetch(`/Home/UpdateItem?idInventory=${inventoryId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(items)
+    });
+}
+
 async function GetEditorInventory(inventoryId) {
     const response = await fetch(`/User/GetEditorInventory?idInventory=${inventoryId}`);
 

@@ -1,4 +1,5 @@
-﻿using Application.Repository.Tables;
+﻿using Application.Dto.Request;
+using Application.Repository.Tables;
 using Domain.Models;
 using Infrastructure.Repository.PostgresDbContext;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,19 @@ namespace Infrastructure.Repository.Repository.Tables
             var res = _context.ItemValue.Update(item);
             await _context.SaveChangesAsync();
             return res.Entity;
+        }
+
+        public async Task UpdateAsync(UpdateItemRequestDto[] data)
+        {
+            for (int i = 0; i < data.Length; i++)
+            {
+                var id = data[i].ItemValueId;
+                var value = data[i].Value;
+
+                await _context.ItemValue
+                    .Where(v => v.Id == id)
+                    .ExecuteUpdateAsync(s => s.SetProperty(v => v.Value, value));
+            }
         }
     }
 }
