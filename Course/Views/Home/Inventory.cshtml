@@ -4,6 +4,8 @@
 
     var classNameUserCheckBox = "userCheckBox";
 
+    var classNameInputField = "inputField";
+
     var classNameAddItem = "itemAdd";
 }
 
@@ -22,6 +24,7 @@
     </table>
     <button onclick="deleteItem()">Delete Item</button>
     <button onclick="deleteField()">Delete Field</button>
+    <button onclick="showChanges()">Show Changes</button>
 </div>
 
 <div class="bg-success bg-opacity-50">
@@ -100,7 +103,7 @@
 
             for (let field of item.itemValue) { 
                 fields += `
-                    <td>${field.value}</td>
+                    <td><input type="text" class="@classNameInputField" value="${field.value}" data-id="${field.id}" data-item-id="${item.id}"></td>
                 `;
             }
 
@@ -204,6 +207,31 @@
 
         await getInventory();
         loadBodyTable();
+    }
+
+    async function showChanges(){
+        const inputs = document.getElementsByClassName('@classNameInputField');
+        const changes = [];
+
+        for(let input of inputs){
+            const itemId = parseInt(input.dataset.itemId);
+            const itemValueId = parseInt(input.dataset.id);
+            const currentValue = input.value;
+
+            const originalItem = inventory.items.find(i => i.id === itemId);
+            const originalValue = originalItem.itemValue.find(v => v.id === itemValueId).value;
+            
+            if (originalValue !== currentValue) {
+                changes.push({
+                    itemId: itemId,
+                    itemValueId: itemValueId,
+                    oldValue: originalValue,
+                    newValue: currentValue
+                });
+            }
+        }
+
+        console.log(changes);
     }
 
     async function addEditorRole() {
