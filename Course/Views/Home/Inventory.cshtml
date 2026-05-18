@@ -8,7 +8,14 @@
 
     var classNameAddItem = "itemAdd";
 }
-
+<style>
+    .drag-item { 
+        border: 2px solid green; 
+    }
+    .drag-over { 
+        border-left: 3px solid blue; 
+    }
+</style>
 <h3 id="inventoryInfo"></h3>
 
 <div>
@@ -56,6 +63,9 @@
     <button onclick="addEditorRole()">Make Editor</button>
 </div>
 
+
+<div id="container"></div>
+
 <script src="~/js/MainFunction.js"></script>
 <script>
     let inventory = {};
@@ -72,6 +82,8 @@
 
         const allField = inventory.inventoryType.map(i => i.id);
         inventoryTypeIds = updateInventoryTypeOrder(allField);
+
+        render();
 
         loadHeadTable();
         loadBodyTable();
@@ -323,7 +335,7 @@
 
     function getInventoryTypeOrder()
     {
-        return JSON.parse(localStorage.getItem(`field_order_${@Model}l`));
+        return JSON.parse(localStorage.getItem(`field_order_${@Model}`));
     }
 
     function setInventoryTypeOrder(order)
@@ -352,4 +364,42 @@
         setInventoryTypeOrder(newOrder);
         return newOrder;
     }
+</script>
+
+<script>
+    let draggedId = null;
+
+    function render() {
+        const container = document.getElementById('container');
+
+        let resHtml = "";
+        for (let id of inventoryTypeIds) {
+            resHtml += `<div class="drag-item" draggable="true" data-id="${id}">${id}</div>`;
+        }
+        container.innerHTML = resHtml;
+
+        const dragItems = document.getElementsByClassName('drag-item');
+
+        for (let el of dragItems) {
+            el.ondragstart = (e) => draggedId = parseInt(e.target.dataset.id);
+            el.ondragover = (e) => e.preventDefault();
+            el.ondragenter = (e) => el.classList.add('drag-over');
+            el.ondragleave = (e) => el.classList.remove('drag-over');
+
+            el.ondrop = (e) => {
+                let targetId = parseInt(e.target.dataset.id);
+
+                let from = inventoryTypeIds.indexOf(draggedId);
+                let to = inventoryTypeIds.indexOf(targetId);
+
+                inventoryTypeIds.splice(from, 1);
+                inventoryTypeIds.splice(to, 0, draggedId);
+
+                setInventoryTypeOrder(inventoryTypeIds);
+                loadFullInventory();
+
+                render();
+            }
+        }
+    } 
 </script>
