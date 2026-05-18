@@ -20,7 +20,7 @@ namespace Course.Controllers
             _service = service;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> PersonalPage()
         {
             return View();
         }
@@ -58,6 +58,13 @@ namespace Course.Controllers
         public async Task<IActionResult> GetAllUserInventories(string userId)
         {
             var inventories = await _service.GetAllInventoryUserAsync(userId);
+
+            return Json(inventories);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllUserAccessInventories(string userId)
+        {
+            var inventories = await _service.GetAccessInventoryUserAsync(userId);
 
             return Json(inventories);
         }

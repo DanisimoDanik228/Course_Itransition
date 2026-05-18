@@ -15,6 +15,7 @@ namespace Application.Service
         Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync(long idInventory);
         Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync();
         Task<IEnumerable<InventoryResponseDto>> GetAllInventoryUserAsync(string userId);
+        Task<IEnumerable<InventoryResponseDto>> GetAccessInventoryUserAsync(string userId);
         Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id);
         Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page);   
         Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item);

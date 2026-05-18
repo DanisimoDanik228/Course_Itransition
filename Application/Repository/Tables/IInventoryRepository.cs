@@ -11,6 +11,7 @@ namespace Application.Repository.Tables
         Task<Inventory?> GetFullByIdAsync(long Id);
         Task<Inventory?> GetPartByIdAsync(long Id, int page, int countItem);
         Task<IEnumerable<Inventory>> GetAllInventoryUserAsync(string userId);
+        Task<IEnumerable<Inventory>> GetAccessInventoryUserAsync(string userId);
         Task<Inventory?> AddAsync(Inventory item);
         Task<Inventory?> UpdateAsync(Inventory item);
         Task<Inventory?> DeleteAsync(Inventory item);

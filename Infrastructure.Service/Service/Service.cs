@@ -77,6 +77,28 @@ namespace Infrastructure.Service.Service
 
             return inventories.Select(i => _mapper.Map<Inventory, InventoryResponseDto>(i));
         }
+
+        public async Task<IEnumerable<InventoryResponseDto>> GetAccessInventoryUserAsync(string userId)
+        {
+            if (userId == null)
+            {
+                return [];
+            }
+
+            IEnumerable<Inventory> inventories;
+
+            if (await _authenticationService.IsAdmin(userId))
+            {
+                inventories = await _inventoryRepository.GetAllAsync();
+            }
+            else 
+            {
+                inventories = await _inventoryRepository.GetAccessInventoryUserAsync(userId);
+            }
+
+            return inventories.Select(i => _mapper.Map<Inventory, InventoryResponseDto>(i));
+        }
+
         public async Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item)
         {
             var inventory = _mapper.Map<InventoryRequestDto, Inventory>(item);

@@ -38,6 +38,19 @@ namespace Infrastructure.Repository.Repository.Tables
             return await _context.Inventory.Where(i => Ids.Contains(i.Id)).ExecuteDeleteAsync();
         }
 
+        public async Task<IEnumerable<Inventory>> GetAccessInventoryUserAsync(string userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.EditInventory)
+                .ThenInclude(ei => ei.Inventory)
+                .Include(u => u.CreatedInventory)
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
+
+            var accessInventories = user.CreatedInventory.Union(user.EditInventory.Select(ei => ei.Inventory));
+            return accessInventories;
+        }
+
         public async Task<IEnumerable<Inventory>> GetAllAsync()
         {
             return _context.Inventory.AsNoTracking().AsEnumerable();

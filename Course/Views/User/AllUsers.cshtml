@@ -6,9 +6,12 @@
     <table>
         <thead>
             <tr>
-                <th>
-                    <input type="checkbox" id="selectAll">
-                </th>
+                @if (@User.IsInRole("Admin"))
+                {
+                    <th>
+                        <input type="checkbox" id="selectAll">
+                    </th>
+                }
                 <th>Email</th>
                 <th>Role</th>
                 <th>StatusBlock</th>
@@ -17,38 +20,49 @@
         <tbody id="userList">
         </tbody>
     </table>
-    <button onclick="btnDelete()">Delete</button>
-    <button onclick="btnBlock()">Block</button>
-    <button onclick="btnUnBlock()">Unblock</button>
-    <button onclick="btnMakeAdmin()">MakeAdmin</button>
-    <button onclick="btnRemoveAdmin()">RemoveAdmin</button>
+    @if (@User.IsInRole("Admin"))
+    {
+        <button onclick="btnDelete()">Delete</button>
+        <button onclick="btnBlock()">Block</button>
+        <button onclick="btnUnBlock()">Unblock</button>
+        <button onclick="btnMakeAdmin()">MakeAdmin</button>
+        <button onclick="btnRemoveAdmin()">RemoveAdmin</button>
+    }
 </div>
 
 <script src="~/js/MainFunction.js"></script>
 <script>
     const userList = document.getElementById('userList');
-    
+    const isAdmin = @(User.IsInRole("Admin") ? "true" : "false");
+
     let allUsers = [];
     
     loadUser();
+
+    if (isAdmin) {
+        createClickSelectAll('selectAll', '@classNameCheckBox');
+    }
 
     async function loadUser() {
         await getUsers();
         let resHtml = "";
 
         for (let user of allUsers) {
-                resHtml +=` 
-                <tr>
-                    <td>
-                        <input type="checkbox" class="@classNameCheckBox" data-id="${user.id}" >
-                    </td>
-                    <td > ${user.email} </td>
-                    <td > ${user.role.join(', ')} </td>
-                    <td > ${user.isBlocked ? 'Blocked' : 'UnBlocked'} </td>
-                </tr>`;
+            let checkbox = isAdmin
+                ? `<td>
+                    <input type="checkbox" class="@classNameCheckBox" data-id="${user.id}" >
+                </td>`
+                : ``;
+
+            resHtml +=` 
+            <tr>
+                ${checkbox}
+                <td > ${user.email} </td>
+                <td > ${user.role.join(', ')} </td>
+                <td > ${user.isBlocked ? 'Blocked' : 'UnBlocked'} </td>
+            </tr>`;
         }
 
-        createClickSelectAll('selectAll','@classNameCheckBox');
         userList.innerHTML = resHtml;
     }
 

@@ -46,7 +46,7 @@ namespace Course.Controllers
 
             if (res)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("PersonalPage", "Home");
             }
 
             return View();

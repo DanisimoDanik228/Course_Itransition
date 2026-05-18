@@ -1,28 +1,20 @@
 ﻿async function RemoveAdmin(userIds) {
-    const request = {
-        ids: userIds
-    };
-
     const response = await fetch(`/User/RemoveAdmin`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(request)
+        body: JSON.stringify(userIds)
     });
 }
 
 async function MakeAdmin(userIds) {
-    const request = {
-        ids: userIds
-    };
-
     const response = await fetch(`/User/MakeAdmin`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(request)
+        body: JSON.stringify(userIds)
     });
 }
 
@@ -84,8 +76,20 @@ async function GetAllInventory() {
     return response;
 }
 
+async function GetAllUserAccessInventories(userId) {
+    const response = await fetch(`/Home/GetAllUserAccessInventories?userId=${userId}`);
+
+    return response;
+}
+
 async function GetAllUserInventories(userId) {
     const response = await fetch(`/Home/GetAllUserInventories?userId=${userId}`);
+
+    return response;
+}
+
+async function GetAllUserAccessInventories(userId) {
+    const response = await fetch(`/Home/GetAllUserAccessInventories?userId=${userId}`);
 
     return response;
 }
