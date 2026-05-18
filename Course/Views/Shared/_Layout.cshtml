@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Course</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="~/js/MainFunction.js" asp-append-version="true"></script>
 </head>
 <body>
     @RenderBody()
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

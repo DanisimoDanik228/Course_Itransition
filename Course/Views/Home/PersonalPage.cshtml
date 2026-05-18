@@ -78,7 +78,6 @@ else
     <button onclick="addInventory()">Add inventory</button>
 </div>
 
-<script src="~/js/MainFunction.js"></script>
 <script>
     const myId = "@UserManager.GetUserId(User)";
     const isAdmin = @(User.IsInRole("Admin") ? "true" : "false");
