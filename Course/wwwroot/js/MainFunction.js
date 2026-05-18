@@ -112,6 +112,18 @@ async function AddItemOnInventory(id, items) {
     return response;
 }
 
+async function AddItemValueOnInventory(id, items) {
+    const response = await fetch(`/Home/AddItemValue?idInventory=${id}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(items)
+    });
+
+    return response;
+}
+
 async function AddFieldOnInventory(id,fieldName,fieldType){
     const item = {
         id: 0,
@@ -173,17 +185,28 @@ async function RemoveEditor(tableIds, inventoryId) {
     });
 }
 
+async function UpdateItem(inventoryId, items) {
+    await fetch(`/Home/UpdateItem?idInventory=${inventoryId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(items)
+    });
+}
+
 async function GetEditorInventory(inventoryId) {
     const response = await fetch(`/User/GetEditorInventory?idInventory=${inventoryId}`);
 
     return response;
 }
 
-function getSelected(className) {
+// funcToId : i => i.dataset.id
+function getSelected(className, funcToId = i => i.dataset.id) {
     const res = document.getElementsByClassName(className);
     const iDs = Array.from(res)
         .filter(i => i.checked)
-        .map(i => i.dataset.id);
+        .map(funcToId);
 
     return iDs;
 }

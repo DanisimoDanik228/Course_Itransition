@@ -24,6 +24,7 @@ namespace Application.Mapping
             CreateMap<ItemValue, ItemValueResponseDto>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.InventoryType.Name));
             CreateMap<ItemValueRequestDto, ItemValue>().ReverseMap();
+            CreateMap<AddItemValueRequestDto, ItemValue>().ReverseMap();
 
             CreateMap<Item, ItemFullResponseDto>();
             CreateMap<ItemFullRequestDto, Item>();

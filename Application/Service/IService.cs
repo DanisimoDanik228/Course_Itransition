@@ -14,15 +14,17 @@ namespace Application.Service
     {
         Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync(long idInventory);
         Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync();
-        Task<int?> DeleteInventoryAsync(long[] idInventory);
+        Task<IEnumerable<InventoryResponseDto>> GetAllInventoryUserAsync(string userId);
         Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id);
-        Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page);
-        Task<int?> DeleteItemsAsync(long idInventory, long[] itemsId);
-        Task<int?> DeleteFieldAsync(long idInventory, long[] fieldsId);
+        Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page);   
         Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item);
         Task<ItemFullResponseDto?> AddItemAsync(ItemFullRequestDto item);
+        Task AddItemValueAsync(long inventoryId, AddItemValueRequestDto[] itemValue);
         Task<InventoryTypeResponseDto?> AddFieldAsync(InventoryTypeRequestDto item);
-        Task<IEnumerable<InventoryResponseDto>> GetAllInventoryUserAsync(string userId);
+        Task<int?> DeleteInventoryAsync(long[] idInventory);
+        Task<int?> DeleteItemsAsync(long idInventory, long[] itemsId);
+        Task<int?> DeleteFieldAsync(long idInventory, long[] fieldsId);
+        Task UpdateItemAsync(UpdateItemRequestDto[] data, long idInventory);
     }
 }
  

@@ -4,24 +4,32 @@
 
     var classNameUserCheckBox = "userCheckBox";
 
+    var classNameInputField = "inputField";
+
     var classNameAddItem = "itemAdd";
 }
-
+<style>
+    .drag-item { 
+        border: 2px solid green; 
+    }
+    .drag-over { 
+        border-left: 3px solid blue; 
+    }
+</style>
 <h3 id="inventoryInfo"></h3>
 
 <div>
     <table>
         <thead>
-            <tr id="inventoryTableHeadCheckBoxes">
-            </tr>
-            <tr id="inventoryTableHeadFieldName">
-            </tr>
+            <tr id="inventoryTableHeadCheckBoxes"></tr>
+            <tr id="inventoryTableHeadFieldName"></tr>
         </thead>
         <tbody id="inventoryTableBody">
         </tbody>
     </table>
     <button onclick="deleteItem()">Delete Item</button>
     <button onclick="deleteField()">Delete Field</button>
+    <button onclick="showChanges()">Change</button>
 </div>
 
 <div class="bg-success bg-opacity-50">
@@ -59,6 +67,7 @@
 <script>
     let inventory = {};
     let users = [];
+    let inventoryTypeIds = [];
 
     getUsers();
     loadFullInventory();
@@ -68,7 +77,12 @@
     async function loadFullInventory() {
         await getInventory();
 
-        loadHeadTable();
+        const allField = inventory.inventoryType.map(i => i.id);
+        inventoryTypeIds = updateInventoryTypeOrder(allField);
+
+        // loadHeadTable();
+        render();
+
         loadBodyTable();
         loadItemAdd();
         inventoryInfo.innerText = `Inventory Name: ${inventory.name} | Creator: ${inventory.creatorName}`;
@@ -76,19 +90,31 @@
 
     function loadHeadTable() { 
         let resHtmlField = "<th></th>";
-        for (let field of inventory.inventoryType) {
-            resHtmlField += `
-                <th><input type="checkbox" class="@classNameFieldCheckBox" data-id="${field.id}"> </th>
-            `;
-        }
-        document.getElementById('inventoryTableHeadCheckBoxes').innerHTML = resHtmlField;
-        
         let resHtmlName = `<th><input type="checkbox" id="selectAll"></th>`;
-        for (let field of inventory.inventoryType) {
-            resHtmlName += `
-                 <th> ${field.name} </th>
-            `;
+
+        for(let id of inventoryTypeIds){
+            const field = inventory.inventoryType.find(f => f.id === id);
+
+            if(field)
+            {
+                resHtmlField += `
+                    <th><input type="checkbox" class="@classNameFieldCheckBox" data-inventory-type-id="${id}"> </th>
+                `;
+                resHtmlName += `
+                    <th class="drag-item" draggable="true" data-id="${field.id}"> ${field.name} </th>
+                `;
+            }else{
+                
+                resHtmlField += `
+                    <th>_Null_</th>
+                `;
+                resHtmlName += `
+                     <th>_Null_</th>
+                `;
+            }
         }
+
+        document.getElementById('inventoryTableHeadCheckBoxes').innerHTML = resHtmlField;
         document.getElementById('inventoryTableHeadFieldName').innerHTML = resHtmlName;
     }
 
@@ -98,10 +124,18 @@
         for(let item of inventory.items){
             let fields = "";
 
-            for (let field of item.itemValue) { 
-                fields += `
-                    <td>${field.value}</td>
-                `;
+            for (let id of inventoryTypeIds){
+                const field = item.itemValue.find(f => f.inventoryTypeId === id);
+                
+                if(field){  
+                    fields += `
+                        <td><input type="text" class="@classNameInputField" value="${field.value}" data-item-value-id="${field.id}" data-item-id="${item.id}"></td>
+                    `;
+                }else{
+                    fields += `
+                        <td><input type="text" class="@classNameInputField" data-inventory-type-id="${id}" data-item-id="${item.id}"></td>
+                    `;
+                }
             }
 
             resHtmlBody += `
@@ -187,7 +221,7 @@
     }
 
     async function deleteField() {
-        const fields = await getSelected('@classNameFieldCheckBox');
+        const fields = await getSelected('@classNameFieldCheckBox',i => i.dataset.inventoryTypeId);
        
         await DeleteFieldOnInventory(@Model,fields);
         
@@ -204,6 +238,65 @@
 
         await getInventory();
         loadBodyTable();
+    }
+
+    async function showChanges(){
+        const inputs = document.getElementsByClassName('@classNameInputField');
+        const changes = [];
+        const addChanges = [];
+
+        for(let input of inputs){
+            const itemId = parseInt(input.dataset.itemId);
+            const itemValueId = parseInt(input.dataset.itemValueId);
+            const inventoryTypeId = parseInt(input.dataset.inventoryTypeId);
+            const currentValue = input.value;
+
+            const originalItem = inventory.items.find(i => i.id === itemId);
+            const originalValueItem = originalItem.itemValue.find(v => v.id === itemValueId);
+
+            if(originalValueItem)
+            {
+                const originalValue = originalValueItem.value;
+
+                if (originalValue !== currentValue) {
+                    changes.push({
+                        itemValueId: itemValueId,
+                        value: currentValue
+                    });
+                }
+            }
+            else
+            {
+                if(currentValue != '')
+                {
+                    addChanges.push({
+                        itemId: itemId,
+                        inventoryTypeId: inventoryTypeId, 
+                        value: currentValue
+                    });
+                }
+            }
+            
+        }
+
+        let needUpdateInventory = false;
+
+        if(changes.length > 0){
+            await UpdateItem(@Model,changes);
+            needUpdateInventory = true;
+        }
+
+        if(addChanges.length > 0){
+            await AddItemValueOnInventory(@Model,addChanges);
+            needUpdateInventory = true;
+        }
+
+        if(needUpdateInventory){
+            loadFullInventory();
+        }
+
+        console.log('changes',changes);
+        console.log('addChanges',addChanges);
     }
 
     async function addEditorRole() {
@@ -236,4 +329,75 @@
     
         loadUsers();
     }
+
+    function getInventoryTypeOrder()
+    {
+        return JSON.parse(localStorage.getItem(`field_order_${@Model}`));
+    }
+
+    function setInventoryTypeOrder(order)
+    {
+        localStorage.setItem(`field_order_${@Model}`, JSON.stringify(order));
+    }
+
+    function updateInventoryTypeOrder(allIds)
+    {
+        let currentOrder = getInventoryTypeOrder();
+        if(!currentOrder)
+        {
+            currentOrder = [];
+        }
+
+        let newOrder = [];
+
+        for(let id of currentOrder)
+            if(allIds.includes(id))
+                newOrder.push(id);
+
+        for(let id of allIds)
+            if(!currentOrder.includes(id))
+                newOrder.push(id);
+
+        setInventoryTypeOrder(newOrder);
+        return newOrder;
+    }
+</script>
+
+<script>
+    let draggedId = null;
+
+    function render() {
+        //const container = document.getElementById('inventoryTableHeadFieldName');
+
+        loadHeadTable();
+        // let resHtml = "";
+        // for (let id of inventoryTypeIds) {
+        //     resHtml += `<div class="drag-item" draggable="true" data-id="${id}">${id}</div>`;
+        // }
+        //container.innerHTML = resHtml;
+
+        const dragItems = document.getElementsByClassName('drag-item');
+
+        for (let el of dragItems) {
+            el.ondragstart = (e) => draggedId = parseInt(e.target.dataset.id);
+            el.ondragover = (e) => e.preventDefault();
+            el.ondragenter = (e) => el.classList.add('drag-over');
+            el.ondragleave = (e) => el.classList.remove('drag-over');
+
+            el.ondrop = (e) => {
+                let targetId = parseInt(e.target.dataset.id);
+
+                let from = inventoryTypeIds.indexOf(draggedId);
+                let to = inventoryTypeIds.indexOf(targetId);
+
+                inventoryTypeIds.splice(from, 1);
+                inventoryTypeIds.splice(to, 0, draggedId);
+
+                setInventoryTypeOrder(inventoryTypeIds);
+                loadFullInventory();
+
+                render();
+            }
+        }
+    } 
 </script>

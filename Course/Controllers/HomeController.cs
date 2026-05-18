@@ -73,6 +73,15 @@ namespace Course.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> AddItemValue(long idInventory, [FromBody] AddItemValueRequestDto[] itemValue)
+        {
+            await _service.AddItemValueAsync(idInventory, itemValue);
+
+            return StatusCode(204);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> AddItem(long idInventory, [FromBody] ItemFullRequestDto item)
         {
             return Json(await _service.AddItemAsync(item));
@@ -108,6 +117,15 @@ namespace Course.Controllers
         public async Task<IActionResult> DeleteField(long idInventory, [FromBody] long[] Ids)
         {
             await _service.DeleteFieldAsync(idInventory, Ids);
+
+            return StatusCode(204);
+        }
+
+        [HttpPatch]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> UpdateItem(long idInventory, [FromBody] UpdateItemRequestDto[] request)
+        {
+            await _service.UpdateItemAsync(request, idInventory);
 
             return StatusCode(204);
         }
