@@ -8,6 +8,7 @@ namespace Application.Service
     {
         Task<bool> MayEditInventory(string userId, long inventoryId);
         Task<bool> MayDropAndCreateInventory(string userId, long inventoryId);
+        Task<bool> MayDropAndCreateField(string userId, long inventoryId);
         Task<bool> MayDropAndCreateEditor(string userId, long inventoryId);
         Task<bool> IsAdmin(string userId);
         string MyId();

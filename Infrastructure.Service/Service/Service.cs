@@ -136,7 +136,7 @@ namespace Infrastructure.Service.Service
         public async Task<InventoryTypeResponseDto?> AddFieldAsync(InventoryTypeRequestDto item)
         {
             var myId = _authenticationService.MyId();
-            if (!(await _authenticationService.MayEditInventory(myId, item.InventoryId)))
+            if (!(await _authenticationService.MayDropAndCreateField(myId, item.InventoryId)))
             {
                 return null;
             }
