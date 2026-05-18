@@ -6,6 +6,7 @@ using Application.Repository.Tables;
 using Application.Service;
 using AutoMapper;
 using Domain.Models;
+using Infrastructure.Repository.Repository.Tables;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -54,7 +55,7 @@ namespace Infrastructure.Service.Service
             var res = await _inventoryRepository.GetFullByIdAsync(Id);
             var response = _mapper.Map<Inventory, InventoryFullResponseDto>(res);
 
-            return PrepareFullInventoryToShow(response);
+            return response;
         }
 
         public async Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page)
@@ -62,7 +63,7 @@ namespace Infrastructure.Service.Service
             var res = await _inventoryRepository.GetPartByIdAsync(Id, Page, Count);
             var response = _mapper.Map<Inventory, InventoryFullResponseDto>(res); 
 
-            return PrepareFullInventoryToShow(response);
+            return response;
         }
 
         public async Task<IEnumerable<InventoryResponseDto>> GetAllInventoryUserAsync(string userId)
@@ -96,6 +97,18 @@ namespace Infrastructure.Service.Service
             var res = await _itemRepository.AddAsync(itemFull);
 
             return _mapper.Map<Item, ItemFullResponseDto>(res);
+        }
+        public async Task AddItemValueAsync(long inventoryId, AddItemValueRequestDto[] request)
+        {
+            var myId = _authenticationService.MyId();
+            if (!(await _authenticationService.MayEditInventory(myId, inventoryId)))
+            {
+                return;
+            }
+
+            var itemValue = request.Select(r => _mapper.Map<AddItemValueRequestDto, ItemValue>(r)).ToArray();
+
+            await _itemValueRepository.AddRangeAsync(itemValue);
         }
 
         public async Task<InventoryTypeResponseDto?> AddFieldAsync(InventoryTypeRequestDto item)
@@ -159,55 +172,6 @@ namespace Infrastructure.Service.Service
             }
 
             await _itemValueRepository.UpdateAsync(data);
-        }
-
-        private static InventoryFullResponseDto PrepareFullInventoryToShow(InventoryFullResponseDto inventory)
-        {
-            var nullItemValue = new ItemValueResponseDto();
-            nullItemValue.Name = "Null_name";
-            nullItemValue.Value = "Null";
-
-            inventory.InventoryType.Sort((a, b) => string.Compare(a.Name, b.Name));
-
-            for (int i = 0; i < inventory.Items.Count; i++)
-            {
-                var item = inventory.Items[i];
-                item.ItemValue.Sort((a, b) => string.Compare(a.Name, b.Name));
-
-                int indexInventoryType = 0;
-                var newListItenValue = new List<ItemValueResponseDto>();
-
-                for (int j = 0; j < item.ItemValue.Count(); j++)
-                {
-                    var item1 = item.ItemValue[j];
-
-                    while (indexInventoryType < inventory.InventoryType.Count() &&
-                        0 < string.Compare(item1.Name, inventory.InventoryType[indexInventoryType].Name))
-                    {
-
-                        newListItenValue.Add(nullItemValue);
-                        indexInventoryType++;
-                    }
-
-                    if (indexInventoryType < inventory.InventoryType.Count() &&
-                        item1.Name == inventory.InventoryType[indexInventoryType].Name)
-                    {
-                        newListItenValue.Add(item1);
-                        indexInventoryType++;
-                    }
-                }
-
-                while (indexInventoryType < inventory.InventoryType.Count())
-                {
-
-                    newListItenValue.Add(nullItemValue);
-                    indexInventoryType++;
-                }
-
-                item.ItemValue = newListItenValue;
-            }
-
-            return inventory;
         }
     }
 }

@@ -22,6 +22,12 @@ namespace Infrastructure.Repository.Repository.Tables
             return res.Entity;
         }
 
+        public async Task AddRangeAsync(ItemValue[] item)
+        {
+            await _context.ItemValue.AddRangeAsync(item);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<ItemValue?> DeleteAsync(ItemValue item)
         {
             var res = _context.ItemValue.Remove(item);
