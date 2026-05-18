@@ -63,9 +63,6 @@
     <button onclick="addEditorRole()">Make Editor</button>
 </div>
 
-
-<div id="container"></div>
-
 <script src="~/js/MainFunction.js"></script>
 <script>
     let inventory = {};
@@ -83,9 +80,9 @@
         const allField = inventory.inventoryType.map(i => i.id);
         inventoryTypeIds = updateInventoryTypeOrder(allField);
 
+        // loadHeadTable();
         render();
 
-        loadHeadTable();
         loadBodyTable();
         loadItemAdd();
         inventoryInfo.innerText = `Inventory Name: ${inventory.name} | Creator: ${inventory.creatorName}`;
@@ -104,7 +101,7 @@
                     <th><input type="checkbox" class="@classNameFieldCheckBox" data-inventory-type-id="${id}"> </th>
                 `;
                 resHtmlName += `
-                     <th> ${field.name} </th>
+                    <th class="drag-item" draggable="true" data-id="${field.id}"> ${field.name} </th>
                 `;
             }else{
                 
@@ -370,13 +367,14 @@
     let draggedId = null;
 
     function render() {
-        const container = document.getElementById('container');
+        //const container = document.getElementById('inventoryTableHeadFieldName');
 
-        let resHtml = "";
-        for (let id of inventoryTypeIds) {
-            resHtml += `<div class="drag-item" draggable="true" data-id="${id}">${id}</div>`;
-        }
-        container.innerHTML = resHtml;
+        loadHeadTable();
+        // let resHtml = "";
+        // for (let id of inventoryTypeIds) {
+        //     resHtml += `<div class="drag-item" draggable="true" data-id="${id}">${id}</div>`;
+        // }
+        //container.innerHTML = resHtml;
 
         const dragItems = document.getElementsByClassName('drag-item');
 
