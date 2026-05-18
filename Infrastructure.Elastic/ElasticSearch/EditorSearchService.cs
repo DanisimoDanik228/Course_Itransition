@@ -1,9 +1,10 @@
 ﻿using Application.Dto.Response;
+using Application.Repository.User;
 using Application.Service;
 using Domain.Models;
-using Infrastructure.Elastic.EditorModel;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Nodes;
+using Infrastructure.Elastic.EditorModel;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,10 +15,14 @@ namespace Infrastructure.Elastic.ElasticSearch
     {
         private const string editorIndex = "editor_index";
         private readonly ElasticsearchClient _elasticsearchClient;
+        private readonly IEditorRepository _editorRepository;
 
-        public EditorSearchService(ElasticsearchClient elasticsearchClient)
+        public EditorSearchService(
+            ElasticsearchClient elasticsearchClient,
+            IEditorRepository editorRepository)
         {
             _elasticsearchClient = elasticsearchClient;
+            _editorRepository = editorRepository;
         }
 
         public async Task<List<InventoryEditorResponseDto>> FindEditorInventoryByEmailAsync(long inventoryId, string email)
@@ -34,15 +39,7 @@ namespace Infrastructure.Elastic.ElasticSearch
 
             if (response.IsValidResponse)
             {
-                return response.Documents
-                    .Select(r => new InventoryEditorResponseDto()
-                    {
-                        Id = r.Id,
-                        Name = r.UserName,
-                        Email = r.Email,
-                        RoleInventory = "___e____"
-                    })
-                    .ToList();
+                return await MakeEditorResponseAsync(inventoryId, response.Documents);
             }
 
             return [];
@@ -62,14 +59,7 @@ namespace Infrastructure.Elastic.ElasticSearch
 
             if (response.IsValidResponse)
             {
-                return response.Documents
-                    .Select(r => new InventoryEditorResponseDto() {
-                        Id = r.Id,
-                        Name = r.UserName,
-                        Email = r.Email,
-                        RoleInventory = "_______"
-                    })
-                    .ToList();
+                return await MakeEditorResponseAsync(inventoryId, response.Documents);
             }
 
             return [];
@@ -80,7 +70,7 @@ namespace Infrastructure.Elastic.ElasticSearch
             var model = new EditorSearchModel()
             {
                 Id = user.Id,
-                UserName = user.UserName,
+                UserName = user.Name,
                 Email = user.Email
             };
 
@@ -91,6 +81,32 @@ namespace Infrastructure.Elastic.ElasticSearch
         {
             foreach (var userId in userIds)
                 await _elasticsearchClient.DeleteAsync<EditorSearchModel>(userId, d => d.Index(editorIndex));
+        }
+
+        private async Task<List<InventoryEditorResponseDto>> MakeEditorResponseAsync(long inventoryId, IEnumerable<EditorSearchModel> response)
+        {
+            var res = response
+                .Select(r => new InventoryEditorResponseDto()
+                {
+                    Id = r.Id,
+                    Name = r.UserName,
+                    Email = r.Email,
+                    RoleInventory = "___ERROR___"
+                })
+                .ToList();
+
+            var roles = await _editorRepository.GetEditorRolesAsync(inventoryId, res.Select(r => r.Id));
+
+            var enumator1 = res.GetEnumerator();
+            var enumator2 = roles.GetEnumerator();
+
+            while (enumator1.MoveNext() && enumator2.MoveNext())
+            {
+                var res1 = enumator1.Current;
+                res1.RoleInventory = enumator2.Current;
+            }
+
+            return res;
         }
     }
 }

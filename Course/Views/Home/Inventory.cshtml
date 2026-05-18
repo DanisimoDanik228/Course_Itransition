@@ -64,6 +64,7 @@
                     <input type="checkbox" id="selectAllUser">
                 </th>
                 <th>Name</th>
+                <th>Email</th>
                 <th>Current Role in inventory</th>
             </tr>
         </thead>
@@ -81,6 +82,7 @@
 
     //getUsers();
     loadFullInventory();
+    searchEditor();
 
     createClickSelectAll('selectAllUser', '@classNameUserCheckBox');
 
@@ -184,6 +186,7 @@
                 <td>
                     <input type="checkbox" class="@classNameUserCheckBox" data-id="${item.id}">
                 </td>
+                <td>${item.name}</td>
                 <td>${item.email}</td>
                 <td>${item.roleInventory}</td>
             </tr>`;
@@ -308,7 +311,7 @@
 
         await MakeEditor(items,@Model);
 
-        //getUsers();
+        //await searchEditor();
     }
     
     async function removeEditorRole(){ 
@@ -316,7 +319,7 @@
 
         await RemoveEditor(items ,@Model);
 
-        //getUsers();
+        //await searchEditor();
     }
     
     async function getInventory() {
@@ -330,7 +333,6 @@
         const response = await GetEditorInventory(@Model, userName, searchField);
         const result = await response.json();
         users = result;
-        console.log(result);
         loadUsers();
     }
 

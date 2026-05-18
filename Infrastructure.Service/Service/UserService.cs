@@ -44,6 +44,11 @@ namespace Infrastructure.Service.Service
         }
         public async Task<List<InventoryEditorResponseDto>> FindEditorInventoryAsync(long inventoryId, string userName, string searchField)
         {
+            if (string.IsNullOrEmpty(userName))
+            {
+                return await _editorRepository.GetEditorInventoryAsync(inventoryId);
+            }
+
             if (searchField == "Email")
             {
                 return await _editorSearchService.FindEditorInventoryByEmailAsync(inventoryId, userName);
@@ -66,7 +71,7 @@ namespace Infrastructure.Service.Service
         public async Task<bool> RegisterAsync(string name, string email, string password)
         {
             var user = await _userRepository.RegisterAsync(name, email, password);
-
+            
             if (user != null)
             { 
                 await _editorSearchService.IndexUserAsync(user);

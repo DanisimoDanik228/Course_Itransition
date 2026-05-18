@@ -73,6 +73,7 @@ namespace Infrastructure.Repository.Repository.User
                 .AsNoTracking()
                 .Select(u => new InventoryEditorResponseDto() { 
                     Id = u.Id,
+                    Name = u.Name,
                     Email = u.Email,
                     RoleInventory = (u.Id == inventory.CreatorId) ? ("Creator") : 
                         ((admins.Any(id => id == u.Id)) ? ("Admin") : 
@@ -82,6 +83,27 @@ namespace Infrastructure.Repository.Repository.User
                 .ToListAsync();
 
             return users;
+        }
+
+        public async Task<IEnumerable<string>> GetEditorRolesAsync(long inventoryId, IEnumerable<string> userIds)
+        {
+            var adminRole = await _context.Roles
+                .Where(r => r.Name == "Admin")
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            var admins = _context.UserRoles
+                .Where(ur => adminRole.Id == ur.RoleId)
+                .Select(ur => ur.UserId);
+
+            var inventory = await _context.Inventory
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == inventoryId);
+
+            return userIds.Select(u => (u == inventory.CreatorId) ? ("Creator") :
+                        ((admins.Any(id => id == u)) ? ("Admin") :
+                        ((_context.EditorInventory.Any(e => e.InventoryId == inventoryId && e.EditorId == u)) ? ("Editor") :
+                        ("Anonym"))));
         }
     }
 }
