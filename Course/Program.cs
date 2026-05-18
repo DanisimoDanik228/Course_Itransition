@@ -43,7 +43,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
-var settings = new ElasticsearchClientSettings(new Uri("http://localhost:9200"))
+var settings = new ElasticsearchClientSettings(new Uri("http://elasticsearch:9200"))
     .DefaultIndex("editor_index");
 
 var client = new ElasticsearchClient(settings);
@@ -64,13 +64,13 @@ builder.Services.AddScoped<IUserService, UserService>();
 var app = builder.Build();
 
 app.UseStaticFiles();
-//using (var scope = app.Services.CreateScope())
-//{
-//    Thread.Sleep(5000);
-//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//    db.Database.EnsureDeleted();
-//    db.Database.EnsureCreated();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    Thread.Sleep(30 * 1000);
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureDeleted();
+    db.Database.EnsureCreated();
+}
 
 using (var scope = app.Services.CreateScope())
 {
