@@ -13,6 +13,7 @@ namespace Infrastructure.Repository.Repository.User
 {
     public class EditorRepository : IEditorRepository
     {
+        private const int _countFindEditor = 10;
         private readonly AppDbContext _context;
 
         public EditorRepository(AppDbContext context)

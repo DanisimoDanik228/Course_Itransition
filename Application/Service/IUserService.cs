@@ -20,5 +20,6 @@ namespace Application.Service
         Task<bool?> MakeEditorRoleAsync(string[] userId, long inventoryId);
         Task<bool?> RemoveEditorRoleAsync(string[] userId, long inventoryId);
         Task<List<InventoryEditorResponseDto>> GetEditorInventoryAsync(long inventoryId);
+        Task<List<InventoryEditorResponseDto>> FindEditorInventoryAsync(long inventoryId, string userName);
     }
 }

@@ -64,7 +64,7 @@ namespace Infrastructure.Repository.Repository.User
             await _signInManager.SignOutAsync();
         }
 
-        public async Task<bool> RegisterAsync(string name, string email, string password)
+        public async Task<AppUser?> RegisterAsync(string name, string email, string password)
         {
             var user = new AppUser { UserName = name, Email = email };
             var result = await _userManager.CreateAsync(user, password);
@@ -72,9 +72,10 @@ namespace Infrastructure.Repository.Repository.User
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "Registered");
+                return user;
             }
 
-            return result.Succeeded;
+            return null;
         }
 
         public async Task BlockUserAsync(string[] Ids)

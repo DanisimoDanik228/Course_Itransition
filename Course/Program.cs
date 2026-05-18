@@ -2,6 +2,8 @@
 using Application.Repository.User;
 using Application.Service;
 using Domain.Models;
+using Elastic.Clients.Elasticsearch;
+using Infrastructure.Elastic.ElasticSearch;
 using Infrastructure.Repository.PostgresDbContext;
 using Infrastructure.Repository.Repository.Tables;
 using Infrastructure.Repository.Repository.User;
@@ -41,12 +43,19 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
+var settings = new ElasticsearchClientSettings(new Uri("http://localhost:9200"))
+    .DefaultIndex("editor_index");
+
+var client = new ElasticsearchClient(settings);
+builder.Services.AddSingleton(client);
+
 builder.Services.AddScoped<IInventoryRepository,InventoryRepository>();
 builder.Services.AddScoped<IItemRepository,ItemRepository>();
 builder.Services.AddScoped<IItemValueRepository,ItemValueRepository>();
 builder.Services.AddScoped<IInventoryTypeRepository, InventoryTypeRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEditorRepository, EditorRepository>();
+builder.Services.AddScoped<IEditorSearchService, EditorSearchService>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IService,Service>();
@@ -55,13 +64,13 @@ builder.Services.AddScoped<IUserService, UserService>();
 var app = builder.Build();
 
 app.UseStaticFiles();
-using (var scope = app.Services.CreateScope())
-{
-    Thread.Sleep(5000);
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureDeleted();
-    db.Database.EnsureCreated();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    Thread.Sleep(5000);
+//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//    db.Database.EnsureDeleted();
+//    db.Database.EnsureCreated();
+//}
 
 using (var scope = app.Services.CreateScope())
 {
@@ -72,6 +81,8 @@ using (var scope = app.Services.CreateScope())
 
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+
+    var editorSearchService = scope.ServiceProvider.GetRequiredService<IEditorSearchService>();
 
     foreach (var roleName in roleNames)
     {
@@ -87,6 +98,7 @@ using (var scope = app.Services.CreateScope())
         await userManager.CreateAsync(admin, passAdmin);
         await userManager.AddToRoleAsync(admin, "Admin");
         await userManager.AddToRoleAsync(admin, "Registered");
+        await editorSearchService.IndexUserAsync(admin);
     }
 }
 

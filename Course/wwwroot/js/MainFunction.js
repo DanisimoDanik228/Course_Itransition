@@ -199,8 +199,8 @@ async function UpdateItem(inventoryId, items) {
     });
 }
 
-async function GetEditorInventory(inventoryId) {
-    const response = await fetch(`/User/GetEditorInventory?idInventory=${inventoryId}`);
+async function GetEditorInventory(inventoryId, userName) {
+    const response = await fetch(`/User/GetEditorInventory?idInventory=${inventoryId}&userName=${userName}`);
 
     return response;
 }

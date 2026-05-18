@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Infrastructure.Elastic\Infrastructure.Elastic.csproj" />
     <ProjectReference Include="..\Infrastructure.Repository\Infrastructure.Repository.csproj" />
     <ProjectReference Include="..\Infrastructure.Service\Infrastructure.Service.csproj" />
   </ItemGroup>

@@ -12,6 +12,7 @@
                         <input type="checkbox" id="selectAll">
                     </th>
                 }
+                <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
                 <th>StatusBlock</th>
@@ -56,6 +57,7 @@
             resHtml +=` 
             <tr>
                 ${checkbox}
+                <td > ${user.name} </td>
                 <td > ${user.email} </td>
                 <td > ${user.role.join(', ')} </td>
                 <td > ${user.isBlocked ? 'Blocked' : 'UnBlocked'} </td>

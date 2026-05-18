@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
+using System.Xml.Linq;
 
 namespace Infrastructure.Service.Service
 {
@@ -18,16 +19,19 @@ namespace Infrastructure.Service.Service
         private readonly IUserRepository _userRepository;
         private readonly IEditorRepository _editorRepository;
         private readonly IAuthenticationService _authenticationService;
+        private readonly IEditorSearchService _editorSearchService;
 
         public UserService(
             IUserRepository userRepository,
             IEditorRepository editorRepository,
-            IAuthenticationService authenticationService
+            IAuthenticationService authenticationService,
+            IEditorSearchService editorSearchService
             )
         {
             _userRepository = userRepository;
             _editorRepository = editorRepository;
             _authenticationService = authenticationService;
+            _editorSearchService = editorSearchService;
         }
 
         public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
@@ -37,6 +41,10 @@ namespace Infrastructure.Service.Service
         public async Task<List<InventoryEditorResponseDto>> GetEditorInventoryAsync(long inventoryId)
         {
             return await _editorRepository.GetEditorInventoryAsync(inventoryId);
+        }
+        public async Task<List<InventoryEditorResponseDto>> FindEditorInventoryAsync(long inventoryId, string userName)
+        {
+            return await _editorSearchService.FindEditorInventoryByNameAsync(inventoryId, userName);
         }
         public async Task<bool> LoginAsync(string email, string password)
         {
@@ -50,7 +58,14 @@ namespace Infrastructure.Service.Service
 
         public async Task<bool> RegisterAsync(string name, string email, string password)
         {
-            return await _userRepository.RegisterAsync(name, email, password);
+            var user = await _userRepository.RegisterAsync(name, email, password);
+
+            if (user != null)
+            { 
+                await _editorSearchService.IndexUserAsync(user);
+            }
+
+            return user != null;
         }
 
         public async Task BlockUserAsync(string[] Ids)
@@ -64,6 +79,8 @@ namespace Infrastructure.Service.Service
         }
         public async Task DeleteUsersAsync(string[] Ids)
         {
+            await _editorSearchService.DeleteUserAsync(Ids);
+
             await _userRepository.DeleteUsersAsync(Ids);
         }
 
