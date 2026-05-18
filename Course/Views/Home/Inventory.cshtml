@@ -225,10 +225,7 @@
        
         await DeleteFieldOnInventory(@Model,fields);
         
-        await getInventory();
-        loadHeadTable();
-        loadBodyTable();
-        loadItemAdd();
+        loadFullInventory();
     }
 
     async function deleteItem() {
