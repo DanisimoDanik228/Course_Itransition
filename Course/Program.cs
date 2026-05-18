@@ -3,6 +3,7 @@ using Application.Repository.User;
 using Application.Service;
 using Domain.Models;
 using Elastic.Clients.Elasticsearch;
+using Infrastructure.Elastic.EditorModel;
 using Infrastructure.Elastic.ElasticSearch;
 using Infrastructure.Repository.PostgresDbContext;
 using Infrastructure.Repository.Repository.Tables;
@@ -34,6 +35,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
+    options.User.RequireUniqueEmail = true;
     options.Password.RequiredLength = 4;
     options.Password.RequireDigit = false;
     options.Password.RequireUppercase = false;
@@ -94,7 +96,7 @@ using (var scope = app.Services.CreateScope())
 
     if (await userManager.FindByEmailAsync(emailAdmin) == null)
     {
-        var admin = new AppUser { UserName = nameAdmin, Email = emailAdmin };
+        var admin = new AppUser { Name = nameAdmin, UserName = emailAdmin, Email = emailAdmin };
         await userManager.CreateAsync(admin, passAdmin);
         await userManager.AddToRoleAsync(admin, "Admin");
         await userManager.AddToRoleAsync(admin, "Registered");
