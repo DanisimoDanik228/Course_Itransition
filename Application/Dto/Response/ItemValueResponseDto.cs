@@ -7,6 +7,7 @@ namespace Application.Dto.Response
     public class ItemValueResponseDto
     {
         public long Id { get; set; }
+        public long InventoryTypeId { get; set; }
         public string Value { get; set; }
         public string Name { get; set; }
     }

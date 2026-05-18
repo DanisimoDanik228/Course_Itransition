@@ -19,6 +19,7 @@ namespace Application.Service
         Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page);   
         Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item);
         Task<ItemFullResponseDto?> AddItemAsync(ItemFullRequestDto item);
+        Task AddItemValueAsync(long inventoryId, AddItemValueRequestDto[] itemValue);
         Task<InventoryTypeResponseDto?> AddFieldAsync(InventoryTypeRequestDto item);
         Task<int?> DeleteInventoryAsync(long[] idInventory);
         Task<int?> DeleteItemsAsync(long idInventory, long[] itemsId);

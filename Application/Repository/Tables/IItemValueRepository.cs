@@ -10,6 +10,7 @@ namespace Application.Repository.Tables
     {
         Task<IEnumerable<ItemValue>> GetAllAsync();
         Task<ItemValue?> AddAsync(ItemValue item);
+        Task AddRangeAsync(ItemValue[] item);
         Task<ItemValue?> UpdateAsync(ItemValue item);
         Task UpdateAsync(UpdateItemRequestDto[] data);
         Task<ItemValue?> DeleteAsync(ItemValue item);

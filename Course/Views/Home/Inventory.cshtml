@@ -14,10 +14,8 @@
 <div>
     <table>
         <thead>
-            <tr id="inventoryTableHeadCheckBoxes">
-            </tr>
-            <tr id="inventoryTableHeadFieldName">
-            </tr>
+            <tr id="inventoryTableHeadCheckBoxes"></tr>
+            <tr id="inventoryTableHeadFieldName"></tr>
         </thead>
         <tbody id="inventoryTableBody">
         </tbody>
@@ -62,6 +60,7 @@
 <script>
     let inventory = {};
     let users = [];
+    let inventoryTypeIds = [1,2,3];
 
     getUsers();
     loadFullInventory();
@@ -79,19 +78,31 @@
 
     function loadHeadTable() { 
         let resHtmlField = "<th></th>";
-        for (let field of inventory.inventoryType) {
-            resHtmlField += `
-                <th><input type="checkbox" class="@classNameFieldCheckBox" data-id="${field.id}"> </th>
-            `;
-        }
-        document.getElementById('inventoryTableHeadCheckBoxes').innerHTML = resHtmlField;
-        
         let resHtmlName = `<th><input type="checkbox" id="selectAll"></th>`;
-        for (let field of inventory.inventoryType) {
-            resHtmlName += `
-                 <th> ${field.name} </th>
-            `;
+
+        for(let id of inventoryTypeIds){
+            const field = inventory.inventoryType.find(f => f.id === id);
+
+            if(field)
+            {
+                resHtmlField += `
+                    <th><input type="checkbox" class="@classNameFieldCheckBox" data-inventory-type-id="${id}"> </th>
+                `;
+                resHtmlName += `
+                     <th> ${field.name} </th>
+                `;
+            }else{
+                
+                resHtmlField += `
+                    <th>_Null_</th>
+                `;
+                resHtmlName += `
+                     <th>_Null_</th>
+                `;
+            }
         }
+
+        document.getElementById('inventoryTableHeadCheckBoxes').innerHTML = resHtmlField;
         document.getElementById('inventoryTableHeadFieldName').innerHTML = resHtmlName;
     }
 
@@ -101,10 +112,18 @@
         for(let item of inventory.items){
             let fields = "";
 
-            for (let field of item.itemValue) { 
-                fields += `
-                    <td><input type="text" class="@classNameInputField" value="${field.value}" data-id="${field.id}" data-item-id="${item.id}"></td>
-                `;
+            for (let id of inventoryTypeIds){
+                const field = item.itemValue.find(f => f.inventoryTypeId === id);
+                
+                if(field){  
+                    fields += `
+                        <td><input type="text" class="@classNameInputField" value="${field.value}" data-item-value-id="${field.id}" data-item-id="${item.id}"></td>
+                    `;
+                }else{
+                    fields += `
+                        <td><input type="text" class="@classNameInputField" data-inventory-type-id="${id}" data-item-id="${item.id}"></td>
+                    `;
+                }
             }
 
             resHtmlBody += `
@@ -190,7 +209,7 @@
     }
 
     async function deleteField() {
-        const fields = await getSelected('@classNameFieldCheckBox');
+        const fields = await getSelected('@classNameFieldCheckBox',i => i.dataset.inventoryTypeId);
        
         await DeleteFieldOnInventory(@Model,fields);
         
@@ -212,25 +231,60 @@
     async function showChanges(){
         const inputs = document.getElementsByClassName('@classNameInputField');
         const changes = [];
+        const addChanges = [];
 
         for(let input of inputs){
             const itemId = parseInt(input.dataset.itemId);
-            const itemValueId = parseInt(input.dataset.id);
+            const itemValueId = parseInt(input.dataset.itemValueId);
+            const inventoryTypeId = parseInt(input.dataset.inventoryTypeId);
             const currentValue = input.value;
 
             const originalItem = inventory.items.find(i => i.id === itemId);
-            const originalValue = originalItem.itemValue.find(v => v.id === itemValueId).value;
-            
-            if (originalValue !== currentValue) {
-                changes.push({
-                    itemValueId: itemValueId,
-                    value: currentValue
-                });
+            const originalValueItem = originalItem.itemValue.find(v => v.id === itemValueId);
+
+            if(originalValueItem)
+            {
+                const originalValue = originalValueItem.value;
+
+                if (originalValue !== currentValue) {
+                    changes.push({
+                        itemValueId: itemValueId,
+                        value: currentValue
+                    });
+                }
             }
+            else
+            {
+                if(currentValue != '')
+                {
+                    addChanges.push({
+                        itemId: itemId,
+                        inventoryTypeId: inventoryTypeId, 
+                        value: currentValue
+                    });
+                }
+            }
+            
         }
 
-        await UpdateItem(@Model,changes);
-        console.log(changes);
+        let needUpdateInventory = false;
+
+        if(changes.length > 0){
+            await UpdateItem(@Model,changes);
+            needUpdateInventory = true;
+        }
+
+        if(addChanges.length > 0){
+            await AddItemValueOnInventory(@Model,addChanges);
+            needUpdateInventory = true;
+        }
+
+        if(needUpdateInventory){
+            loadFullInventory();
+        }
+
+        console.log('changes',changes);
+        console.log('addChanges',addChanges);
     }
 
     async function addEditorRole() {
