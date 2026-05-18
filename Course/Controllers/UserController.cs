@@ -23,9 +23,9 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(string email, string password)
+        public async Task<IActionResult> Register(string name, string email, string password)
         {
-            var res = await _userService.RegisterAsync(email,password);
+            var res = await _userService.RegisterAsync(name, email,password);
 
             if (res)
             {

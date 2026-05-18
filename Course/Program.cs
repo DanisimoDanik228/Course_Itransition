@@ -66,6 +66,7 @@ using (var scope = app.Services.CreateScope())
 using (var scope = app.Services.CreateScope())
 {
     var nameAdmin = "werty";
+    var emailAdmin = "werty@mail";
     var passAdmin = "1111";
     string[] roleNames = { "Admin", "Registered" };
 
@@ -80,9 +81,9 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    if (await userManager.FindByNameAsync(nameAdmin) == null)
+    if (await userManager.FindByEmailAsync(emailAdmin) == null)
     {
-        var admin = new AppUser { UserName = nameAdmin, Email = nameAdmin };
+        var admin = new AppUser { UserName = nameAdmin, Email = emailAdmin };
         await userManager.CreateAsync(admin, passAdmin);
         await userManager.AddToRoleAsync(admin, "Admin");
         await userManager.AddToRoleAsync(admin, "Registered");

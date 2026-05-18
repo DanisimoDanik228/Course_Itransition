@@ -13,7 +13,7 @@ namespace Application.Repository.User
         Task<IEnumerable<UserResponseDto>> GetAllUsersAsync();
         Task<bool> LoginAsync(string email, string password);
         Task LogoutAsync();
-        Task<bool> RegisterAsync(string email, string password);
+        Task<bool> RegisterAsync(string name, string email, string password);
         Task BlockUserAsync(string[] Ids);
         Task UnblockUserAsync(string[] Ids);
         Task MakeAdminAsync(string[] userId);

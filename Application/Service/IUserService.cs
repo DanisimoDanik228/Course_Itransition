@@ -8,7 +8,7 @@ namespace Application.Service
 {
     public interface IUserService
     {
-        Task<bool> RegisterAsync(string email, string password);
+        Task<bool> RegisterAsync(string name, string email, string password);
         Task<bool> LoginAsync(string email, string password);
         Task LogoutAsync();
         Task<IEnumerable<UserResponseDto>> GetAllUsersAsync();

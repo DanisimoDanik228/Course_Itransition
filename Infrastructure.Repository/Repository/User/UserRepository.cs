@@ -39,6 +39,7 @@ namespace Infrastructure.Repository.Repository.User
                     {
                         Id = user.Id,
                         Email = user.Email,
+                        Name = user.UserName,
                         IsBlocked = user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow,
                         Role = _context.UserRoles
                             .Where(ur => ur.UserId == user.Id)
@@ -52,7 +53,8 @@ namespace Infrastructure.Repository.Repository.User
 
         public async Task<bool> LoginAsync(string email, string password)
         {
-            var result = await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
+            var user = await _userManager.FindByEmailAsync(email);
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, password, isPersistent: false, lockoutOnFailure: false);
 
             return result.Succeeded;
         }
@@ -62,9 +64,9 @@ namespace Infrastructure.Repository.Repository.User
             await _signInManager.SignOutAsync();
         }
 
-        public async Task<bool> RegisterAsync(string email, string password)
+        public async Task<bool> RegisterAsync(string name, string email, string password)
         {
-            var user = new AppUser { UserName = email, Email = email };
+            var user = new AppUser { UserName = name, Email = email };
             var result = await _userManager.CreateAsync(user, password);
 
             if (result.Succeeded)

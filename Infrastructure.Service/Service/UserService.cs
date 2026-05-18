@@ -48,9 +48,9 @@ namespace Infrastructure.Service.Service
             await _userRepository.LogoutAsync();
         }
 
-        public async Task<bool> RegisterAsync(string email, string password)
+        public async Task<bool> RegisterAsync(string name, string email, string password)
         {
-            return await _userRepository.RegisterAsync(email, password);
+            return await _userRepository.RegisterAsync(name, email, password);
         }
 
         public async Task BlockUserAsync(string[] Ids)
