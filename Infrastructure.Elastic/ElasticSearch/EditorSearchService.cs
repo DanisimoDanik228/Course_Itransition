@@ -20,9 +20,32 @@ namespace Infrastructure.Elastic.ElasticSearch
             _elasticsearchClient = elasticsearchClient;
         }
 
-        public Task<List<InventoryEditorResponseDto>> FindEditorInventoryByEmailAsync(long inventoryId, string email)
+        public async Task<List<InventoryEditorResponseDto>> FindEditorInventoryByEmailAsync(long inventoryId, string email)
         {
-            throw new NotImplementedException();
+            var response = await _elasticsearchClient.SearchAsync<EditorSearchModel>(e => e
+                           .Index(editorIndex)
+                           .Query(q => q
+                               .Wildcard(w => w
+                               .Field(f => f.Email)
+                               .Value($"*{email.ToLower()}*")
+                               )
+                           )
+                       );
+
+            if (response.IsValidResponse)
+            {
+                return response.Documents
+                    .Select(r => new InventoryEditorResponseDto()
+                    {
+                        Id = r.Id,
+                        Name = r.UserName,
+                        Email = r.Email,
+                        RoleInventory = "___e____"
+                    })
+                    .ToList();
+            }
+
+            return [];
         }
 
         public async Task<List<InventoryEditorResponseDto>> FindEditorInventoryByNameAsync(long inventoryId, string userName)

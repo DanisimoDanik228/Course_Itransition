@@ -81,9 +81,9 @@ namespace Course.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEditorInventory(long idInventory, string userName)
+        public async Task<IActionResult> GetEditorInventory(long idInventory, string userName, string searchField)
         {
-            var editors = await _userService.FindEditorInventoryAsync(idInventory, userName);
+            var editors = await _userService.FindEditorInventoryAsync(idInventory, userName, searchField);
 
             return Json(editors);
         }

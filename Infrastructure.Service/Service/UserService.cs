@@ -42,9 +42,16 @@ namespace Infrastructure.Service.Service
         {
             return await _editorRepository.GetEditorInventoryAsync(inventoryId);
         }
-        public async Task<List<InventoryEditorResponseDto>> FindEditorInventoryAsync(long inventoryId, string userName)
+        public async Task<List<InventoryEditorResponseDto>> FindEditorInventoryAsync(long inventoryId, string userName, string searchField)
         {
-            return await _editorSearchService.FindEditorInventoryByNameAsync(inventoryId, userName);
+            if (searchField == "Email")
+            {
+                return await _editorSearchService.FindEditorInventoryByEmailAsync(inventoryId, userName);
+            }
+            else 
+            { 
+                return await _editorSearchService.FindEditorInventoryByNameAsync(inventoryId, userName);
+            }
         }
         public async Task<bool> LoginAsync(string email, string password)
         {
