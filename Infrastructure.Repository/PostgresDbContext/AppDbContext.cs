@@ -52,8 +52,7 @@ namespace Infrastructure.Repository.PostgresDbContext
             modelBuilder.Entity<Inventory>()
                 .HasOne(i => i.Creator)
                 .WithMany(c => c.CreatedInventory)
-                .HasForeignKey(i => i.CreatorId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(i => i.CreatorId);
 
             modelBuilder.Entity<Inventory>()
                 .HasMany(i => i.Editors)

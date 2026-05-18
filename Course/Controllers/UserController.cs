@@ -23,9 +23,9 @@ namespace Course.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(string email, string password)
+        public async Task<IActionResult> Register(string name, string email, string password)
         {
-            var res = await _userService.RegisterAsync(email,password);
+            var res = await _userService.RegisterAsync(name, email,password);
 
             if (res)
             {
@@ -81,9 +81,9 @@ namespace Course.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEditorInventory(long idInventory)
+        public async Task<IActionResult> GetEditorInventory(long idInventory, string userName, string searchField)
         {
-            var editors = await _userService.GetEditorInventoryAsync(idInventory);
+            var editors = await _userService.FindEditorInventoryAsync(idInventory, userName, searchField);
 
             return Json(editors);
         }

@@ -29,7 +29,7 @@
     </table>
     <button onclick="deleteItem()">Delete Item</button>
     <button onclick="deleteField()">Delete Field</button>
-    <button onclick="showChanges()">Change</button>
+    <button onclick="applyChanges()">Change</button>
 </div>
 
 <div class="bg-success bg-opacity-50">
@@ -46,6 +46,17 @@
 </div>
 
 <div class="bg-info">
+    <input type="text" name="name" id="inputUser" oninput="searchEditor()" />
+    <div>    
+        <div>
+            <input type="radio" name="searchField" value="UserName" onchange="changedSearchField()" checked>
+            <label for="userName">Name</label>
+        </div>
+        <div>
+            <input type="radio" name="searchField" value="Email" onchange="changedSearchField()">
+            <label for="email">Email</label>
+        </div>
+    </div>
     <table>
         <thead>
             <tr>
@@ -53,6 +64,7 @@
                     <input type="checkbox" id="selectAllUser">
                 </th>
                 <th>Name</th>
+                <th>Email</th>
                 <th>Current Role in inventory</th>
             </tr>
         </thead>
@@ -65,11 +77,12 @@
 
 <script>
     let inventory = {};
-    let users = [];
+    //let users = [];
     let inventoryTypeIds = [];
 
-    getUsers();
+    //getUsers();
     loadFullInventory();
+    searchEditor();
 
     createClickSelectAll('selectAllUser', '@classNameUserCheckBox');
 
@@ -173,6 +186,7 @@
                 <td>
                     <input type="checkbox" class="@classNameUserCheckBox" data-id="${item.id}">
                 </td>
+                <td>${item.name}</td>
                 <td>${item.email}</td>
                 <td>${item.roleInventory}</td>
             </tr>`;
@@ -236,7 +250,7 @@
         loadBodyTable();
     }
 
-    async function showChanges(){
+    async function applyChanges(){
         const inputs = document.getElementsByClassName('@classNameInputField');
         const changes = [];
         const addChanges = [];
@@ -290,9 +304,6 @@
         if(needUpdateInventory){
             loadFullInventory();
         }
-
-        console.log('changes',changes);
-        console.log('addChanges',addChanges);
     }
 
     async function addEditorRole() {
@@ -300,7 +311,7 @@
 
         await MakeEditor(items,@Model);
 
-        getUsers();
+        //await searchEditor();
     }
     
     async function removeEditorRole(){ 
@@ -308,7 +319,7 @@
 
         await RemoveEditor(items ,@Model);
 
-        getUsers();
+        //await searchEditor();
     }
     
     async function getInventory() {
@@ -318,12 +329,19 @@
         inventory = result;
     }
 
-    async function getUsers() {
-        const response = await GetEditorInventory(@Model);
+    async function getUsers(userName, searchField) {
+        const response = await GetEditorInventory(@Model, userName, searchField);
         const result = await response.json();
         users = result;
-    
         loadUsers();
+    }
+
+    async function searchEditor() { 
+        const inputUser = document.getElementById('inputUser');
+
+        const searchField = getSearchField();
+
+        await getUsers(inputUser.value, searchField);
     }
 
     function getInventoryTypeOrder()
@@ -356,6 +374,20 @@
 
         setInventoryTypeOrder(newOrder);
         return newOrder;
+    }
+
+    async function changedSearchField() {
+        await searchEditor();
+    }
+
+    function getSearchField() { 
+        const radio = document.getElementsByName('searchField');
+
+        for (let r of radio) {
+            if(r.checked){
+                return r.value;
+            }
+        }
     }
 </script>
 

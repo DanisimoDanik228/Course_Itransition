@@ -8,7 +8,7 @@ namespace Application.Service
 {
     public interface IUserService
     {
-        Task<bool> RegisterAsync(string email, string password);
+        Task<bool> RegisterAsync(string name, string email, string password);
         Task<bool> LoginAsync(string email, string password);
         Task LogoutAsync();
         Task<IEnumerable<UserResponseDto>> GetAllUsersAsync();
@@ -20,5 +20,6 @@ namespace Application.Service
         Task<bool?> MakeEditorRoleAsync(string[] userId, long inventoryId);
         Task<bool?> RemoveEditorRoleAsync(string[] userId, long inventoryId);
         Task<List<InventoryEditorResponseDto>> GetEditorInventoryAsync(long inventoryId);
+        Task<List<InventoryEditorResponseDto>> FindEditorInventoryAsync(long inventoryId, string userName, string searchField);
     }
 }

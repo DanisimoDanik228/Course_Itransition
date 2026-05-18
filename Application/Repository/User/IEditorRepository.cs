@@ -11,5 +11,6 @@ namespace Application.Repository.User
         Task<bool?> MakeEditorAsync(string[] userId, long inventoryId);
         Task<bool?> RemoveEditorAsync(string[] userId, long inventoryId);
         Task<List<InventoryEditorResponseDto>> GetEditorInventoryAsync(long inventoryId);
+        Task<IEnumerable<string>> GetEditorRolesAsync(long inventoryId, IEnumerable<string> userIds);
     }
 }
