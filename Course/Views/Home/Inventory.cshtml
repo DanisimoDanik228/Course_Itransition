@@ -60,7 +60,7 @@
 <script>
     let inventory = {};
     let users = [];
-    let inventoryTypeIds = [1,2,3];
+    let inventoryTypeIds = [];
 
     getUsers();
     loadFullInventory();
@@ -69,6 +69,9 @@
 
     async function loadFullInventory() {
         await getInventory();
+
+        const allField = inventory.inventoryType.map(i => i.id);
+        inventoryTypeIds = updateInventoryTypeOrder(allField);
 
         loadHeadTable();
         loadBodyTable();
@@ -316,5 +319,37 @@
         users = result;
     
         loadUsers();
+    }
+
+    function getInventoryTypeOrder()
+    {
+        return JSON.parse(localStorage.getItem(`field_order_${@Model}l`));
+    }
+
+    function setInventoryTypeOrder(order)
+    {
+        localStorage.setItem(`field_order_${@Model}`, JSON.stringify(order));
+    }
+
+    function updateInventoryTypeOrder(allIds)
+    {
+        let currentOrder = getInventoryTypeOrder();
+        if(!currentOrder)
+        {
+            currentOrder = [];
+        }
+
+        let newOrder = [];
+
+        for(let id of currentOrder)
+            if(allIds.includes(id))
+                newOrder.push(id);
+
+        for(let id of allIds)
+            if(!currentOrder.includes(id))
+                newOrder.push(id);
+
+        setInventoryTypeOrder(newOrder);
+        return newOrder;
     }
 </script>
