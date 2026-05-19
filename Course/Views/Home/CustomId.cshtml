@@ -7,15 +7,33 @@
         border-top: 3px solid blue;
     }
 </style>
-<div>
-    <div draggable="true" class="drag-item" onclick="addItem(11,'item_1')" data-name="item_1" data-id="11">item_1</div>
-    <div draggable="true" class="drag-item" onclick="addItem(2122,'item_2')" data-name="item_2" data-id="2122">item_2</div>
-    <div draggable="true" class="drag-item" onclick="addItem(33,'item_3')" data-name="item_3" data-id="33">item_3</div>
-</div>
-<div id="container">
+<div id="listPartsCustomId"></div>
+<div id="container" class="border border-black border-3 m-3">
     
 </div>
 <button onclick="saveCustomId()">Save</button>
+<button onclick="getCustomIdExample()">Generate Example</button>
+
+<script>
+    let partsCustomId = [];
+    
+    loadPartsCustomId();
+
+    async function loadPartsCustomId() { 
+        response = await GetAllPartCustomId();
+        partsCustomId = await response.json();
+
+        let resHtml = "";
+        for (let part of partsCustomId) { 
+            resHtml += `
+            <div
+                onclick="addItem('${part.typePartCustomId}','${part.name}')">
+                ${part.name}
+            </div>`;
+        }
+        document.getElementById('listPartsCustomId').innerHTML = resHtml;
+    }
+</script>
 
 <script>
     let draggedId = null;    
@@ -49,11 +67,27 @@
 
         for (let i = 0; i < selectedItems.length; i++) { 
             const el = selectedItems[i];
+
+            let resSelect = "";
+            const avaliableFormat = partsCustomId.find(i => i.typePartCustomId == el.id).avaliableFormat;
+            if (avaliableFormat.length > 0) {
+                resSelect += `<select data-id="${i}">`
+            } else { 
+                resSelect += `<select style="display:none;" data-id="${i}">`
+            }
+            
+            for (let format of avaliableFormat) {
+                resSelect += `
+                        <option value="${format}">${format}</option>`;
+            }
+            resSelect += `</select>`
+
             resHtml += 
                 `<div draggable="true"
-                        data-index="${i}"
-                        class="drag-item" margin: 5px;">
+                    data-index="${i}"
+                    class="drag-item" margin: 5px;">
                     ${el.name}
+                    ${resSelect}
                     <button onclick="removeItem(${i})">Delete</button>
                 </div>
             `;
@@ -78,7 +112,17 @@
 
 
     async function saveCustomId() { 
-        console.log(selectedItems);
+        let data = [...selectedItems];
+        for (let i = 0; i < data.length; i++){
+            const item = data[i];
+            const selectEl = document.querySelector(`div[data-index="${i}"] select`);
+            if (selectEl) {
+                data[i].format = selectEl.value;
+            } else {
+                data[i].format = '';
+            }
+        }
+        console.log(data);
     }
 
     function addItem(id,name) { 
@@ -88,5 +132,9 @@
         });
 
         renderTarget();
+    }
+
+    async function getCustomIdExample() { 
+        
     }
 </script>

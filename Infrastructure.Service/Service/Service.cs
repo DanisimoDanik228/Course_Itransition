@@ -24,6 +24,7 @@ namespace Infrastructure.Service.Service
         private readonly IItemRepository _itemRepository;
         private readonly IInventoryTypeRepository _inventoryTypeRepository;
         private readonly IAuthenticationService _authenticationService;
+        private readonly ICustomIdService _customIdService;
         private readonly IMapper _mapper;
         public Service(
             IInventoryRepository inventoryRepository,
@@ -31,6 +32,7 @@ namespace Infrastructure.Service.Service
             IItemRepository itemRepository,
             IInventoryTypeRepository inventoryTypeRepository,
             IAuthenticationService authenticationService,
+            ICustomIdService customIdService,
             IMapper mapper )
         {
             _inventoryRepository = inventoryRepository;
@@ -38,6 +40,7 @@ namespace Infrastructure.Service.Service
             _itemRepository = itemRepository;
             _inventoryTypeRepository = inventoryTypeRepository;
             _authenticationService = authenticationService;
+            _customIdService = customIdService;
             _mapper = mapper;
         }
         public async Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync()
@@ -194,6 +197,11 @@ namespace Infrastructure.Service.Service
             }
 
             await _itemValueRepository.UpdateAsync(data);
+        }
+
+        public IEnumerable<PartNameCustomId> GetAllPartCustomId()
+        {
+            return _customIdService.GetAllPartCustomId();
         }
     }
 }

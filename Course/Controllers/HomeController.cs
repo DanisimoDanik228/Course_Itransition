@@ -33,7 +33,14 @@ namespace Course.Controllers
 
         public async Task<IActionResult> CustomId(long idInventory)
         {
-            return View(idInventory);
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPartCustomId()
+        {
+            var parts = _service.GetAllPartCustomId();
+            return Json(parts);
         }
 
         [HttpGet]

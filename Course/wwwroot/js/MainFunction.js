@@ -70,6 +70,12 @@ async function AddInventory(inventory) {
     return response;
 }
 
+async function GetAllPartCustomId() {
+    const response = await fetch('/Home/GetAllPartCustomId');
+
+    return response;
+}
+
 async function GetAllInventory() {
     const response = await fetch('/Home/GetAllInventory');
 

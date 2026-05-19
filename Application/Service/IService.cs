@@ -12,7 +12,8 @@ namespace Application.Service
 {
     public interface IService
     {
-        Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync(long idInventory);
+        IEnumerable<PartNameCustomId> GetAllPartCustomId();
+        Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync (long idInventory);
         Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync();
         Task<IEnumerable<InventoryResponseDto>> GetAllInventoryUserAsync(string userId);
         Task<IEnumerable<InventoryResponseDto>> GetAccessInventoryUserAsync(string userId);
