@@ -234,7 +234,7 @@ namespace Infrastructure.Service.Service
             return _customIdService.GetAllPartCustomId();
         }
 
-        public async Task SetCustomIdAsync(long idInventory, string structCustomId)
+        public async Task SetStructCustomIdAsync(long idInventory, string structCustomId)
         {
             var myId = _authenticationService.MyId();
             if (!(await _authenticationService.MayEditCutomIdInventory(myId, idInventory)))
@@ -243,6 +243,11 @@ namespace Infrastructure.Service.Service
             }
 
             await _inventoryRepository.UpdateCustomIdAsync(idInventory, structCustomId);
+        }
+
+        public async Task<string> GetStructCustomIdAsync(long inventoryId)
+        {
+            return await _inventoryRepository.GetStructCustomIdAsync(inventoryId);
         }
     }
 }

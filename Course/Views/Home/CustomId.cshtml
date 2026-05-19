@@ -42,7 +42,14 @@
     let selectedItems = [];
 
     const container = document.getElementById('container');
-    renderTarget();
+    loadExistStructCustomId();
+
+    async function loadExistStructCustomId(){
+        const response = await GetStructCustomId(@Model);
+        selectedItems = await response.json();
+        
+        renderTarget();
+    }
 
     container.ondragover = (e) => {
         e.preventDefault(); 
@@ -127,7 +134,7 @@
 
     async function saveCustomId() { 
         console.log(selectedItems);
-        await SetCustomId(@Model, selectedItems);
+    await SetStructCustomId(@Model, selectedItems);
     }
 
     function addItem(id,name) { 

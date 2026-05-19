@@ -81,11 +81,20 @@ namespace Course.Controllers
             return Json(inventories);
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> GetStructCustomId(long idInventory)
+        {
+            var res = await _service.GetStructCustomIdAsync(idInventory);
+
+            return Ok(res);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> SetCustomId(long idInventory, string structCustomId)
+        public async Task<IActionResult> SetStructCustomId(long idInventory, string structCustomId)
         {
-            await _service.SetCustomIdAsync(idInventory, structCustomId);
+            await _service.SetStructCustomIdAsync(idInventory, structCustomId);
 
             return NoContent();
         }

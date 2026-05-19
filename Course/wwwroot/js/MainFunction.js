@@ -70,13 +70,19 @@ async function AddInventory(inventory) {
     return response;
 }
 
-async function SetCustomId(inventoryId, structCustomId) {
-    const response = await fetch(`/Home/SetCustomId?idInventory=${inventoryId}&structCustomId=${JSON.stringify(structCustomId)}`, {
+async function SetStructCustomId(inventoryId, structCustomId) {
+    const response = await fetch(`/Home/SetStructCustomId?idInventory=${inventoryId}&structCustomId=${JSON.stringify(structCustomId)}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         }
     });
+
+    return response;
+}
+
+async function GetStructCustomId(inventoryId) {
+    const response = await fetch(`/Home/GetStructCustomId?idInventory=${inventoryId}`);
 
     return response;
 }
