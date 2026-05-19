@@ -99,8 +99,8 @@ async function GetAllUsers(){
     return response;
 }
 
-async function GetPartInventory(id,page,count) {
-    const response = await fetch(`/Home/GetPartInventory?idInventory=${id}&Page=${page}&Count=${count}`);   
+async function GetPartInventory(id,page) {
+    const response = await fetch(`/Home/GetPartInventory?idInventory=${id}&Page=${page}`);   
     return response;
 }
 

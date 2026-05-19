@@ -16,6 +16,18 @@
         border-left: 3px solid blue; 
     }
 </style>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" 
+           href="/Home/Inventory?Id=@Model&Page=1">Inventory</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" 
+           href="/Home/CustomId?idInventory=@Model">Custom Id</a>
+    </li>
+</ul>
+
 <h3 id="inventoryInfo"></h3>
 
 <div>
@@ -97,7 +109,7 @@
 
         loadBodyTable();
         loadItemAdd();
-        inventoryInfo.innerText = `Inventory Name: ${inventory.name} | Creator: ${inventory.creatorName}`;
+        document.getElementById('inventoryInfo').innerText = `Inventory Name: ${inventory.name} | Creator: ${inventory.creatorName}`;
     }
 
     function loadHeadTable() { 
@@ -323,7 +335,7 @@
     }
     
     async function getInventory() {
-        const response = await GetPartInventory(@Model,@ViewBag.Page,@ViewBag.Count);
+        const response = await GetPartInventory(@Model,@ViewBag.Page);
     
         const result = await response.json();
         inventory = result;
@@ -395,14 +407,7 @@
     let draggedId = null;
 
     function render() {
-        //const container = document.getElementById('inventoryTableHeadFieldName');
-
         loadHeadTable();
-        // let resHtml = "";
-        // for (let id of inventoryTypeIds) {
-        //     resHtml += `<div class="drag-item" draggable="true" data-id="${id}">${id}</div>`;
-        // }
-        //container.innerHTML = resHtml;
 
         const dragItems = document.getElementsByClassName('drag-item');
 

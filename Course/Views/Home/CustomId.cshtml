@@ -1,0 +1,92 @@
+﻿<style>
+    .drag-item {
+        border: 2px solid green;
+    }
+
+    .drag-over {
+        border-top: 3px solid blue;
+    }
+</style>
+<div>
+    <div draggable="true" class="drag-item" onclick="addItem(11,'item_1')" data-name="item_1" data-id="11">item_1</div>
+    <div draggable="true" class="drag-item" onclick="addItem(2122,'item_2')" data-name="item_2" data-id="2122">item_2</div>
+    <div draggable="true" class="drag-item" onclick="addItem(33,'item_3')" data-name="item_3" data-id="33">item_3</div>
+</div>
+<div id="container">
+    
+</div>
+<button onclick="saveCustomId()">Save</button>
+
+<script>
+    let draggedId = null;    
+    let selectedItems = [];
+
+    const container = document.getElementById('container');
+    renderTarget();
+
+    container.ondragover = (e) => {
+        e.preventDefault(); 
+    };
+
+    container.ondrop = (e) => {
+        e.preventDefault();
+
+        const item = selectedItems[draggedId];
+        let targetId = parseInt(e.target.dataset.index);
+        selectedItems.splice(draggedId, 1);
+        selectedItems.splice(targetId, 0, item);
+
+        renderTarget();
+    };
+
+    function renderTarget() {
+        if (selectedItems.length === 0) {
+            container.innerHTML = "Empty List";
+            return;
+        }
+
+        let resHtml = "";
+
+        for (let i = 0; i < selectedItems.length; i++) { 
+            const el = selectedItems[i];
+            resHtml += 
+                `<div draggable="true"
+                        data-index="${i}"
+                        class="drag-item" margin: 5px;">
+                    ${el.name}
+                    <button onclick="removeItem(${i})">Delete</button>
+                </div>
+            `;
+        }
+
+        container.innerHTML = resHtml;
+
+        const items = container.childNodes;
+        for (let el of items) {
+            el.ondragenter = (e) => el.classList.add('drag-over');
+            el.ondragleave = (e) => el.classList.remove('drag-over');
+            el.ondragstart = (e) => {
+                draggedId = parseInt(e.target.dataset.index);
+            };
+        }
+    }
+
+    function removeItem(index){
+        selectedItems.splice(index, 1);
+        renderTarget();
+    };
+
+
+    async function saveCustomId() { 
+        console.log(selectedItems);
+    }
+
+    function addItem(id,name) { 
+        selectedItems.push({
+            id:id,
+            name:name
+        });
+
+        renderTarget();
+    }
+</script>

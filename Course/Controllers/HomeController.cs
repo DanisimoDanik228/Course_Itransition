@@ -25,11 +25,15 @@ namespace Course.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Inventory(long Id, int Count, int Page)
+        public async Task<IActionResult> Inventory(long Id, int Page)
         {
-            ViewBag.Count = Count;
             ViewBag.Page = Page;
             return View(Id);
+        }
+
+        public async Task<IActionResult> CustomId(long idInventory)
+        {
+            return View(idInventory);
         }
 
         [HttpGet]
@@ -47,8 +51,9 @@ namespace Course.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPartInventory(long idInventory, int Count, int Page)
+        public async Task<IActionResult> GetPartInventory(long idInventory, int Page)
         {
+            int Count = 5;
             var res = await _service.GetPartInventoryAsync(idInventory, Count, Page);
 
             return Json(res);
