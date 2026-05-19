@@ -13,6 +13,7 @@
 </div>
 <button onclick="saveCustomId()">Save</button>
 <button onclick="getCustomIdExample()">Generate Example</button>
+<div id="exampleCustomId"></div>
 
 <script>
     let partsCustomId = [];
@@ -173,7 +174,7 @@
                     break;
 
                 case "5": // GUID
-                    result += Math.random().toString(16).substring(2, 10).toUpperCase();
+                    result += crypto.randomUUID();
                     break;
 
                 case "6": // Date/time
@@ -186,6 +187,6 @@
             }
         });
 
-        console.log(result);
+        document.getElementById('exampleCustomId').textContent = result;
     }
 </script>
