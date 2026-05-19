@@ -7,6 +7,7 @@ namespace Application.Dto.Request
     public class UpdateItemRequestDto
     {
         public long ItemValueId { get; set; }
+        public long InventoryTypeId { get; set; }
         public string Value { get; set; }
     }
 }

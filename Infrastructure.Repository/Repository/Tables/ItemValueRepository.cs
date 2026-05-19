@@ -59,5 +59,15 @@ namespace Infrastructure.Repository.Repository.Tables
                     .ExecuteUpdateAsync(s => s.SetProperty(v => v.Value, value));
             }
         }
+
+        public async Task<bool> ExistCustomIdAsync(long inventoryTypeCustomId, string customIds)
+        {
+            var res = await _context.ItemValue
+                .Where(it => it.InventoryTypeId == inventoryTypeCustomId)
+                .Select(it => it.Value)
+                .AnyAsync(v => v == customIds);
+
+            return res;
+        }
     }
 }

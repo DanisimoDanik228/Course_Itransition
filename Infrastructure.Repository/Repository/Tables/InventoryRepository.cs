@@ -118,7 +118,7 @@ namespace Infrastructure.Repository.Repository.Tables
 
         public async Task<Inventory?> UpdateAsync(Inventory item)
         {
-           var res = _context.Inventory.Update(item);
+            var res = _context.Inventory.Update(item);
             return res.Entity;
         }
 

@@ -155,7 +155,7 @@
                 
                 if(field){  
                     fields += `
-                        <td><input type="text" class="@classNameInputField" value="${field.value}" data-item-value-id="${field.id}" data-item-id="${item.id}"></td>
+                            <td><input type="text" class="@classNameInputField" value="${field.value}" data-inventory-type-id="${id}" data-item-value-id="${field.id}" data-item-id="${item.id}"></td>
                     `;
                 }else{
                     fields += `
@@ -287,7 +287,8 @@
                 if (originalValue !== currentValue) {
                     changes.push({
                         itemValueId: itemValueId,
-                        value: currentValue
+                        value: currentValue,
+                        inventoryTypeId: inventoryTypeId
                     });
                 }
             }

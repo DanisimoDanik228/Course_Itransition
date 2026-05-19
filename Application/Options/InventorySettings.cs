@@ -7,5 +7,6 @@ namespace Application.Options
     public class InventorySettings
     {
         public string CustomIdName { get; set; }
+        public int TryGenerateCustomId { get; set; }
     }
 }

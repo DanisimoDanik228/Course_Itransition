@@ -141,11 +141,30 @@ namespace Infrastructure.Service.Service
 
             var itemFull = _mapper.Map<ItemFullRequestDto, Item>(item);
             var structCustomId = await _inventoryRepository.GetStructCustomIdAsync(itemFull.InventoryId); 
+            var id = await _inventoryTypeRepository.GetIdItemValueCustomIdAsync(itemFull.InventoryId); 
             var maxSequence = 1 + await _inventoryRepository.GetMaxSequenceAsync(itemFull.InventoryId);
             itemFull.Sequence = maxSequence;
+            string customId = null;
+            
+            for (int i = 0; i < _inventorySettings.TryGenerateCustomId; i++)
+            {
+                var tempCustomId = _customIdService.GenerateCustomId(structCustomId, maxSequence);
+                var exist = await _itemValueRepository.ExistCustomIdAsync(id, tempCustomId);
+
+                if (!exist)
+                {
+                    customId = tempCustomId;
+                    break;
+                }
+            }
+
+            if (customId == null) {
+                return null;
+            }
+
             itemFull.ItemValue.Add(new ItemValue()
             {
-                Value = _customIdService.GenerateCustomId(structCustomId, maxSequence),
+                Value = customId,
                 InventoryTypeId = await _inventoryTypeRepository.GetIdItemValueCustomIdAsync(itemFull.InventoryId)
             });
 
@@ -224,6 +243,31 @@ namespace Infrastructure.Service.Service
             if (!(await _authenticationService.MayEditInventory(myId, idInventory)))
             {
                 return;
+            }
+
+            var id = await _inventoryTypeRepository.GetIdItemValueCustomIdAsync(idInventory);
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                var item = data[i];
+                if (item.InventoryTypeId == id)
+                {
+                    var structCustomId = await _inventoryRepository.GetStructCustomIdAsync(idInventory);
+                    var valid = _customIdService.IsValidCustomId(structCustomId,item.Value);
+
+                    if (valid) {
+                        var exist = await _itemValueRepository.ExistCustomIdAsync(id, item.Value);
+                        valid = !exist;
+                    }
+
+                    if (!valid) { 
+                        var dataTemp = data.ToList();
+                        dataTemp.RemoveAt(i);
+                        data = dataTemp.ToArray();
+                    }
+
+                    break;
+                }
             }
 
             await _itemValueRepository.UpdateAsync(data);
