@@ -31,7 +31,13 @@ namespace Infrastructure.Repository.Repository.Tables
             await _context.SaveChangesAsync();
             return res.Entity;
         }
-
+        public async Task<long> GetIdItemValueCustomIdAsync(long inventoryId)
+        {
+            return await _context.InventoryType
+                .Where(it => it.InventoryId == inventoryId && it.Name == "CustomId")
+                .Select(it => it.Id)
+                .FirstOrDefaultAsync();
+        }
         public async Task<int> DeleteAsync(long[] Ids)
         {
             return await _context.InventoryType.Where(i => Ids.Contains(i.Id)).ExecuteDeleteAsync();

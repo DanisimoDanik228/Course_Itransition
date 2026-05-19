@@ -7,6 +7,8 @@
     var classNameInputField = "inputField";
 
     var classNameAddItem = "itemAdd";
+
+    var CustomIdName = "CustomId";
 }
 <style>
     .drag-item { 
@@ -179,10 +181,12 @@
     function loadItemAdd() {
         let resHtml = "";
         for (let field of inventory.inventoryType) {
-            resHtml += `
-                <div>${field.name}</div>
-                <input class="@classNameAddItem" data-id="${field.id}" type="text">
-            `;
+            if (field.name != '@CustomIdName') {
+                resHtml += `
+                    <div>${field.name}</div>
+                    <input class="@classNameAddItem" data-id="${field.id}" type="text">
+                `;
+            }
         }
 
         document.getElementById('listItemField').innerHTML = resHtml;
