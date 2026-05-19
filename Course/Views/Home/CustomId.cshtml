@@ -13,7 +13,7 @@
 </div>
 <button onclick="saveCustomId()">Save</button>
 <button onclick="getCustomIdExample()">Generate Example</button>
-<div id="exampleCustomId"></div>
+<pre id="exampleCustomId"></pre>
 
 <script>
     let partsCustomId = [];
@@ -65,23 +65,28 @@
         }
 
         let resHtml = "";
-
         for (let i = 0; i < selectedItems.length; i++) { 
             const el = selectedItems[i];
 
             let resSelect = "";
-            const avaliableFormat = partsCustomId.find(i => i.typePartCustomId == el.id).avaliableFormat;
-            if (avaliableFormat.length > 0) {
-                resSelect += `<select data-id="${i}">`
-            } else { 
-                resSelect += `<select style="display:none;" data-id="${i}">`
+            const part = partsCustomId.find(i => i.typePartCustomId == el.id);
+            const avaliableFormat = part.avaliableFormat;
+            if (avaliableFormat.length > 1) {
+                resSelect += `<select onchange="updateSelect(${i},this.value)">`
+
+                for (let format of avaliableFormat) {
+                    const selectedStatus = (el.format == format) ? ('selected'): ('');
+                    resSelect += `<option value="${format}" ${selectedStatus}>${format}</option>`;
+                }
+            }
+
+            if (part.name === 'FixedText') {
+                resSelect += `<input oninput="updateInput(${i},this.value)" type="text" value="${el.format}">`
             }
             
-            for (let format of avaliableFormat) {
-                resSelect += `
-                        <option value="${format}">${format}</option>`;
+            if (avaliableFormat.length > 1) {
+                resSelect += `</select>`
             }
-            resSelect += `</select>`
 
             resHtml += 
                 `<div draggable="true"
@@ -106,51 +111,51 @@
         }
     }
 
+    function updateSelect(indexId, value) { 
+        selectedItems[indexId].format = value;
+    }
+
+    function updateInput(indexId, value) { 
+        selectedItems[indexId].format = value;
+    }
+
     function removeItem(index){
         selectedItems.splice(index, 1);
         renderTarget();
     };
 
     async function saveCustomId() { 
-        let data = getPartCustomIdWithFormat();
-        console.log(data);
+        console.log(selectedItems);
     }
 
     function addItem(id,name) { 
-        selectedItems.push({
+        let item = {
             id:id,
-            name:name
-        });
+            name:name,
+            format:''
+        };
 
+        const part = partsCustomId.find(p => p.typePartCustomId == id);
+
+        if (part.avaliableFormat.length > 0) {
+            item.format = part.avaliableFormat[0];
+        }
+
+        selectedItems.push(item);
         renderTarget();
     }
 
-    function getPartCustomIdWithFormat() { 
-        let data = [...selectedItems];
-        for (let i = 0; i < data.length; i++) {
-            const item = data[i];
-            const selectEl = document.querySelector(`div[data-index="${i}"] select`);
-            if (selectEl) {
-                data[i].format = selectEl.value;
-            } else {
-                data[i].format = '';
-            }
-        }
-        return data;
-    }
-
     async function getCustomIdExample() {
-        let data = getPartCustomIdWithFormat();
         let result = "";
         const now = new Date();
 
-        data.forEach(part => {
+        selectedItems.forEach(part => {
             const typeId = String(part.id);
             const format = part.format;
 
             switch (typeId) {
                 case "0": // FixedText 
-                    result += "FixedText";
+                    result += format;
                     break;
 
                 case "1": // 20-bit random number 

@@ -71,7 +71,7 @@ namespace Infrastructure.Service.Service
                 new PartNameCustomId {
                     TypePartCustomId = (int)TypePartCustomId.FixedText,
                     Name = "FixedText",
-                    AvaliableFormat = []
+                    AvaliableFormat = ["FixedText"]
                 },
                 new PartNameCustomId {
                     TypePartCustomId = (int)TypePartCustomId.BitNumber20,
