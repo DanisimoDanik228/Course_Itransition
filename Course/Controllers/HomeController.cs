@@ -33,7 +33,7 @@ namespace Course.Controllers
 
         public async Task<IActionResult> CustomId(long idInventory)
         {
-            return View();
+            return View(idInventory);
         }
 
         [HttpGet]
@@ -80,7 +80,16 @@ namespace Course.Controllers
 
             return Json(inventories);
         }
-        
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> SetCustomId(long idInventory, string structCustomId)
+        {
+            await _service.SetCustomIdAsync(idInventory, structCustomId);
+
+            return NoContent();
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> AddInventory([FromBody] InventoryRequestDto inventory)

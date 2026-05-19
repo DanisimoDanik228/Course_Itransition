@@ -1,4 +1,5 @@
-﻿<style>
+﻿@model long
+<style>
     .drag-item {
         border: 2px solid green;
     }
@@ -126,6 +127,7 @@
 
     async function saveCustomId() { 
         console.log(selectedItems);
+        await SetCustomId(@Model, selectedItems);
     }
 
     function addItem(id,name) { 
@@ -147,7 +149,6 @@
 
     async function getCustomIdExample() {
         let result = "";
-        const now = new Date();
 
         selectedItems.forEach(part => {
             const typeId = String(part.id);

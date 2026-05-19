@@ -105,6 +105,16 @@ namespace Infrastructure.Service.Service
         public async Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item)
         {
             var inventory = _mapper.Map<InventoryRequestDto, Inventory>(item);
+
+            if (string.IsNullOrEmpty(inventory.StructCustomId))
+            {
+                // default value
+                inventory.StructCustomId = "[" +
+                    "{\"id\":\"7\"," +
+                    "\"name\":\"Sequence\"," +
+                    "\"format\":\"\"}" +
+                    "]";
+            }
             var res = await _inventoryRepository.AddAsync(inventory);
 
             return _mapper.Map<Inventory, InventoryResponseDto>(res);
@@ -119,6 +129,15 @@ namespace Infrastructure.Service.Service
             }
 
             var itemFull = _mapper.Map<ItemFullRequestDto, Item>(item);
+
+            if (string.IsNullOrEmpty(itemFull.CustomId))
+            {
+                var structCustomId = await _inventoryRepository.GetStructCustomIdAsync(itemFull.InventoryId); 
+                var maxSequence = 1 + await _inventoryRepository.GetMaxSequenceAsync(itemFull.InventoryId);
+                itemFull.Sequence = maxSequence;
+                itemFull.CustomId = _customIdService.GenerateCustomId(structCustomId, maxSequence);
+            }
+
             var res = await _itemRepository.AddAsync(itemFull);
 
             return _mapper.Map<Item, ItemFullResponseDto>(res);
@@ -202,6 +221,17 @@ namespace Infrastructure.Service.Service
         public IEnumerable<PartNameCustomId> GetAllPartCustomId()
         {
             return _customIdService.GetAllPartCustomId();
+        }
+
+        public async Task SetCustomIdAsync(long idInventory, string structCustomId)
+        {
+            var myId = _authenticationService.MyId();
+            if (!(await _authenticationService.MayEditCutomIdInventory(myId, idInventory)))
+            {
+                return;
+            }
+
+            await _inventoryRepository.UpdateCustomIdAsync(idInventory, structCustomId);
         }
     }
 }

@@ -77,6 +77,18 @@ namespace Infrastructure.Repository.Repository.Tables
                 .FirstAsync(i => i.Id == Id);
         }
 
+        public async Task<long> GetMaxSequenceAsync(long inventoryId)
+        {
+            if (await _context.Items.CountAsync() == 0)
+            {
+                return 0;
+            }
+
+            return _context.Items
+                .Where(i => i.InventoryId == inventoryId)
+                .Max(i => i.Sequence);
+        }
+
         public async Task<Inventory?> GetPartByIdAsync(long Id, int page, int countItem)
         {
             var inventory = await _context.Inventory
@@ -98,10 +110,23 @@ namespace Infrastructure.Repository.Repository.Tables
             return inventory;
         }
 
+        public async Task<string> GetStructCustomIdAsync(long inventoryId)
+        {
+            var inventory = await _context.Inventory.FindAsync(inventoryId);
+            return inventory.StructCustomId;
+        }
+
         public async Task<Inventory?> UpdateAsync(Inventory item)
         {
            var res = _context.Inventory.Update(item);
             return res.Entity;
+        }
+
+        public async Task UpdateCustomIdAsync(long inventoryId, string structCustomId)
+        {
+            await _context.Inventory
+                .Where(i => i.Id == inventoryId)
+                .ExecuteUpdateAsync(i => i.SetProperty(i => i.StructCustomId, structCustomId));
         }
     }
 }

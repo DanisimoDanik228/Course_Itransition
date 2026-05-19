@@ -12,6 +12,9 @@ namespace Application.Repository.Tables
         Task<Inventory?> GetPartByIdAsync(long Id, int page, int countItem);
         Task<IEnumerable<Inventory>> GetAllInventoryUserAsync(string userId);
         Task<IEnumerable<Inventory>> GetAccessInventoryUserAsync(string userId);
+        Task<string> GetStructCustomIdAsync(long inventoryId);
+        Task<long> GetMaxSequenceAsync(long inventoryId);
+        Task UpdateCustomIdAsync(long inventoryId, string structCustomId);
         Task<Inventory?> AddAsync(Inventory item);
         Task<Inventory?> UpdateAsync(Inventory item);
         Task<Inventory?> DeleteAsync(Inventory item);

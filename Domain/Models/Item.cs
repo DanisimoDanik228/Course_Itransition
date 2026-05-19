@@ -7,6 +7,8 @@ namespace Domain.Models
     public class Item
     {
         public long Id { get; set; }
+        public long Sequence { get; set; }
+        public string CustomId { get; set; }
 
         public ICollection<ItemValue> ItemValue { get; set; } 
 

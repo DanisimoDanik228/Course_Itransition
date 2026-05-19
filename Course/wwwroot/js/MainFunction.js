@@ -70,6 +70,17 @@ async function AddInventory(inventory) {
     return response;
 }
 
+async function SetCustomId(inventoryId, structCustomId) {
+    const response = await fetch(`/Home/SetCustomId?idInventory=${inventoryId}&structCustomId=${JSON.stringify(structCustomId)}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+
+    return response;
+}
+
 async function GetAllPartCustomId() {
     const response = await fetch('/Home/GetAllPartCustomId');
 

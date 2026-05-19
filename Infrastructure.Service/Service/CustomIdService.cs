@@ -12,51 +12,50 @@ namespace Infrastructure.Service.Service
     {
         private readonly Random _random = new Random();
 
-        public string GenerateCustomId(string structCustomId)
+        public string GenerateCustomId(string structCustomId, long sequence)
         {
-            int sequence = 1;
-
             var parts = JsonSerializer.Deserialize<List<PartCustomId>>(structCustomId);
             var result = new StringBuilder();
 
             foreach (var part in parts)
             {
-                switch (part.typePartCustomId)
+                var id = int.Parse(part.id);
+                switch (id)
                 {
-                    case TypePartCustomId.FixedText:
-                        result.Append("FixedText");
+                    case (int)TypePartCustomId.FixedText:
+                        result.Append(part.format);
                         break;
 
-                    case TypePartCustomId.DateTime:
-                        result.Append(DateTime.Now.ToString(part.Format));
+                    case (int)TypePartCustomId.DateTime:
+                        result.Append(DateTime.Now.ToString(part.format.Replace('D','d').Replace('Y','y')));
                         break;
 
-                    case TypePartCustomId.GUID:
+                    case (int)TypePartCustomId.GUID:
                         result.Append(Guid.NewGuid().ToString()); 
                         break;
 
-                    case TypePartCustomId.Sequence:
+                    case (int)TypePartCustomId.Sequence:
                         result.Append(sequence);
                         break;
 
-                    case TypePartCustomId.DigitNumber6:
+                    case (int)TypePartCustomId.DigitNumber6:
                         int rnd6 = _random.Next(0, 1_000_000);
-                        result.Append(FormatNumber(rnd6, 6, part.Format));
+                        result.Append(FormatNumber(rnd6, 6, part.format));
                         break;
 
-                    case TypePartCustomId.DigitNumber9:
+                    case (int)TypePartCustomId.DigitNumber9:
                         int rnd9 = _random.Next(0, 1_000_000_000);
-                        result.Append(FormatNumber(rnd9, 9, part.Format));
+                        result.Append(FormatNumber(rnd9, 9, part.format));
                         break;
 
-                    case TypePartCustomId.BitNumber20:
+                    case (int)TypePartCustomId.BitNumber20:
                         int rnd20 = _random.Next(0, 1 << 20);
-                        result.Append(FormatNumber(rnd20, 7, part.Format));
+                        result.Append(FormatNumber(rnd20, 7, part.format));
                         break;
 
-                    case TypePartCustomId.BitNumber32:
+                    case (int)TypePartCustomId.BitNumber32:
                         long rnd32 = (long)(_random.NextInt64(0,1 << 32));
-                        result.Append(FormatNumber(rnd32, 10, part.Format));
+                        result.Append(FormatNumber(rnd32, 10, part.format));
                         break;
                 }
             }
@@ -110,7 +109,6 @@ namespace Infrastructure.Service.Service
                 }
             };
         }
-
         public bool IsValidCustomId(string structCustomId, string customId)
         {
             throw new NotImplementedException();

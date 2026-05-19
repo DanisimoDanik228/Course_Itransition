@@ -9,6 +9,7 @@ namespace Application.Dto.Response.Full
     {
         public long Id { get; set; }
         public long InventoryId { get; set; }
+        public string CustomId { get; set; }
         public List<ItemValueResponseDto> ItemValue { get; set; }
     }
 }

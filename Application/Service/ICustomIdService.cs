@@ -9,6 +9,6 @@ namespace Application.Service
     {
         IEnumerable<PartNameCustomId> GetAllPartCustomId();
         bool IsValidCustomId(string structCustomId, string customId);
-        string GenerateCustomId(string structCustomId);
+        string GenerateCustomId(string structCustomId, long sequence);
     }
 }
