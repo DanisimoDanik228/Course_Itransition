@@ -34,7 +34,7 @@
         document.getElementById('listPartsCustomId').innerHTML = resHtml;
     }
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
 <script>
     let draggedId = null;    
     let selectedItems = [];
@@ -110,18 +110,8 @@
         renderTarget();
     };
 
-
     async function saveCustomId() { 
-        let data = [...selectedItems];
-        for (let i = 0; i < data.length; i++){
-            const item = data[i];
-            const selectEl = document.querySelector(`div[data-index="${i}"] select`);
-            if (selectEl) {
-                data[i].format = selectEl.value;
-            } else {
-                data[i].format = '';
-            }
-        }
+        let data = getPartCustomIdWithFormat();
         console.log(data);
     }
 
@@ -134,7 +124,68 @@
         renderTarget();
     }
 
-    async function getCustomIdExample() { 
-        
+    function getPartCustomIdWithFormat() { 
+        let data = [...selectedItems];
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i];
+            const selectEl = document.querySelector(`div[data-index="${i}"] select`);
+            if (selectEl) {
+                data[i].format = selectEl.value;
+            } else {
+                data[i].format = '';
+            }
+        }
+        return data;
+    }
+
+    async function getCustomIdExample() {
+        let data = getPartCustomIdWithFormat();
+        let result = "";
+        const now = new Date();
+
+        data.forEach(part => {
+            const typeId = String(part.id);
+            const format = part.format;
+
+            switch (typeId) {
+                case "0": // FixedText 
+                    result += "FixedText";
+                    break;
+
+                case "1": // 20-bit random number 
+                    let rnd20 = Math.floor(Math.random() * 1048576);
+                    result += (format === "With lead zero") ? String(rnd20).padStart(7, '0') : rnd20;
+                    break;
+
+                case "2": // 32-bit random number 
+                    let rnd32 = Math.floor(Math.random() * 4294967296);
+                    result += (format === "With lead zero") ? String(rnd32).padStart(10, '0') : rnd32;
+                    break;
+
+                case "3": // 6-digit random number
+                    let rnd6 = Math.floor(Math.random() * 1000000);
+                    result += (format === "With lead zero") ? String(rnd6).padStart(6, '0') : rnd6;
+                    break;
+
+                case "4": // 9-digit random number
+                    let rnd9 = Math.floor(Math.random() * 1000000000);
+                    result += (format === "With lead zero") ? String(rnd9).padStart(9, '0') : rnd9;
+                    break;
+
+                case "5": // GUID
+                    result += Math.random().toString(16).substring(2, 10).toUpperCase();
+                    break;
+
+                case "6": // Date/time
+                    result += dayjs().format(format);
+                    break;
+
+                case "7": // Sequence 
+                    result += "1";
+                    break;
+            }
+        });
+
+        console.log(result);
     }
 </script>

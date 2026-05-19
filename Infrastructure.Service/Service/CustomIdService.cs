@@ -101,7 +101,7 @@ namespace Infrastructure.Service.Service
                 new PartNameCustomId {
                     TypePartCustomId = (int)TypePartCustomId.DateTime,
                     Name = "Date/time",
-                    AvaliableFormat = ["yyyy-MM-dd/HH-mm", "dd.MM.yyy HH:mm"]
+                    AvaliableFormat = ["YYYY-MM-DD/HH-mm", "DD.MM.YYYY HH:mm"]
                 },
                 new PartNameCustomId {
                     TypePartCustomId = (int)TypePartCustomId.Sequence,
