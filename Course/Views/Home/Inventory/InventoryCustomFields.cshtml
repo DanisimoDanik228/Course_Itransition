@@ -1,6 +1,11 @@
 ﻿@{
     var classNameFieldCheckBox = "fieldCheckBox";
     var classNameInputField = "inputField";
+
+    var classNameFieldName = "fieldName";
+    var classNameFieldType = "fieldType";
+    var classNameFieldVisible = "fieldVisible";
+    var classNameFieldDesc = "fieldDesc";
 }
 <style>
     .drag-item {
@@ -20,6 +25,7 @@
                 <th>Name</th>
                 <th>Type</th>
                 <th>Visible</th>
+                <th>Description</th>
             </tr>
         </thead>
         <tbody id="inventoryTableBody">
@@ -68,11 +74,18 @@
                     <td>
                         <input type="checkbox" class="@classNameFieldCheckBox" data-inventory-type-id="${field.id}">
                     </td>
-                        <td class="drag-item" draggable="true" data-id="${field.id}" title="${field.description}">
-                        ${field.name}
+                    <td class="drag-item" draggable="true" data-id="${field.id}" title="${field.description}">
+                        <input type="text" class="@classNameFieldName" value="${field.name}" data-inventory-type-id="${id}">
                     </td>
-                    <td>${field.type}</td>
-                    <td>${field.isShowInventoryTab}</td>
+                    <td>
+                        <input type="text" class="@classNameFieldType" value="${field.type}" data-inventory-type-id="${id}">
+                    </td>
+                    <td>
+                        <input type="text" class="@classNameFieldVisible" value="${field.isShowInventoryTab}" data-inventory-type-id="${id}">
+                    </td>
+                    <td>
+                        <input type="text" class="@classNameFieldDesc" value="${field.description}" data-inventory-type-id="${id}">
+                    </td>
                 </tr>`;
         }
 
@@ -154,37 +167,26 @@
     }
 
     async function applyChanges() {
-        const inputs = document.getElementsByClassName('@classNameInputField');
-        const changes = [];
-        const addChanges = [];
+        const updatedFields = [];
 
-        for (let input of inputs) {
-            const itemId = parseInt(input.dataset.itemId);
-            const itemValueId = parseInt(input.dataset.itemValueId);
-            const inventoryTypeId = parseInt(input.dataset.inventoryTypeId);
-            const currentValue = input.value;
+        for (let id of orderInventoryTypes) {
+            const nameInput = document.querySelector('.@classNameFieldName' + `[data-inventory-type-id="${id}"]`);
+            const typeInput = document.querySelector('.@classNameFieldType' + `[data-inventory-type-id="${id}"]`);
+            const visibleInput = document.querySelector('.@classNameFieldVisible' + `[data-inventory-type-id="${id}"]`);
+            const descInput = document.querySelector('.@classNameFieldDesc' + `[data-inventory-type-id="${id}"]`);
 
-            const originalItem = inventory.items.find(i => i.id === itemId);
-            const originalValueItem = originalItem.itemValue.find(v => v.id === itemValueId);
+            const updatedItem = {
+                id: id,
+                inventoryId: @Model,
+                name: nameInput.value,
+                type: parseInt(typeInput.value),
+                isShowInventoryTab: visibleInput.value,
+                description: descInput.value
+            };
 
-            if (originalValueItem) {
-                const originalValue = originalValueItem.value;
-
-                if (originalValue !== currentValue) {
-                    changes.push({
-                        itemValueId: itemValueId,
-                        value: currentValue,
-                        inventoryTypeId: inventoryTypeId
-                    });
-                }
-            }
-
+            updatedFields.push(updatedItem);
         }
 
-        if (changes.length > 0) {
-            await UpdateItem(@Model, changes);
-
-            loadInventoryTypes();
-        }
+        console.log(updatedFields);
     }
 </script>

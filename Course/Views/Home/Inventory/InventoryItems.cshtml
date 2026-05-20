@@ -11,22 +11,12 @@
 
     var CustomIdName = "CustomId";
 }
-<style>
-    .drag-item {
-        border: 2px solid green;
-    }
-
-    .drag-over {
-        border-left: 3px solid blue;
-    }
-</style>
 <partial name="Inventory/InventoryNavigate" />
 <h3 id="inventoryInfo"></h3>
 
 <div>
     <table>
         <thead>
-            <tr id="inventoryTableHeadCheckBoxes"></tr>
             <tr id="inventoryTableHeadFieldName"></tr>
         </thead>
         <tbody id="inventoryTableBody">
@@ -98,45 +88,23 @@
         const allField = inventory.inventoryType.map(i => i.id);
         inventoryTypeIds = updateInventoryTypeOrder(allField);
 
-        // loadHeadTable();
-        render();
-
+        loadHeadTable();
         loadBodyTable();
         loadItemAdd();
         document.getElementById('inventoryInfo').innerText = `Inventory Name: ${inventory.name} | Creator: ${inventory.creatorName}`;
     }
 
     function loadHeadTable() {
-        let resHtmlField = "<th></th>";
         let resHtmlName = `<th><input type="checkbox" id="selectAll"></th>`;
 
         for (let id of inventoryTypeIds) {
             const field = inventory.inventoryType.find(f => f.id === id);
-
-            if (field) {
-                resHtmlField += `
-                        <th><input type="checkbox" class="@classNameFieldCheckBox" data-inventory-type-id="${id}"> </th>
-                    `;
-                const visible = `<i title="Show on Inventory Tab" class="bi bi-eye"> </i>`;
-                const unVisible = `<i title="UnShow on Inventory Tab" class="bi bi-eye-slash"></i>`;
-                resHtmlName += `
-                        <th class="drag-item" title="${field.description}" draggable="true" data-id="${field.id}">
-                            ${field.name}
-                            ${field.isShowInventoryTab ? visible : unVisible}
-                        </th>
-                    `;
-            } else {
-
-                resHtmlField += `
-                        <th>_Null_</th>
-                    `;
-                resHtmlName += `
-                         <th>_Null_</th>
-                    `;
-            }
+            resHtmlName += `
+                <th>
+                    ${field.name}
+                </th>`;
         }
 
-        document.getElementById('inventoryTableHeadCheckBoxes').innerHTML = resHtmlField;
         document.getElementById('inventoryTableHeadFieldName').innerHTML = resHtmlName;
     }
 
@@ -400,38 +368,6 @@
         for (let r of radio) {
             if (r.checked) {
                 return r.value;
-            }
-        }
-    }
-</script>
-
-<script>
-    let draggedId = null;
-
-    function render() {
-        loadHeadTable();
-
-        const dragItems = document.getElementsByClassName('drag-item');
-
-        for (let el of dragItems) {
-            el.ondragstart = (e) => draggedId = parseInt(e.target.dataset.id);
-            el.ondragover = (e) => e.preventDefault();
-            el.ondragenter = (e) => el.classList.add('drag-over');
-            el.ondragleave = (e) => el.classList.remove('drag-over');
-
-            el.ondrop = (e) => {
-                let targetId = parseInt(e.target.dataset.id);
-
-                let from = inventoryTypeIds.indexOf(draggedId);
-                let to = inventoryTypeIds.indexOf(targetId);
-
-                inventoryTypeIds.splice(from, 1);
-                inventoryTypeIds.splice(to, 0, draggedId);
-
-                setInventoryTypeOrder(inventoryTypeIds);
-                loadFullInventory();
-
-                render();
             }
         }
     }
