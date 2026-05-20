@@ -14,10 +14,8 @@ namespace Course.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IService _service;
         public HomeController(IService service)
         {
-            _service = service;
         }
 
         public async Task<IActionResult> PersonalPage()
@@ -25,15 +23,32 @@ namespace Course.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Inventory(long Id, int Page)
+        public async Task<IActionResult> Inventory(long Id, long InventoryId)
         {
-            ViewBag.Page = Page;
-            return View(Id);
+            switch (Id)
+            {
+                case 0:
+                    return View("Inventory/InventoryItems", InventoryId);
+                case 1:
+                    return View("Inventory/InventoryDiscussion.cshtml", InventoryId);
+                case 2:
+                    return View("Inventory/InventoryGeneralSettings", InventoryId);
+                case 3:
+                    return View("Inventory/InventoryCustomId", InventoryId);
+                case 4:
+                    return View("Inventory/InventoryAccessSettings", InventoryId);
+                case 5:
+                    return View("Inventory/InventoryCustomFields", InventoryId);
+                case 6:
+                    return View("Inventory/InventoryStatistics", InventoryId);
+                default:
+                    return View();
+            }
         }
 
-        public async Task<IActionResult> CustomId(long idInventory)
+        public async Task<IActionResult> InventoryItems(long InventoryId)
         {
-            return View(idInventory);
+            return View(InventoryId);
         }
     }
 }
