@@ -69,6 +69,15 @@ namespace Course.Controllers.API
             return Ok(res);
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> GetInventoryTypes(long idInventory)
+        {
+            var res = await _service.GetInventoryTypesAsync(idInventory);
+
+            return Ok(res);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> SetStructCustomId(long idInventory, [FromBody] List<PartCustomId> structCustomId)

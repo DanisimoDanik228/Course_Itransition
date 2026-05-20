@@ -1,3 +1,190 @@
-﻿@model long
+﻿@{
+    var classNameFieldCheckBox = "fieldCheckBox";
+    var classNameInputField = "inputField";
+}
+<style>
+    .drag-item {
+        border: 2px solid green;
+    }
+
+    .drag-over {
+        border-top: 3px solid blue;
+    }
+</style>
 <partial name="Inventory/InventoryNavigate" />
-<h3>Empty Page</h3>
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th><input type="checkbox" id="selectAll"></th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Visible</th>
+            </tr>
+        </thead>
+        <tbody id="inventoryTableBody">
+        </tbody>
+    </table>
+    <div>
+        <button onclick="deleteField()">Delete Field</button>
+        <button onclick="applyChanges()">Change</button>
+    </div>
+</div>
+<div>
+    <div>Name</div>
+    <input id="fieldName" type="text">
+    <div>Type</div>
+    <input id="fieldType" type="text">
+    <button onclick="addField()" type="submit">Add Field</button>
+</div>
+<script>
+    let inventoryTypes = [];
+    let orderInventoryTypes = [];
+    let draggedId = null;
+
+    loadInventoryTypes();
+
+    createClickSelectAll('selectAll', '@classNameFieldCheckBox');
+
+    async function loadInventoryTypes() {
+        await getInventoryTypes();
+        const allIds = inventoryTypes.map(i => i.id);
+        orderInventoryTypes = updateInventoryTypeOrder(allIds);
+        loadTableBody();
+    }
+
+    async function getInventoryTypes() {
+        const response = await GetInventoryTypes(@Model);
+        inventoryTypes = await response.json();
+    }
+
+    function loadTableBody() {
+        let resHtml = "";
+
+        for (let id of orderInventoryTypes) {
+            const field = inventoryTypes.find(i => i.id == id)
+            resHtml += `
+                <tr>
+                    <td>
+                        <input type="checkbox" class="@classNameFieldCheckBox" data-inventory-type-id="${field.id}">
+                    </td>
+                        <td class="drag-item" draggable="true" data-id="${field.id}" title="${field.description}">
+                        ${field.name}
+                    </td>
+                    <td>${field.type}</td>
+                    <td>${field.isShowInventoryTab}</td>
+                </tr>`;
+        }
+
+        document.getElementById('inventoryTableBody').innerHTML = resHtml;
+        render();
+    }
+
+    function render() {
+        const dragItems = document.getElementsByClassName('drag-item');
+
+        for (let el of dragItems) {
+            el.ondragstart = (e) => draggedId = parseInt(el.dataset.id);
+            el.ondragover = (e) => e.preventDefault();
+            el.ondragenter = (e) => el.classList.add('drag-over');
+            el.ondragleave = (e) => el.classList.remove('drag-over');
+
+            el.ondrop = (e) => {
+                let targetId = parseInt(el.dataset.id);
+
+                let from = orderInventoryTypes.indexOf(draggedId);
+                let to = orderInventoryTypes.indexOf(targetId);
+
+                orderInventoryTypes.splice(from, 1);
+                orderInventoryTypes.splice(to, 0, draggedId);
+
+                setInventoryTypeOrder(orderInventoryTypes);
+                loadInventoryTypes();
+
+                render();
+            }
+        }
+    }
+
+    function getInventoryTypeOrder() {
+        const data = localStorage.getItem(`field_order_${@Model}`);
+        return data ? JSON.parse(data) : null;
+    }
+
+    function setInventoryTypeOrder(order) {
+        localStorage.setItem(`field_order_${@Model}`, JSON.stringify(order));
+    }
+
+    function updateInventoryTypeOrder(allIds) {
+        let currentOrder = getInventoryTypeOrder() || [];
+        let newOrder = currentOrder.filter(id => allIds.includes(id));
+
+        allIds.forEach(id => {
+            if (!newOrder.includes(id)) {
+                newOrder.push(id);
+            }
+        });
+
+        setInventoryTypeOrder(newOrder);
+        return newOrder;
+    }
+
+    async function addField() {
+        const nameField = document.getElementById('fieldName').value;
+        const typeField = document.getElementById('fieldType').value;
+        const item = {
+            id: 0,
+            inventoryId: @Model,
+            name: nameField,
+            type: 0,
+            isShowInventoryTab: false,
+            description: ""
+        };
+
+        await AddFieldOnInventory(item);
+        await loadInventoryTypes();
+    }
+
+    async function deleteField() {
+        const fields = await getSelected('@classNameFieldCheckBox', i => i.dataset.inventoryTypeId);
+
+        await DeleteFieldOnInventory(@Model, fields);
+
+        loadInventoryTypes();
+    }
+
+    async function applyChanges() {
+        const inputs = document.getElementsByClassName('@classNameInputField');
+        const changes = [];
+        const addChanges = [];
+
+        for (let input of inputs) {
+            const itemId = parseInt(input.dataset.itemId);
+            const itemValueId = parseInt(input.dataset.itemValueId);
+            const inventoryTypeId = parseInt(input.dataset.inventoryTypeId);
+            const currentValue = input.value;
+
+            const originalItem = inventory.items.find(i => i.id === itemId);
+            const originalValueItem = originalItem.itemValue.find(v => v.id === itemValueId);
+
+            if (originalValueItem) {
+                const originalValue = originalValueItem.value;
+
+                if (originalValue !== currentValue) {
+                    changes.push({
+                        itemValueId: itemValueId,
+                        value: currentValue,
+                        inventoryTypeId: inventoryTypeId
+                    });
+                }
+            }
+
+        }
+
+        if (changes.length > 0) {
+            await UpdateItem(@Model, changes);
+
+            loadInventoryTypes();
+        }
+    }
+</script>

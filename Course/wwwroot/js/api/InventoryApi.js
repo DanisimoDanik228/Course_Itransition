@@ -62,6 +62,12 @@ async function GetAllUserInventories(userId) {
     return response;
 }
 
+async function GetInventoryTypes(inventoryId) {
+    const response = await fetch(`/api/inventory/GetInventoryTypes?idInventory=${inventoryId}`);
+
+    return response;
+}
+
 async function GetAllUserAccessInventories(userId) {
     const response = await fetch(`/api/inventory/GetAllUserAccessInventories?userId=${userId}`);
 

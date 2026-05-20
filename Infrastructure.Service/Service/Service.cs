@@ -109,6 +109,13 @@ namespace Infrastructure.Service.Service
 
             return inventories.Select(i => _mapper.Map<Inventory, InventoryResponseDto>(i));
         }
+        public async Task<IEnumerable<InventoryTypeResponseDto>> GetInventoryTypesAsync(long inventoryId)
+        {
+            var res = await _inventoryRepository.GetInventoryTypeOnInventoryAsync(inventoryId);
+            
+            var res1 =  res.Select(i => _mapper.Map<InventoryType, InventoryTypeResponseDto>(i));
+            return res1;
+        }
 
         public async Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item)
         {

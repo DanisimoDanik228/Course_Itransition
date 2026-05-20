@@ -77,6 +77,16 @@ namespace Infrastructure.Repository.Repository.Tables
                 .FirstAsync(i => i.Id == Id);
         }
 
+        public async Task<IEnumerable<InventoryType>> GetInventoryTypeOnInventoryAsync(long inventoryId)
+        {
+            var inventory = await _context.Inventory
+                .Include(i => i.InventoryType)
+                .Where(i => i.Id == inventoryId)
+                .FirstOrDefaultAsync();
+
+            return inventory.InventoryType;
+        }
+
         public async Task<long> GetMaxSequenceAsync(long inventoryId)
         {
             if (await _context.Items.CountAsync() == 0)
