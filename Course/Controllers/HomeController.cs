@@ -87,7 +87,7 @@ namespace Course.Controllers
         {
             var res = await _service.GetStructCustomIdAsync(idInventory);
 
-            return Ok(res);
+            return Json(res);
         }
 
         [HttpPost]
