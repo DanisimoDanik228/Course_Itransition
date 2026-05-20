@@ -1,0 +1,205 @@
+﻿@model long
+<style>
+    .drag-item {
+        border: 2px solid green;
+    }
+
+    .drag-over {
+        border-top: 3px solid blue;
+    }
+</style>
+<div id="listPartsCustomId"></div>
+<div id="container" class="border border-black border-3 m-3">
+    
+</div>
+<button onclick="saveCustomId()">Save</button>
+<button onclick="getCustomIdExample()">Generate Example</button>
+<pre id="exampleCustomId"></pre>
+
+<script>
+    let partsCustomId = [];
+    
+    loadPartsCustomId();
+
+    async function loadPartsCustomId() { 
+        response = await GetAllPartCustomId();
+        partsCustomId = await response.json();
+
+        let resHtml = "";
+        for (let part of partsCustomId) { 
+            resHtml += `
+            <div
+                onclick="addItem('${part.typePartCustomId}','${part.name}')">
+                ${part.name}
+            </div>`;
+        }
+        document.getElementById('listPartsCustomId').innerHTML = resHtml;
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+<script>
+    let draggedId = null;    
+    let selectedItems = [];
+
+    const container = document.getElementById('container');
+    loadExistStructCustomId();
+
+    async function loadExistStructCustomId(){
+        const response = await GetStructCustomId(@Model);
+        selectedItems = await response.json();
+        
+        renderTarget();
+    }
+
+    container.ondragover = (e) => {
+        e.preventDefault(); 
+    };
+
+    container.ondrop = (e) => {
+        e.preventDefault();
+
+        const item = selectedItems[draggedId];
+        let targetId = parseInt(e.target.dataset.index);
+        selectedItems.splice(draggedId, 1);
+        selectedItems.splice(targetId, 0, item);
+
+        renderTarget();
+    };
+
+    function renderTarget() {
+        if (selectedItems.length === 0) {
+            container.innerHTML = "Empty List";
+            return;
+        }
+
+        let resHtml = "";
+        for (let i = 0; i < selectedItems.length; i++) { 
+            const el = selectedItems[i];
+
+            let resSelect = "";
+            const part = partsCustomId.find(i => i.typePartCustomId == el.id);
+            const avaliableFormat = part.avaliableFormat;
+            if (avaliableFormat.length > 1) {
+                resSelect += `<select onchange="updateSelect(${i},this.value)">`
+
+                for (let format of avaliableFormat) {
+                    const selectedStatus = (el.format == format) ? ('selected'): ('');
+                    resSelect += `<option value="${format}" ${selectedStatus}>${format}</option>`;
+                }
+            }
+
+            if (part.name === 'FixedText') {
+                resSelect += `<input oninput="updateInput(${i},this.value)" type="text" value="${el.format}">`
+            }
+            
+            if (avaliableFormat.length > 1) {
+                resSelect += `</select>`
+            }
+
+            resHtml += 
+                `<div draggable="true"
+                    data-index="${i}"
+                    class="drag-item" margin: 5px;">
+                    ${el.name}
+                    ${resSelect}
+                    <button onclick="removeItem(${i})">Delete</button>
+                </div>
+            `;
+        }
+
+        container.innerHTML = resHtml;
+
+        const items = container.childNodes;
+        for (let el of items) {
+            el.ondragenter = (e) => el.classList.add('drag-over');
+            el.ondragleave = (e) => el.classList.remove('drag-over');
+            el.ondragstart = (e) => {
+                draggedId = parseInt(e.target.dataset.index);
+            };
+        }
+    }
+
+    function updateSelect(indexId, value) { 
+        selectedItems[indexId].format = value;
+    }
+
+    function updateInput(indexId, value) { 
+        selectedItems[indexId].format = value;
+    }
+
+    function removeItem(index){
+        selectedItems.splice(index, 1);
+        renderTarget();
+    };
+
+    async function saveCustomId() { 
+        console.log(selectedItems);
+    await SetStructCustomId(@Model, selectedItems);
+    }
+
+    function addItem(id,name) { 
+        let item = {
+            id:id,
+            name:name,
+            format:''
+        };
+
+        const part = partsCustomId.find(p => p.typePartCustomId == id);
+
+        if (part.avaliableFormat.length > 0) {
+            item.format = part.avaliableFormat[0];
+        }
+
+        selectedItems.push(item);
+        renderTarget();
+    }
+
+    async function getCustomIdExample() {
+        let result = "";
+
+        selectedItems.forEach(part => {
+            const typeId = String(part.id);
+            const format = part.format;
+
+            switch (typeId) {
+                case "0": // FixedText 
+                    result += format;
+                    break;
+
+                case "1": // 20-bit random number 
+                    let rnd20 = Math.floor(Math.random() * 1048576);
+                    result += (format === "With lead zero") ? String(rnd20).padStart(7, '0') : rnd20;
+                    break;
+
+                case "2": // 32-bit random number 
+                    let rnd32 = Math.floor(Math.random() * 4294967296);
+                    result += (format === "With lead zero") ? String(rnd32).padStart(10, '0') : rnd32;
+                    break;
+
+                case "3": // 6-digit random number
+                    let rnd6 = Math.floor(Math.random() * 1000000);
+                    result += (format === "With lead zero") ? String(rnd6).padStart(6, '0') : rnd6;
+                    break;
+
+                case "4": // 9-digit random number
+                    let rnd9 = Math.floor(Math.random() * 1000000000);
+                    result += (format === "With lead zero") ? String(rnd9).padStart(9, '0') : rnd9;
+                    break;
+
+                case "5": // GUID
+                    result += crypto.randomUUID();
+                    break;
+
+                case "6": // Date/time
+                    result += dayjs().format(format);
+                    break;
+
+                case "7": // Sequence 
+                    result += "1";
+                    break;
+            }
+        });
+
+        document.getElementById('exampleCustomId').textContent = result;
+    }
+</script>

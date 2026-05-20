@@ -7,6 +7,8 @@
     var classNameInputField = "inputField";
 
     var classNameAddItem = "itemAdd";
+
+    var CustomIdName = "CustomId";
 }
 <style>
     .drag-item { 
@@ -16,6 +18,18 @@
         border-left: 3px solid blue; 
     }
 </style>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" 
+           href="/Home/Inventory?Id=@Model&Page=1">Inventory</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" 
+           href="/Home/CustomId?idInventory=@Model">Custom Id</a>
+    </li>
+</ul>
+
 <h3 id="inventoryInfo"></h3>
 
 <div>
@@ -97,7 +111,7 @@
 
         loadBodyTable();
         loadItemAdd();
-        inventoryInfo.innerText = `Inventory Name: ${inventory.name} | Creator: ${inventory.creatorName}`;
+        document.getElementById('inventoryInfo').innerText = `Inventory Name: ${inventory.name} | Creator: ${inventory.creatorName}`;
     }
 
     function loadHeadTable() { 
@@ -141,7 +155,7 @@
                 
                 if(field){  
                     fields += `
-                        <td><input type="text" class="@classNameInputField" value="${field.value}" data-item-value-id="${field.id}" data-item-id="${item.id}"></td>
+                            <td><input type="text" class="@classNameInputField" value="${field.value}" data-inventory-type-id="${id}" data-item-value-id="${field.id}" data-item-id="${item.id}"></td>
                     `;
                 }else{
                     fields += `
@@ -167,10 +181,12 @@
     function loadItemAdd() {
         let resHtml = "";
         for (let field of inventory.inventoryType) {
-            resHtml += `
-                <div>${field.name}</div>
-                <input class="@classNameAddItem" data-id="${field.id}" type="text">
-            `;
+            if (field.name != '@CustomIdName') {
+                resHtml += `
+                    <div>${field.name}</div>
+                    <input class="@classNameAddItem" data-id="${field.id}" type="text">
+                `;
+            }
         }
 
         document.getElementById('listItemField').innerHTML = resHtml;
@@ -271,7 +287,8 @@
                 if (originalValue !== currentValue) {
                     changes.push({
                         itemValueId: itemValueId,
-                        value: currentValue
+                        value: currentValue,
+                        inventoryTypeId: inventoryTypeId
                     });
                 }
             }
@@ -323,7 +340,7 @@
     }
     
     async function getInventory() {
-        const response = await GetPartInventory(@Model,@ViewBag.Page,@ViewBag.Count);
+        const response = await GetPartInventory(@Model,@ViewBag.Page);
     
         const result = await response.json();
         inventory = result;
@@ -395,14 +412,7 @@
     let draggedId = null;
 
     function render() {
-        //const container = document.getElementById('inventoryTableHeadFieldName');
-
         loadHeadTable();
-        // let resHtml = "";
-        // for (let id of inventoryTypeIds) {
-        //     resHtml += `<div class="drag-item" draggable="true" data-id="${id}">${id}</div>`;
-        // }
-        //container.innerHTML = resHtml;
 
         const dragItems = document.getElementsByClassName('drag-item');
 

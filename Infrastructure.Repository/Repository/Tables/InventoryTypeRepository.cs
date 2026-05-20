@@ -1,7 +1,9 @@
-﻿using Application.Repository.Tables;
+﻿using Application.Options;
+using Application.Repository.Tables;
 using Domain.Models;
 using Infrastructure.Repository.PostgresDbContext;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,10 +13,14 @@ namespace Infrastructure.Repository.Repository.Tables
     public class InventoryTypeRepository : IInventoryTypeRepository
     {
         private readonly AppDbContext _context;
+        private readonly InventorySettings _inventorySettings;
 
-        public InventoryTypeRepository(AppDbContext context)
+        public InventoryTypeRepository(
+            AppDbContext context,
+            IOptions<InventorySettings> options)
         {
             _context = context;
+            _inventorySettings = options.Value;
         }
 
         public async Task<InventoryType?> AddAsync(InventoryType item)
@@ -24,17 +30,18 @@ namespace Infrastructure.Repository.Repository.Tables
 
             return res.Entity;
         }
-
-        public async Task<InventoryType?> DeleteAsync(InventoryType item)
+        public async Task<long> GetIdItemValueCustomIdAsync(long inventoryId)
         {
-            var res = _context.InventoryType.Remove(item);
-            await _context.SaveChangesAsync();
-            return res.Entity;
+            return await _context.InventoryType
+                .Where(it => it.InventoryId == inventoryId && it.Name == "CustomId")
+                .Select(it => it.Id)
+                .FirstOrDefaultAsync();
         }
-
         public async Task<int> DeleteAsync(long[] Ids)
         {
-            return await _context.InventoryType.Where(i => Ids.Contains(i.Id)).ExecuteDeleteAsync();
+            return await _context.InventoryType
+                .Where(i => Ids.Contains(i.Id) && i.Name != _inventorySettings.CustomIdName)
+                .ExecuteDeleteAsync();
         }
 
         public async Task<IEnumerable<InventoryType>> GetAllAsync()

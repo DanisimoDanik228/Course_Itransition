@@ -1,4 +1,5 @@
-﻿using Application.Repository.Tables;
+﻿using Application.Options;
+using Application.Repository.Tables;
 using Application.Repository.User;
 using Application.Service;
 using Domain.Models;
@@ -48,6 +49,10 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 var settings = new ElasticsearchClientSettings(new Uri("http://elasticsearch:9200"))
     .DefaultIndex("editor_index");
 
+builder.Services.Configure<InventorySettings>(
+    builder.Configuration.GetSection("InventorySettings")
+);
+
 var client = new ElasticsearchClient(settings);
 builder.Services.AddSingleton(client);
 
@@ -62,6 +67,7 @@ builder.Services.AddScoped<IEditorSearchService, EditorSearchService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IService,Service>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICustomIdService, CustomIdService>();
 
 var app = builder.Build();
 

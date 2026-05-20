@@ -2,6 +2,7 @@
 using Application.Dto.Request.Full;
 using Application.Dto.Response;
 using Application.Dto.Response.Full;
+using Application.Options;
 using Application.Repository.Tables;
 using Application.Service;
 using AutoMapper;
@@ -9,11 +10,14 @@ using Domain.Models;
 using Infrastructure.Repository.Repository.Tables;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Infrastructure.Service.Service
 {
@@ -24,6 +28,8 @@ namespace Infrastructure.Service.Service
         private readonly IItemRepository _itemRepository;
         private readonly IInventoryTypeRepository _inventoryTypeRepository;
         private readonly IAuthenticationService _authenticationService;
+        private readonly ICustomIdService _customIdService;
+        private readonly InventorySettings _inventorySettings;
         private readonly IMapper _mapper;
         public Service(
             IInventoryRepository inventoryRepository,
@@ -31,6 +37,8 @@ namespace Infrastructure.Service.Service
             IItemRepository itemRepository,
             IInventoryTypeRepository inventoryTypeRepository,
             IAuthenticationService authenticationService,
+            ICustomIdService customIdService,
+            IOptions<InventorySettings> options,
             IMapper mapper )
         {
             _inventoryRepository = inventoryRepository;
@@ -38,6 +46,8 @@ namespace Infrastructure.Service.Service
             _itemRepository = itemRepository;
             _inventoryTypeRepository = inventoryTypeRepository;
             _authenticationService = authenticationService;
+            _customIdService = customIdService;
+            _inventorySettings = options.Value;
             _mapper = mapper;
         }
         public async Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync()
@@ -102,7 +112,23 @@ namespace Infrastructure.Service.Service
         public async Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item)
         {
             var inventory = _mapper.Map<InventoryRequestDto, Inventory>(item);
+
+            if (string.IsNullOrEmpty(inventory.StructCustomId))
+            {
+                // default value
+                inventory.StructCustomId = "[" +
+                    "{\"id\":\"7\"," +
+                    "\"name\":\"Sequence\"," +
+                    "\"format\":\"\"}" +
+                    "]";
+            }
+            
             var res = await _inventoryRepository.AddAsync(inventory);
+            var resInventoryType = await _inventoryTypeRepository.AddAsync(new InventoryType() {
+                Name = _inventorySettings.CustomIdName,
+                Type = "string",
+                InventoryId = res.Id
+            });
 
             return _mapper.Map<Inventory, InventoryResponseDto>(res);
         }
@@ -116,6 +142,34 @@ namespace Infrastructure.Service.Service
             }
 
             var itemFull = _mapper.Map<ItemFullRequestDto, Item>(item);
+            var structCustomId = await _inventoryRepository.GetStructCustomIdAsync(itemFull.InventoryId); 
+            var id = await _inventoryTypeRepository.GetIdItemValueCustomIdAsync(itemFull.InventoryId); 
+            var maxSequence = 1 + await _inventoryRepository.GetMaxSequenceAsync(itemFull.InventoryId);
+            itemFull.Sequence = maxSequence;
+            string customId = null;
+            
+            for (int i = 0; i < _inventorySettings.TryGenerateCustomId; i++)
+            {
+                var tempCustomId = _customIdService.GenerateCustomId(structCustomId, maxSequence);
+                var exist = await _itemValueRepository.ExistCustomIdAsync(id, tempCustomId);
+
+                if (!exist)
+                {
+                    customId = tempCustomId;
+                    break;
+                }
+            }
+
+            if (customId == null) {
+                return null;
+            }
+
+            itemFull.ItemValue.Add(new ItemValue()
+            {
+                Value = customId,
+                InventoryTypeId = await _inventoryTypeRepository.GetIdItemValueCustomIdAsync(itemFull.InventoryId)
+            });
+
             var res = await _itemRepository.AddAsync(itemFull);
 
             return _mapper.Map<Item, ItemFullResponseDto>(res);
@@ -185,7 +239,7 @@ namespace Infrastructure.Service.Service
             return await _inventoryTypeRepository.DeleteAsync(fieldsId);
         }
         
-        public async Task UpdateItemAsync(UpdateItemRequestDto[] data, long idInventory)
+        public async Task UpdateItemAsync(List<UpdateItemRequestDto> data, long idInventory)
         {
             var myId = _authenticationService.MyId();
             if (!(await _authenticationService.MayEditInventory(myId, idInventory)))
@@ -193,7 +247,63 @@ namespace Infrastructure.Service.Service
                 return;
             }
 
+            var id = await _inventoryTypeRepository.GetIdItemValueCustomIdAsync(idInventory);
+            var itemCustomId = data.Where(d => d.InventoryTypeId == id).FirstOrDefault();
+            if (itemCustomId != null)
+            {
+                var structCustomId = await _inventoryRepository.GetStructCustomIdAsync(idInventory);
+                var sequence = await _inventoryRepository.GetMaxSequenceAsync(idInventory);
+                var valid = _customIdService.IsValidCustomId(structCustomId, itemCustomId.Value, sequence);
+
+                if (!valid)
+                {
+                    data.Remove(itemCustomId);
+                }
+                else
+                {
+                    var exist = await _itemValueRepository.ExistCustomIdAsync(id, itemCustomId.Value);
+
+                    if (exist)
+                    {
+                        data.Remove(itemCustomId);
+                    }
+                }
+            }
+
             await _itemValueRepository.UpdateAsync(data);
+        }
+
+        public IEnumerable<PartNameCustomId> GetAllPartCustomId()
+        {
+            return _customIdService.GetAllPartCustomId();
+        }
+
+        public async Task SetStructCustomIdAsync(long idInventory, List<PartCustomId> structCustomId)
+        {
+            if (!structCustomId.Any())
+            {
+                return;
+            }
+
+            var myId = _authenticationService.MyId();
+            if (!(await _authenticationService.MayEditCutomIdInventory(myId, idInventory)))
+            {
+                return;
+            }
+
+            var str = JsonSerializer.Serialize(structCustomId);
+
+            await _inventoryRepository.UpdateCustomIdAsync(idInventory, str);
+        }
+
+        public async Task<List<PartCustomId>> GetStructCustomIdAsync(long inventoryId)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var str = await _inventoryRepository.GetStructCustomIdAsync(inventoryId);
+            return JsonSerializer.Deserialize<List<PartCustomId>>(str, options);
         }
     }
 }

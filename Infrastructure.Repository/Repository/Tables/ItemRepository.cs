@@ -47,6 +47,12 @@ namespace Infrastructure.Repository.Repository.Tables
             return _context.Items.Include(i => i.ItemValue).AsNoTracking().Where(i => i.InventoryId == idInventory).ToList();
         }
 
+        public async Task<Item?> GetByIdAsync(long Id)
+        {
+            return await _context.Items
+                .FindAsync(Id);
+        }
+
         public async Task<Item?> UpdateAsync(Item item)
         {
             var res = _context.Items.Update(item);

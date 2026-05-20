@@ -12,10 +12,12 @@ namespace Application.Service
 {
     public interface IService
     {
-        Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync(long idInventory);
+        IEnumerable<PartNameCustomId> GetAllPartCustomId();
+        Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync (long idInventory);
         Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync();
         Task<IEnumerable<InventoryResponseDto>> GetAllInventoryUserAsync(string userId);
         Task<IEnumerable<InventoryResponseDto>> GetAccessInventoryUserAsync(string userId);
+        Task<List<PartCustomId>> GetStructCustomIdAsync(long inventoryId);
         Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id);
         Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page);   
         Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item);
@@ -25,7 +27,8 @@ namespace Application.Service
         Task<int?> DeleteInventoryAsync(long[] idInventory);
         Task<int?> DeleteItemsAsync(long idInventory, long[] itemsId);
         Task<int?> DeleteFieldAsync(long idInventory, long[] fieldsId);
-        Task UpdateItemAsync(UpdateItemRequestDto[] data, long idInventory);
+        Task SetStructCustomIdAsync(long idInventory, List<PartCustomId> structCustomId);
+        Task UpdateItemAsync(List<UpdateItemRequestDto> data, long idInventory);
     }
 }
  

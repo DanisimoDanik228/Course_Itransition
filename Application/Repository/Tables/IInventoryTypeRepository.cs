@@ -9,8 +9,8 @@ namespace Application.Repository.Tables
     {
         Task<IEnumerable<InventoryType>> GetAllAsync();
         Task<InventoryType?> AddAsync(InventoryType item);
+        Task<long> GetIdItemValueCustomIdAsync(long inventoryId);
         Task<InventoryType?> UpdateAsync(InventoryType item);
-        Task<InventoryType?> DeleteAsync(InventoryType item);
         Task<int> DeleteAsync(long[] Ids);
     }
 }

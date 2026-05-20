@@ -70,6 +70,30 @@ async function AddInventory(inventory) {
     return response;
 }
 
+async function SetStructCustomId(inventoryId, structCustomId) {
+    const response = await fetch(`/Home/SetStructCustomId?idInventory=${inventoryId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(structCustomId)
+    });
+
+    return response;
+}
+
+async function GetStructCustomId(inventoryId) {
+    const response = await fetch(`/Home/GetStructCustomId?idInventory=${inventoryId}`);
+
+    return response;
+}
+
+async function GetAllPartCustomId() {
+    const response = await fetch('/Home/GetAllPartCustomId');
+
+    return response;
+}
+
 async function GetAllInventory() {
     const response = await fetch('/Home/GetAllInventory');
 
@@ -99,8 +123,8 @@ async function GetAllUsers(){
     return response;
 }
 
-async function GetPartInventory(id,page,count) {
-    const response = await fetch(`/Home/GetPartInventory?idInventory=${id}&Page=${page}&Count=${count}`);   
+async function GetPartInventory(id,page) {
+    const response = await fetch(`/Home/GetPartInventory?idInventory=${id}&Page=${page}`);   
     return response;
 }
 

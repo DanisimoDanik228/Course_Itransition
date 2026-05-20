@@ -47,9 +47,9 @@ namespace Infrastructure.Repository.Repository.Tables
             return res.Entity;
         }
 
-        public async Task UpdateAsync(UpdateItemRequestDto[] data)
+        public async Task UpdateAsync(List<UpdateItemRequestDto> data)
         {
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 0; i < data.Count; i++)
             {
                 var id = data[i].ItemValueId;
                 var value = data[i].Value;
@@ -58,6 +58,16 @@ namespace Infrastructure.Repository.Repository.Tables
                     .Where(v => v.Id == id)
                     .ExecuteUpdateAsync(s => s.SetProperty(v => v.Value, value));
             }
+        }
+
+        public async Task<bool> ExistCustomIdAsync(long inventoryTypeCustomId, string customIds)
+        {
+            var res = await _context.ItemValue
+                .Where(it => it.InventoryTypeId == inventoryTypeCustomId)
+                .Select(it => it.Value)
+                .AnyAsync(v => v == customIds);
+
+            return res;
         }
     }
 }

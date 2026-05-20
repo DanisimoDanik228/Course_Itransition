@@ -93,5 +93,19 @@ namespace Infrastructure.Service.Service
 
             return res;
         }
+
+        public async Task<bool> MayEditCutomIdInventory(string userId, long inventoryId)
+        {
+            if (await _userManager.IsInRoleAsync(new AppUser { Id = userId }, "Admin"))
+            {
+                return true;
+            }
+
+            var res = await _context.Inventory
+                .AnyAsync(i => i.Id == inventoryId &&
+                    (i.CreatorId == userId));
+
+            return res;
+        }
     }
 }

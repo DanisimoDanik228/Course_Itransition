@@ -25,11 +25,22 @@ namespace Course.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Inventory(long Id, int Count, int Page)
+        public async Task<IActionResult> Inventory(long Id, int Page)
         {
-            ViewBag.Count = Count;
             ViewBag.Page = Page;
             return View(Id);
+        }
+
+        public async Task<IActionResult> CustomId(long idInventory)
+        {
+            return View(idInventory);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPartCustomId()
+        {
+            var parts = _service.GetAllPartCustomId();
+            return Json(parts);
         }
 
         [HttpGet]
@@ -47,8 +58,9 @@ namespace Course.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPartInventory(long idInventory, int Count, int Page)
+        public async Task<IActionResult> GetPartInventory(long idInventory, int Page)
         {
+            int Count = 5;
             var res = await _service.GetPartInventoryAsync(idInventory, Count, Page);
 
             return Json(res);
@@ -68,7 +80,25 @@ namespace Course.Controllers
 
             return Json(inventories);
         }
-        
+
+        [HttpGet]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> GetStructCustomId(long idInventory)
+        {
+            var res = await _service.GetStructCustomIdAsync(idInventory);
+
+            return Json(res);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> SetStructCustomId(long idInventory, [FromBody] List<PartCustomId> structCustomId)
+        {
+            await _service.SetStructCustomIdAsync(idInventory, structCustomId);
+
+            return NoContent();
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> AddInventory([FromBody] InventoryRequestDto inventory)
@@ -130,7 +160,7 @@ namespace Course.Controllers
 
         [HttpPatch]
         [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> UpdateItem(long idInventory, [FromBody] UpdateItemRequestDto[] request)
+        public async Task<IActionResult> UpdateItem(long idInventory, [FromBody] List<UpdateItemRequestDto> request)
         {
             await _service.UpdateItemAsync(request, idInventory);
 
