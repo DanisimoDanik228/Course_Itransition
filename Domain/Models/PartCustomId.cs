@@ -18,9 +18,9 @@ namespace Domain.Models
 
     public class PartCustomId 
     {
-        public string id { get; set; } // TypePartCustomId    
-        public string name { get; set; }    
-        public string format { get; set; }    
+        public string Id { get; set; } // TypePartCustomId    
+        public string Name { get; set; }    
+        public string Format { get; set; }    
     }
 
     public class PartNameCustomId 

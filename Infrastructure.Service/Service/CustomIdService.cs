@@ -21,15 +21,15 @@ namespace Infrastructure.Service.Service
 
             foreach (var part in parts)
             {
-                var id = int.Parse(part.id);
+                var id = int.Parse(part.Id);
                 switch (id)
                 {
                     case (int)TypePartCustomId.FixedText:
-                        result.Append(part.format);
+                        result.Append(part.Format);
                         break;
 
                     case (int)TypePartCustomId.DateTime:
-                        result.Append(DateTime.Now.ToString(part.format.Replace('D', 'd').Replace('Y', 'y')));
+                        result.Append(DateTime.Now.ToString(part.Format.Replace('D', 'd').Replace('Y', 'y')));
                         break;
 
                     case (int)TypePartCustomId.GUID:
@@ -42,22 +42,22 @@ namespace Infrastructure.Service.Service
 
                     case (int)TypePartCustomId.DigitNumber6:
                         int rnd6 = _random.Next(0, 1_000_000);
-                        result.Append(FormatNumber(rnd6, 6, part.format));
+                        result.Append(FormatNumber(rnd6, 6, part.Format));
                         break;
 
                     case (int)TypePartCustomId.DigitNumber9:
                         int rnd9 = _random.Next(0, 1_000_000_000);
-                        result.Append(FormatNumber(rnd9, 9, part.format));
+                        result.Append(FormatNumber(rnd9, 9, part.Format));
                         break;
 
                     case (int)TypePartCustomId.BitNumber20:
                         int rnd20 = _random.Next(0, 1 << 20);
-                        result.Append(FormatNumber(rnd20, 7, part.format));
+                        result.Append(FormatNumber(rnd20, 7, part.Format));
                         break;
 
                     case (int)TypePartCustomId.BitNumber32:
                         long rnd32 = (long)(_random.NextInt64(0, 1 << 32));
-                        result.Append(FormatNumber(rnd32, 10, part.format));
+                        result.Append(FormatNumber(rnd32, 10, part.Format));
                         break;
                 }
             }
@@ -111,22 +111,22 @@ namespace Infrastructure.Service.Service
                 }
             };
         }
-        public bool IsValidCustomId(string structCustomId, string customId)
+        public bool IsValidCustomId(string structCustomId, string customId, long sequence)
         {
             var parts = JsonSerializer.Deserialize<List<PartCustomId>>(structCustomId);
             var result = new StringBuilder();
 
             foreach (var part in parts)
             {
-                var id = int.Parse(part.id);
+                var id = int.Parse(part.Id);
                 switch (id)
                 {
                     case (int)TypePartCustomId.FixedText:
-                        result.Append(CustomIdRegEx.regExFixedText(part.format));
+                        result.Append(CustomIdRegEx.regExFixedText(part.Format));
                         break;
 
                     case (int)TypePartCustomId.DateTime:
-                        result.Append(CustomIdRegEx.regExDateTime(part.format));
+                        result.Append(CustomIdRegEx.regExDateTime(part.Format));
                         break;
 
                     case (int)TypePartCustomId.GUID:
@@ -134,23 +134,23 @@ namespace Infrastructure.Service.Service
                         break;
 
                     case (int)TypePartCustomId.Sequence:
-                        result.Append(CustomIdRegEx.regExSequence(part.format));
+                        result.Append(CustomIdRegEx.regExSequence(sequence.ToString()));
                         break;
 
                     case (int)TypePartCustomId.DigitNumber6:
-                        result.Append(CustomIdRegEx.regExDigitNumber6(part.format));
+                        result.Append(CustomIdRegEx.regExDigitNumber6(part.Format));
                         break;
 
                     case (int)TypePartCustomId.DigitNumber9:
-                        result.Append(CustomIdRegEx.regExDigitNumber9(part.format));
+                        result.Append(CustomIdRegEx.regExDigitNumber9(part.Format));
                         break;
 
                     case (int)TypePartCustomId.BitNumber20:
-                        result.Append(CustomIdRegEx.regExBitNumber20(part.format));
+                        result.Append(CustomIdRegEx.regExBitNumber20(part.Format));
                         break;
 
                     case (int)TypePartCustomId.BitNumber32:
-                        result.Append(CustomIdRegEx.regExBitNumber32(part.format));
+                        result.Append(CustomIdRegEx.regExBitNumber32(part.Format));
                         break;
                 }
             }
@@ -233,7 +233,8 @@ namespace Infrastructure.Service.Service
 
         public static string regExSequence(string format)
         {
-            return "\\d{1,100}";
+            return format;
+            //return "\\d{1,100}";
         }
     }
 }

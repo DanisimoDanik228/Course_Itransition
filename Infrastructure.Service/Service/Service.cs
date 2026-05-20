@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 
 namespace Infrastructure.Service.Service
 {
@@ -237,7 +238,7 @@ namespace Infrastructure.Service.Service
             return await _inventoryTypeRepository.DeleteAsync(fieldsId);
         }
         
-        public async Task UpdateItemAsync(UpdateItemRequestDto[] data, long idInventory)
+        public async Task UpdateItemAsync(List<UpdateItemRequestDto> data, long idInventory)
         {
             var myId = _authenticationService.MyId();
             if (!(await _authenticationService.MayEditInventory(myId, idInventory)))
@@ -246,27 +247,25 @@ namespace Infrastructure.Service.Service
             }
 
             var id = await _inventoryTypeRepository.GetIdItemValueCustomIdAsync(idInventory);
-
-            for (int i = 0; i < data.Length; i++)
+            var itemCustomId = data.Where(d => d.InventoryTypeId == id).FirstOrDefault();
+            if (itemCustomId != null)
             {
-                var item = data[i];
-                if (item.InventoryTypeId == id)
+                var structCustomId = await _inventoryRepository.GetStructCustomIdAsync(idInventory);
+                var sequence = await _inventoryRepository.GetMaxSequenceAsync(idInventory);
+                var valid = _customIdService.IsValidCustomId(structCustomId, itemCustomId.Value, sequence);
+
+                if (!valid)
                 {
-                    var structCustomId = await _inventoryRepository.GetStructCustomIdAsync(idInventory);
-                    var valid = _customIdService.IsValidCustomId(structCustomId,item.Value);
+                    data.Remove(itemCustomId);
+                }
+                else
+                {
+                    var exist = await _itemValueRepository.ExistCustomIdAsync(id, itemCustomId.Value);
 
-                    if (valid) {
-                        var exist = await _itemValueRepository.ExistCustomIdAsync(id, item.Value);
-                        valid = !exist;
+                    if (exist)
+                    {
+                        data.Remove(itemCustomId);
                     }
-
-                    if (!valid) { 
-                        var dataTemp = data.ToList();
-                        dataTemp.RemoveAt(i);
-                        data = dataTemp.ToArray();
-                    }
-
-                    break;
                 }
             }
 
@@ -278,20 +277,28 @@ namespace Infrastructure.Service.Service
             return _customIdService.GetAllPartCustomId();
         }
 
-        public async Task SetStructCustomIdAsync(long idInventory, string structCustomId)
+        public async Task SetStructCustomIdAsync(long idInventory, List<PartCustomId> structCustomId)
         {
+            if (!structCustomId.Any())
+            {
+                return;
+            }
+
             var myId = _authenticationService.MyId();
             if (!(await _authenticationService.MayEditCutomIdInventory(myId, idInventory)))
             {
                 return;
             }
 
-            await _inventoryRepository.UpdateCustomIdAsync(idInventory, structCustomId);
+            var str = JsonSerializer.Serialize(structCustomId);
+
+            await _inventoryRepository.UpdateCustomIdAsync(idInventory, str);
         }
 
-        public async Task<string> GetStructCustomIdAsync(long inventoryId)
+        public async Task<IEnumerable<PartCustomId>> GetStructCustomIdAsync(long inventoryId)
         {
-            return await _inventoryRepository.GetStructCustomIdAsync(inventoryId);
+            var str = await _inventoryRepository.GetStructCustomIdAsync(inventoryId);
+            return JsonSerializer.Deserialize<List<PartCustomId>>(str);
         }
     }
 }

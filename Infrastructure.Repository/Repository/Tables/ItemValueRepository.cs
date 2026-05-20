@@ -47,9 +47,9 @@ namespace Infrastructure.Repository.Repository.Tables
             return res.Entity;
         }
 
-        public async Task UpdateAsync(UpdateItemRequestDto[] data)
+        public async Task UpdateAsync(List<UpdateItemRequestDto> data)
         {
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 0; i < data.Count; i++)
             {
                 var id = data[i].ItemValueId;
                 var value = data[i].Value;

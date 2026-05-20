@@ -71,11 +71,12 @@ async function AddInventory(inventory) {
 }
 
 async function SetStructCustomId(inventoryId, structCustomId) {
-    const response = await fetch(`/Home/SetStructCustomId?idInventory=${inventoryId}&structCustomId=${JSON.stringify(structCustomId)}`, {
+    const response = await fetch(`/Home/SetStructCustomId?idInventory=${inventoryId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-        }
+        },
+        body: JSON.stringify(structCustomId)
     });
 
     return response;

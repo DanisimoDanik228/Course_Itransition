@@ -7,6 +7,7 @@ namespace Application.Repository.Tables
 {
     public interface IItemRepository
     {
+        Task<Item?> GetByIdAsync(long Id);
         Task<IEnumerable<Item>> GetAllAsync();
         Task<IEnumerable<Item>> GetAllFromInventoryAsync(long idInventory);
         Task<Item?> AddAsync(Item item);

@@ -92,7 +92,7 @@ namespace Course.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> SetStructCustomId(long idInventory, string structCustomId)
+        public async Task<IActionResult> SetStructCustomId(long idInventory, [FromBody] List<PartCustomId> structCustomId)
         {
             await _service.SetStructCustomIdAsync(idInventory, structCustomId);
 
@@ -160,7 +160,7 @@ namespace Course.Controllers
 
         [HttpPatch]
         [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> UpdateItem(long idInventory, [FromBody] UpdateItemRequestDto[] request)
+        public async Task<IActionResult> UpdateItem(long idInventory, [FromBody] List<UpdateItemRequestDto> request)
         {
             await _service.UpdateItemAsync(request, idInventory);
 

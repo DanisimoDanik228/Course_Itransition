@@ -13,7 +13,7 @@ namespace Application.Repository.Tables
         Task AddRangeAsync(ItemValue[] item);
         Task<bool> ExistCustomIdAsync(long inventoryTypeCustomId, string customIds);
         Task<ItemValue?> UpdateAsync(ItemValue item);
-        Task UpdateAsync(UpdateItemRequestDto[] data);
+        Task UpdateAsync(List<UpdateItemRequestDto> data);
         Task<ItemValue?> DeleteAsync(ItemValue item);
     }
 }

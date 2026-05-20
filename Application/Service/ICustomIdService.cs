@@ -8,7 +8,7 @@ namespace Application.Service
     public interface ICustomIdService
     {
         IEnumerable<PartNameCustomId> GetAllPartCustomId();
-        bool IsValidCustomId(string structCustomId, string customId);
+        bool IsValidCustomId(string structCustomId, string customId, long sequence);
         string GenerateCustomId(string structCustomId, long sequence);
     }
 }
