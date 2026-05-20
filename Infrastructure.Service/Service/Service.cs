@@ -17,6 +17,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Infrastructure.Service.Service
 {
@@ -297,8 +298,12 @@ namespace Infrastructure.Service.Service
 
         public async Task<List<PartCustomId>> GetStructCustomIdAsync(long inventoryId)
         {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
             var str = await _inventoryRepository.GetStructCustomIdAsync(inventoryId);
-            return JsonSerializer.Deserialize<List<PartCustomId>>(str);
+            return JsonSerializer.Deserialize<List<PartCustomId>>(str, options);
         }
     }
 }

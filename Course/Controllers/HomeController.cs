@@ -87,11 +87,6 @@ namespace Course.Controllers
         {
             var res = await _service.GetStructCustomIdAsync(idInventory);
 
-            foreach (var item in res)
-            {
-                Console.WriteLine(new string('_',100) + item.Name + " | " + item.Format);
-            }
-
             return Json(res);
         }
 
