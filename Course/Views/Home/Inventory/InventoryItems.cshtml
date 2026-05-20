@@ -60,10 +60,8 @@
 <script>
     let page = 1;
     let inventory = {};
-    //let users = [];
-    let inventoryTypeIds = [];
+    let orderInventoryTypes = [];
 
-    //getUsers();
     loadFullInventory();
     searchEditor();
 
@@ -72,8 +70,9 @@
     async function loadFullInventory() {
         await getInventory();
 
-        const allField = inventory.inventoryType.map(i => i.id);
-        inventoryTypeIds = updateInventoryTypeOrder(allField);
+        const allIds = inventory.inventoryType.map(i => i.id);
+        const tableOrderField = await (await GetOrderField(@Model)).json();
+        orderInventoryTypes = collapseFieldOrder(tableOrderField, allIds);
 
         loadHeadTable();
         loadBodyTable();
@@ -83,7 +82,7 @@
     function loadHeadTable() {
         let resHtmlName = `<th><input type="checkbox" id="selectAll"></th>`;
 
-        for (let id of inventoryTypeIds) {
+        for (let id of orderInventoryTypes) {
             const field = inventory.inventoryType.find(f => f.id === id);
             resHtmlName += `
                 <th>
@@ -100,7 +99,7 @@
         for (let item of inventory.items) {
             let fields = "";
 
-            for (let id of inventoryTypeIds) {
+            for (let id of orderInventoryTypes) {
                 const field = item.itemValue.find(f => f.inventoryTypeId === id);
 
                 if (field) {
