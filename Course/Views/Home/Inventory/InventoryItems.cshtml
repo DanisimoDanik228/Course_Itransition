@@ -23,21 +23,8 @@
         </tbody>
     </table>
     <button onclick="deleteItem()">Delete Item</button>
-    <button onclick="deleteField()">Delete Field</button>
-    <button onclick="applyChanges()">Change</button>
-</div>
-
-<div class="bg-success bg-opacity-50">
-    <div id="listItemField"></div>
     <button onclick="addItem()" type="submit">Add Item</button>
-</div>
-
-<div class="bg-success bg-opacity-75">
-    <div>Name</div>
-    <input id="fieldName" type="text">
-    <div>Type</div>
-    <input id="fieldType" type="text">
-    <button onclick="addField()" type="submit">Add Field</button>
+    <button onclick="applyChanges()">Change</button>
 </div>
 
 <div class="bg-info">
@@ -90,7 +77,6 @@
 
         loadHeadTable();
         loadBodyTable();
-        loadItemAdd();
         document.getElementById('inventoryInfo').innerText = `Inventory Name: ${inventory.name} | Creator: ${inventory.creatorName}`;
     }
 
@@ -138,22 +124,6 @@
         document.getElementById('inventoryTableBody').innerHTML = resHtmlBody;
 
         createClickSelectAll('selectAll', '@classNameItemCheckBox');
-
-        loadItemAdd();
-    }
-
-    function loadItemAdd() {
-        let resHtml = "";
-        for (let field of inventory.inventoryType) {
-            if (field.name != '@CustomIdName') {
-                resHtml += `
-                        <div>${field.name}</div>
-                        <input class="@classNameAddItem" data-id="${field.id}" type="text">
-                    `;
-            }
-        }
-
-        document.getElementById('listItemField').innerHTML = resHtml;
     }
 
     function loadUsers() {
