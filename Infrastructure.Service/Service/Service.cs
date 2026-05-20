@@ -130,6 +130,7 @@ namespace Infrastructure.Service.Service
             }
 
             inventory.OrderField = [1];
+            inventory.IsPublic = false;
             var res = await _inventoryRepository.AddAsync(inventory);
             var resInventoryType = await _inventoryTypeRepository.AddAsync(new InventoryType() {
                 Name = _inventorySettings.CustomIdName,
