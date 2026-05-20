@@ -68,8 +68,9 @@ namespace Infrastructure.Service.Service
             return response;
         }
 
-        public async Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page)
+        public async Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Page)
         {
+            int Count = _inventorySettings.CountItemPerPage;
             var res = await _inventoryRepository.GetPartByIdAsync(Id, Page, Count);
             var response = _mapper.Map<Inventory, InventoryFullResponseDto>(res); 
 
@@ -108,6 +109,13 @@ namespace Infrastructure.Service.Service
 
             return inventories.Select(i => _mapper.Map<Inventory, InventoryResponseDto>(i));
         }
+        public async Task<IEnumerable<InventoryTypeResponseDto>> GetInventoryTypesAsync(long inventoryId)
+        {
+            var res = await _inventoryRepository.GetInventoryTypeOnInventoryAsync(inventoryId);
+            
+            var res1 =  res.Select(i => _mapper.Map<InventoryType, InventoryTypeResponseDto>(i));
+            return res1;
+        }
 
         public async Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item)
         {
@@ -115,18 +123,15 @@ namespace Infrastructure.Service.Service
 
             if (string.IsNullOrEmpty(inventory.StructCustomId))
             {
-                // default value
-                inventory.StructCustomId = "[" +
-                    "{\"id\":\"7\"," +
-                    "\"name\":\"Sequence\"," +
-                    "\"format\":\"\"}" +
-                    "]";
+                inventory.StructCustomId = _inventorySettings.DefaultStructCustomId;
             }
             
             var res = await _inventoryRepository.AddAsync(inventory);
             var resInventoryType = await _inventoryTypeRepository.AddAsync(new InventoryType() {
                 Name = _inventorySettings.CustomIdName,
-                Type = "string",
+                Type = FieldType.SingleLine,
+                Description = "",
+                IsShowInventoryTab = false,
                 InventoryId = res.Id
             });
 
@@ -298,12 +303,36 @@ namespace Infrastructure.Service.Service
 
         public async Task<List<PartCustomId>> GetStructCustomIdAsync(long inventoryId)
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
             var str = await _inventoryRepository.GetStructCustomIdAsync(inventoryId);
-            return JsonSerializer.Deserialize<List<PartCustomId>>(str, options);
+            return JsonSerializer.Deserialize<List<PartCustomId>>(str, new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
+        }
+
+        public async Task UpdateInvertoryTypes(List<InventoryTypeRequestDto> data)
+        {
+            var setId = data.Select(i => i.InventoryId).ToHashSet();
+            if (setId.Count() != 1) {
+                return;
+            }
+
+            var invertoryId = setId.First();
+            var myId = _authenticationService.MyId();
+            if (!(await _authenticationService.MayEditCutomIdInventory(myId, invertoryId)))
+            {
+                return;
+            }
+
+            var id = await _inventoryTypeRepository.GetIdItemValueCustomIdAsync(invertoryId);
+            foreach (var item in data)
+            {
+                if (item.Id == id) 
+                {
+                    item.Name = _inventorySettings.CustomIdName;
+                    item.Type = (int)FieldType.SingleLine;
+                }
+            }
+
+            var inventoryTypes = data.Select(i => _mapper.Map<InventoryTypeRequestDto,InventoryType>(i));
+            await _inventoryTypeRepository.UpdateRangeAsync(inventoryTypes);
         }
     }
 }

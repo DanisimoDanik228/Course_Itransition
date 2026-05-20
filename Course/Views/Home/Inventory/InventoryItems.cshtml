@@ -1,4 +1,5 @@
-﻿@{
+﻿@model long
+@{
     var classNameFieldCheckBox = "fieldCheckBox";
     var classNameItemCheckBox = "itemCheckBox";
 
@@ -10,58 +11,25 @@
 
     var CustomIdName = "CustomId";
 }
-<style>
-    .drag-item { 
-        border: 2px solid green; 
-    }
-    .drag-over { 
-        border-left: 3px solid blue; 
-    }
-</style>
-
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link" 
-           href="/Home/Inventory?Id=@Model&Page=1">Inventory</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" 
-           href="/Home/CustomId?idInventory=@Model">Custom Id</a>
-    </li>
-</ul>
-
+<partial name="Inventory/InventoryNavigate" />
 <h3 id="inventoryInfo"></h3>
 
 <div>
     <table>
         <thead>
-            <tr id="inventoryTableHeadCheckBoxes"></tr>
             <tr id="inventoryTableHeadFieldName"></tr>
         </thead>
         <tbody id="inventoryTableBody">
         </tbody>
     </table>
     <button onclick="deleteItem()">Delete Item</button>
-    <button onclick="deleteField()">Delete Field</button>
-    <button onclick="applyChanges()">Change</button>
-</div>
-
-<div class="bg-success bg-opacity-50">
-    <div id ="listItemField"></div>
     <button onclick="addItem()" type="submit">Add Item</button>
-</div>
-
-<div class="bg-success bg-opacity-75">
-    <div>Name</div>
-    <input id="fieldName" type="text">
-    <div>Type</div>
-    <input id="fieldType" type="text">
-    <button onclick="addField()" type="submit">Add Field</button>
+    <button onclick="applyChanges()">Change</button>
 </div>
 
 <div class="bg-info">
     <input type="text" name="name" id="inputUser" oninput="searchEditor()" />
-    <div>    
+    <div>
         <div>
             <input type="radio" name="searchField" value="UserName" onchange="changedSearchField()" checked>
             <label for="userName">Name</label>
@@ -90,6 +58,7 @@
 </div>
 
 <script>
+    let page = 1;
     let inventory = {};
     //let users = [];
     let inventoryTypeIds = [];
@@ -106,90 +75,55 @@
         const allField = inventory.inventoryType.map(i => i.id);
         inventoryTypeIds = updateInventoryTypeOrder(allField);
 
-        // loadHeadTable();
-        render();
-
+        loadHeadTable();
         loadBodyTable();
-        loadItemAdd();
         document.getElementById('inventoryInfo').innerText = `Inventory Name: ${inventory.name} | Creator: ${inventory.creatorName}`;
     }
 
-    function loadHeadTable() { 
-        let resHtmlField = "<th></th>";
+    function loadHeadTable() {
         let resHtmlName = `<th><input type="checkbox" id="selectAll"></th>`;
 
-        for(let id of inventoryTypeIds){
+        for (let id of inventoryTypeIds) {
             const field = inventory.inventoryType.find(f => f.id === id);
-
-            if(field)
-            {
-                resHtmlField += `
-                    <th><input type="checkbox" class="@classNameFieldCheckBox" data-inventory-type-id="${id}"> </th>
-                `;
-                resHtmlName += `
-                    <th class="drag-item" draggable="true" data-id="${field.id}"> ${field.name} </th>
-                `;
-            }else{
-                
-                resHtmlField += `
-                    <th>_Null_</th>
-                `;
-                resHtmlName += `
-                     <th>_Null_</th>
-                `;
-            }
+            resHtmlName += `
+                <th>
+                    ${field.name}
+                </th>`;
         }
 
-        document.getElementById('inventoryTableHeadCheckBoxes').innerHTML = resHtmlField;
         document.getElementById('inventoryTableHeadFieldName').innerHTML = resHtmlName;
     }
 
     function loadBodyTable() {
         let resHtmlBody = "";
 
-        for(let item of inventory.items){
+        for (let item of inventory.items) {
             let fields = "";
 
-            for (let id of inventoryTypeIds){
+            for (let id of inventoryTypeIds) {
                 const field = item.itemValue.find(f => f.inventoryTypeId === id);
-                
-                if(field){  
+
+                if (field) {
                     fields += `
-                            <td><input type="text" class="@classNameInputField" value="${field.value}" data-inventory-type-id="${id}" data-item-value-id="${field.id}" data-item-id="${item.id}"></td>
-                    `;
-                }else{
+                                <td><input type="text" class="@classNameInputField" value="${field.value}" data-inventory-type-id="${id}" data-item-value-id="${field.id}" data-item-id="${item.id}"></td>
+                        `;
+                } else {
                     fields += `
-                        <td><input type="text" class="@classNameInputField" data-inventory-type-id="${id}" data-item-id="${item.id}"></td>
-                    `;
+                            <td><input type="text" class="@classNameInputField" data-inventory-type-id="${id}" data-item-id="${item.id}"></td>
+                        `;
                 }
             }
 
             resHtmlBody += `
-                <tr>
-                    <td><input type="checkbox" class="@classNameItemCheckBox" data-id="${item.id}" > </td>
-                    ${fields}
-                </tr>
-            `;
+                    <tr>
+                        <td><input type="checkbox" class="@classNameItemCheckBox" data-id="${item.id}" > </td>
+                        ${fields}
+                    </tr>
+                `;
         }
         document.getElementById('inventoryTableBody').innerHTML = resHtmlBody;
-        
-        createClickSelectAll('selectAll','@classNameItemCheckBox');
 
-        loadItemAdd();
-    }
-
-    function loadItemAdd() {
-        let resHtml = "";
-        for (let field of inventory.inventoryType) {
-            if (field.name != '@CustomIdName') {
-                resHtml += `
-                    <div>${field.name}</div>
-                    <input class="@classNameAddItem" data-id="${field.id}" type="text">
-                `;
-            }
-        }
-
-        document.getElementById('listItemField').innerHTML = resHtml;
+        createClickSelectAll('selectAll', '@classNameItemCheckBox');
     }
 
     function loadUsers() {
@@ -198,16 +132,16 @@
 
         for (let item of users) {
             resHtml += `
-            <tr>
-                <td>
-                    <input type="checkbox" class="@classNameUserCheckBox" data-id="${item.id}">
-                </td>
-                <td>${item.name}</td>
-                <td>${item.email}</td>
-                <td>${item.roleInventory}</td>
-            </tr>`;
+                <tr>
+                    <td>
+                        <input type="checkbox" class="@classNameUserCheckBox" data-id="${item.id}">
+                    </td>
+                    <td>${item.name}</td>
+                    <td>${item.email}</td>
+                    <td>${item.roleInventory}</td>
+                </tr>`;
         }
-        
+
         userList.innerHTML = resHtml;
     }
 
@@ -220,7 +154,7 @@
             itemValue: []
         };
 
-        for (let field of values) { 
+        for (let field of values) {
             let subItem = {
                 id: 0,
                 value: field.value,
@@ -230,18 +164,26 @@
             item.itemValue.push(subItem);
         }
 
-        const response = await AddItemOnInventory(@Model,item);        
+        const response = await AddItemOnInventory(@Model, item);
         const result = await response.json();
         inventory.items.push(result);
-       
+
         loadBodyTable();
     }
 
     async function addField() {
         const nameField = document.getElementById('fieldName').value;
         const typeField = document.getElementById('fieldType').value;
-       
-        const response = await AddFieldOnInventory(@Model, nameField, typeField);
+        const item = {
+            id: 0,
+            inventoryId: @Model,
+            name: nameField,
+            type: 0,
+            isShowInventoryTab: false,
+            description: ""
+        };
+
+        const response = await AddFieldOnInventory(item);
         const result = await response.json();
         inventory.inventoryType.push(result);
 
@@ -250,28 +192,28 @@
     }
 
     async function deleteField() {
-        const fields = await getSelected('@classNameFieldCheckBox',i => i.dataset.inventoryTypeId);
-       
-        await DeleteFieldOnInventory(@Model,fields);
-        
+        const fields = await getSelected('@classNameFieldCheckBox', i => i.dataset.inventoryTypeId);
+
+        await DeleteFieldOnInventory(@Model, fields);
+
         loadFullInventory();
     }
 
     async function deleteItem() {
         const items = await getSelected('@classNameItemCheckBox');
-       
-        await DeleteItemsOnInventory(@Model,items);
+
+        await DeleteItemsOnInventory(@Model, items);
 
         await getInventory();
         loadBodyTable();
     }
 
-    async function applyChanges(){
+    async function applyChanges() {
         const inputs = document.getElementsByClassName('@classNameInputField');
         const changes = [];
         const addChanges = [];
 
-        for(let input of inputs){
+        for (let input of inputs) {
             const itemId = parseInt(input.dataset.itemId);
             const itemValueId = parseInt(input.dataset.itemValueId);
             const inventoryTypeId = parseInt(input.dataset.inventoryTypeId);
@@ -280,8 +222,7 @@
             const originalItem = inventory.items.find(i => i.id === itemId);
             const originalValueItem = originalItem.itemValue.find(v => v.id === itemValueId);
 
-            if(originalValueItem)
-            {
+            if (originalValueItem) {
                 const originalValue = originalValueItem.value;
 
                 if (originalValue !== currentValue) {
@@ -292,33 +233,31 @@
                     });
                 }
             }
-            else
-            {
-                if(currentValue != '')
-                {
+            else {
+                if (currentValue != '') {
                     addChanges.push({
                         itemId: itemId,
-                        inventoryTypeId: inventoryTypeId, 
+                        inventoryTypeId: inventoryTypeId,
                         value: currentValue
                     });
                 }
             }
-            
+
         }
 
         let needUpdateInventory = false;
 
-        if(changes.length > 0){
-            await UpdateItem(@Model,changes);
+        if (changes.length > 0) {
+            await UpdateItem(@Model, changes);
             needUpdateInventory = true;
         }
 
-        if(addChanges.length > 0){
-            await AddItemValueOnInventory(@Model,addChanges);
+        if (addChanges.length > 0) {
+            await AddItemValueOnInventory(@Model, addChanges);
             needUpdateInventory = true;
         }
 
-        if(needUpdateInventory){
+        if (needUpdateInventory) {
             loadFullInventory();
         }
     }
@@ -330,18 +269,18 @@
 
         //await searchEditor();
     }
-    
-    async function removeEditorRole(){ 
+
+    async function removeEditorRole() {
         const items = await getSelected('@classNameUserCheckBox');
 
-        await RemoveEditor(items ,@Model);
+        await RemoveEditor(items,@Model);
 
         //await searchEditor();
     }
-    
+
     async function getInventory() {
-        const response = await GetPartInventory(@Model,@ViewBag.Page);
-    
+        const response = await GetPartInventory(@Model, page);
+
         const result = await response.json();
         inventory = result;
     }
@@ -353,7 +292,7 @@
         loadUsers();
     }
 
-    async function searchEditor() { 
+    async function searchEditor() {
         const inputUser = document.getElementById('inputUser');
 
         const searchField = getSearchField();
@@ -361,32 +300,28 @@
         await getUsers(inputUser.value, searchField);
     }
 
-    function getInventoryTypeOrder()
-    {
+    function getInventoryTypeOrder() {
         return JSON.parse(localStorage.getItem(`field_order_${@Model}`));
     }
 
-    function setInventoryTypeOrder(order)
-    {
+    function setInventoryTypeOrder(order) {
         localStorage.setItem(`field_order_${@Model}`, JSON.stringify(order));
     }
 
-    function updateInventoryTypeOrder(allIds)
-    {
+    function updateInventoryTypeOrder(allIds) {
         let currentOrder = getInventoryTypeOrder();
-        if(!currentOrder)
-        {
+        if (!currentOrder) {
             currentOrder = [];
         }
 
         let newOrder = [];
 
-        for(let id of currentOrder)
-            if(allIds.includes(id))
+        for (let id of currentOrder)
+            if (allIds.includes(id))
                 newOrder.push(id);
 
-        for(let id of allIds)
-            if(!currentOrder.includes(id))
+        for (let id of allIds)
+            if (!currentOrder.includes(id))
                 newOrder.push(id);
 
         setInventoryTypeOrder(newOrder);
@@ -397,45 +332,13 @@
         await searchEditor();
     }
 
-    function getSearchField() { 
+    function getSearchField() {
         const radio = document.getElementsByName('searchField');
 
         for (let r of radio) {
-            if(r.checked){
+            if (r.checked) {
                 return r.value;
             }
         }
     }
-</script>
-
-<script>
-    let draggedId = null;
-
-    function render() {
-        loadHeadTable();
-
-        const dragItems = document.getElementsByClassName('drag-item');
-
-        for (let el of dragItems) {
-            el.ondragstart = (e) => draggedId = parseInt(e.target.dataset.id);
-            el.ondragover = (e) => e.preventDefault();
-            el.ondragenter = (e) => el.classList.add('drag-over');
-            el.ondragleave = (e) => el.classList.remove('drag-over');
-
-            el.ondrop = (e) => {
-                let targetId = parseInt(e.target.dataset.id);
-
-                let from = inventoryTypeIds.indexOf(draggedId);
-                let to = inventoryTypeIds.indexOf(targetId);
-
-                inventoryTypeIds.splice(from, 1);
-                inventoryTypeIds.splice(to, 0, draggedId);
-
-                setInventoryTypeOrder(inventoryTypeIds);
-                loadFullInventory();
-
-                render();
-            }
-        }
-    } 
 </script>

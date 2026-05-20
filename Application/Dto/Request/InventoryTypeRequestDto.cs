@@ -8,8 +8,10 @@ namespace Application.Dto.Request
     public class InventoryTypeRequestDto
     {
         public long Id { get; set; }
-        public string Type { get; set; }
+        public int Type { get; set; }
         public string Name { get; set; }
+        public bool IsShowInventoryTab { get; set; }
+        public string Description { get; set; }
         public long InventoryId { get; set; }
     }
 }

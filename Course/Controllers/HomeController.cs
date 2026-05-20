@@ -14,10 +14,8 @@ namespace Course.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IService _service;
         public HomeController(IService service)
         {
-            _service = service;
         }
 
         public async Task<IActionResult> PersonalPage()
@@ -25,146 +23,32 @@ namespace Course.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Inventory(long Id, int Page)
+        public async Task<IActionResult> Inventory(long Id, long InventoryId)
         {
-            ViewBag.Page = Page;
-            return View(Id);
+            switch (Id)
+            {
+                case 0:
+                    return View("Inventory/InventoryItems", InventoryId);
+                case 1:
+                    return View("Inventory/InventoryDiscussion.cshtml", InventoryId);
+                case 2:
+                    return View("Inventory/InventoryGeneralSettings", InventoryId);
+                case 3:
+                    return View("Inventory/InventoryCustomId", InventoryId);
+                case 4:
+                    return View("Inventory/InventoryAccessSettings", InventoryId);
+                case 5:
+                    return View("Inventory/InventoryCustomFields", InventoryId);
+                case 6:
+                    return View("Inventory/InventoryStatistics", InventoryId);
+                default:
+                    return View();
+            }
         }
 
-        public async Task<IActionResult> CustomId(long idInventory)
+        public async Task<IActionResult> InventoryItems(long InventoryId)
         {
-            return View(idInventory);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAllPartCustomId()
-        {
-            var parts = _service.GetAllPartCustomId();
-            return Json(parts);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAllInventory()
-        {
-            return Json(await _service.GetAllInventoryAsync());
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetFullInventory(long idInventory)
-        {
-            var res = await _service.GetFullInventoryByIdAsync(idInventory);
-
-            return Json(res);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetPartInventory(long idInventory, int Page)
-        {
-            int Count = 5;
-            var res = await _service.GetPartInventoryAsync(idInventory, Count, Page);
-
-            return Json(res);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAllUserInventories(string userId)
-        {
-            var inventories = await _service.GetAllInventoryUserAsync(userId);
-
-            return Json(inventories);
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetAllUserAccessInventories(string userId)
-        {
-            var inventories = await _service.GetAccessInventoryUserAsync(userId);
-
-            return Json(inventories);
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> GetStructCustomId(long idInventory)
-        {
-            var res = await _service.GetStructCustomIdAsync(idInventory);
-
-            return Json(res);
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> SetStructCustomId(long idInventory, [FromBody] List<PartCustomId> structCustomId)
-        {
-            await _service.SetStructCustomIdAsync(idInventory, structCustomId);
-
-            return NoContent();
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> AddInventory([FromBody] InventoryRequestDto inventory)
-        {
-            var res = await _service.AddInventoryAsync(inventory);
-
-            return Json(res);
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> AddItemValue(long idInventory, [FromBody] AddItemValueRequestDto[] itemValue)
-        {
-            await _service.AddItemValueAsync(idInventory, itemValue);
-
-            return StatusCode(204);
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> AddItem(long idInventory, [FromBody] ItemFullRequestDto item)
-        {
-            return Json(await _service.AddItemAsync(item));
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> AddField([FromBody] InventoryTypeRequestDto item)
-        {
-            return Json(await _service.AddFieldAsync(item));
-        }
-
-        [HttpDelete]
-        [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> DeleteInventory([FromBody] long[] Ids)
-        {
-            await _service.DeleteInventoryAsync(Ids);
-
-            return StatusCode(204);
-        }
-
-        [HttpDelete]
-        [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> DeleteItems(long idInventory, [FromBody] long[] Ids)
-        {
-            await _service.DeleteItemsAsync(idInventory, Ids);
-
-            return StatusCode(204);
-        }
-
-        [HttpDelete]
-        [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> DeleteField(long idInventory, [FromBody] long[] Ids)
-        {
-            await _service.DeleteFieldAsync(idInventory, Ids);
-
-            return StatusCode(204);
-        }
-
-        [HttpPatch]
-        [Authorize(Roles = "Admin,Registered")]
-        public async Task<IActionResult> UpdateItem(long idInventory, [FromBody] List<UpdateItemRequestDto> request)
-        {
-            await _service.UpdateItemAsync(request, idInventory);
-
-            return StatusCode(204);
+            return View(InventoryId);
         }
     }
 }

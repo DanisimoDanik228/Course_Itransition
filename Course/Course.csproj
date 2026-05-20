@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Views\Home\Inventory\InventoryGeneralSettings.cshtml" />
+    <None Include="Views\Home\Inventory\InventoryAccessSettings.cshtml" />
+    <None Include="Views\Home\Inventory\InventoryCustomFields.cshtml" />
+    <None Include="Views\Home\Inventory\InventoryDiscussion.cshtml" />
+    <None Include="Views\Home\Inventory\InventoryStatistics.cshtml" />
+    <None Include="Views\Home\Inventory\InventoryCustomId.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Infrastructure.Elastic\Infrastructure.Elastic.csproj" />
     <ProjectReference Include="..\Infrastructure.Repository\Infrastructure.Repository.csproj" />
     <ProjectReference Include="..\Infrastructure.Service\Infrastructure.Service.csproj" />

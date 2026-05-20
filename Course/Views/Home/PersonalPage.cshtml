@@ -104,7 +104,7 @@ else
                     <input type="checkbox" class="@classNameMyInventoryCheckBox" data-id="${item.id}">
                 </td>
                 <td>
-                    <a href="/Home/Inventory?Id=${item.id}&Page=1">${item.id}</a>
+                    <a href="/Home/Inventory?Id=0&InventoryId=${item.id}">${item.id}</a>
                 </td>
                 <td>${item.name}</td>
             </tr>`;
@@ -127,7 +127,7 @@ else
             <tr>
                 ${checkbox}
                 <td>
-                    <a href="/Home/Inventory?Id=${item.id}&Page=1">${item.id}</a>
+                    <a href="/Home/Inventory?Id=0&InventoryId=${item.id}"">${item.id}</a>
                 </td>
                 <td>${item.name}</td>
             </tr>`;
@@ -156,6 +156,7 @@ else
         const name = document.getElementById('nameInventory').value;
 
         const item = {
+
             name:name,
             creatorId: myId
         };

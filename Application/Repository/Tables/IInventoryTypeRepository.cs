@@ -11,6 +11,7 @@ namespace Application.Repository.Tables
         Task<InventoryType?> AddAsync(InventoryType item);
         Task<long> GetIdItemValueCustomIdAsync(long inventoryId);
         Task<InventoryType?> UpdateAsync(InventoryType item);
+        Task UpdateRangeAsync(IEnumerable<InventoryType> item);
         Task<int> DeleteAsync(long[] Ids);
     }
 }

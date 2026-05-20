@@ -8,6 +8,7 @@
         border-top: 3px solid blue;
     }
 </style>
+<partial name="Inventory/InventoryNavigate" />
 <div id="listPartsCustomId"></div>
 <div id="container" class="border border-black border-3 m-3">
     
@@ -36,7 +37,6 @@
         document.getElementById('listPartsCustomId').innerHTML = resHtml;
     }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
 <script>
     let draggedId = null;    
     let selectedItems = [];
