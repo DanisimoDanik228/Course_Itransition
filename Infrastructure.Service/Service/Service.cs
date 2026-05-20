@@ -306,5 +306,22 @@ namespace Infrastructure.Service.Service
             var str = await _inventoryRepository.GetStructCustomIdAsync(inventoryId);
             return JsonSerializer.Deserialize<List<PartCustomId>>(str, new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
         }
+
+        public async Task UpdateInvertoryTypes(List<InventoryTypeRequestDto> data)
+        {
+            var setId = data.Select(i => i.InventoryId).ToHashSet();
+            if (setId.Count() != 1) {
+                return;
+            }
+
+            var myId = _authenticationService.MyId();
+            if (!(await _authenticationService.MayEditCutomIdInventory(myId, setId.First())))
+            {
+                return;
+            }
+
+            var inventoryTypes = data.Select(i => _mapper.Map<InventoryTypeRequestDto,InventoryType>(i));
+            await _inventoryTypeRepository.UpdateRangeAsync(inventoryTypes);
+        }
     }
 }

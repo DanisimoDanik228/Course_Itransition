@@ -31,6 +31,7 @@ namespace Application.Service
         Task<int?> DeleteFieldAsync(long idInventory, long[] fieldsId);
         Task SetStructCustomIdAsync(long idInventory, List<PartCustomId> structCustomId);
         Task UpdateItemAsync(List<UpdateItemRequestDto> data, long idInventory);
+        Task UpdateInvertoryTypes(List<InventoryTypeRequestDto> data);
     }
 }
  

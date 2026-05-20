@@ -54,5 +54,11 @@ namespace Infrastructure.Repository.Repository.Tables
             var res = _context.InventoryType.Update(item);
             return res.Entity;
         }
+
+        public async Task UpdateRangeAsync(IEnumerable<InventoryType> data)
+        {
+            _context.InventoryType.UpdateRange(data);
+            await _context.SaveChangesAsync();
+        }
     }
 }

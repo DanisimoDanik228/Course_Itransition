@@ -39,8 +39,6 @@
 <div>
     <div>Name</div>
     <input id="fieldName" type="text">
-    <div>Type</div>
-    <input id="fieldType" type="text">
     <button onclick="addField()" type="submit">Add Field</button>
 </div>
 <script>
@@ -81,7 +79,10 @@
                         <input type="text" class="@classNameFieldType" value="${field.type}" data-inventory-type-id="${id}">
                     </td>
                     <td>
-                        <input type="text" class="@classNameFieldVisible" value="${field.isShowInventoryTab}" data-inventory-type-id="${id}">
+                        <select class="@classNameFieldVisible" data-inventory-type-id="${id}">
+                            <option value="1">true</option>
+                                <option value="0" ${field.isShowInventoryTab ? '' : 'selected'}>false</option>
+                        </select>
                     </td>
                     <td>
                         <input type="text" class="@classNameFieldDesc" value="${field.description}" data-inventory-type-id="${id}">
@@ -144,7 +145,6 @@
 
     async function addField() {
         const nameField = document.getElementById('fieldName').value;
-        const typeField = document.getElementById('fieldType').value;
         const item = {
             id: 0,
             inventoryId: @Model,
@@ -180,13 +180,14 @@
                 inventoryId: @Model,
                 name: nameInput.value,
                 type: parseInt(typeInput.value),
-                isShowInventoryTab: visibleInput.value,
+                isShowInventoryTab: visibleInput.value === '1',
                 description: descInput.value
             };
 
             updatedFields.push(updatedItem);
         }
 
-        console.log(updatedFields);
+        await UpdateInvertoryTypes(updatedFields);
+        loadInventoryTypes();
     }
 </script>

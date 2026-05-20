@@ -154,5 +154,14 @@ namespace Course.Controllers.API
 
             return StatusCode(204);
         }
+
+        [HttpPatch]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> UpdateInvertoryTypes([FromBody] List<InventoryTypeRequestDto> request)
+        {
+            await _service.UpdateInvertoryTypes(request);
+
+            return StatusCode(204);
+        }
     }
 }

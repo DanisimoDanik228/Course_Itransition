@@ -146,3 +146,13 @@ async function UpdateItem(inventoryId, items) {
         body: JSON.stringify(items)
     });
 }
+
+async function UpdateInvertoryTypes(items) {
+    await fetch(`/api/inventory/UpdateInvertoryTypes`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(items)
+    });
+}
