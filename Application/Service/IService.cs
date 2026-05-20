@@ -17,7 +17,7 @@ namespace Application.Service
         Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync();
         Task<IEnumerable<InventoryResponseDto>> GetAllInventoryUserAsync(string userId);
         Task<IEnumerable<InventoryResponseDto>> GetAccessInventoryUserAsync(string userId);
-
+        Task<int[]> GetOrderField(long inventoryId);
         Task<List<PartCustomId>> GetStructCustomIdAsync(long inventoryId);
         Task<IEnumerable<InventoryTypeResponseDto>> GetInventoryTypesAsync(long inventoryId);
         Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id);
@@ -32,6 +32,7 @@ namespace Application.Service
         Task SetStructCustomIdAsync(long idInventory, List<PartCustomId> structCustomId);
         Task UpdateItemAsync(List<UpdateItemRequestDto> data, long idInventory);
         Task UpdateInvertoryTypes(List<InventoryTypeRequestDto> data);
+        Task UpdateOrderField(long inventoryId, int[] orderField);
     }
 }
  

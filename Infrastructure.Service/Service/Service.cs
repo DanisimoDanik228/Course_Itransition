@@ -116,7 +116,10 @@ namespace Infrastructure.Service.Service
             var res1 =  res.Select(i => _mapper.Map<InventoryType, InventoryTypeResponseDto>(i));
             return res1;
         }
-
+        public async Task<int[]> GetOrderField(long inventoryId) 
+        {
+            return await _inventoryRepository.GetOrderField(inventoryId);
+        }
         public async Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item)
         {
             var inventory = _mapper.Map<InventoryRequestDto, Inventory>(item);
@@ -125,7 +128,8 @@ namespace Infrastructure.Service.Service
             {
                 inventory.StructCustomId = _inventorySettings.DefaultStructCustomId;
             }
-            
+
+            inventory.OrderField = [1];
             var res = await _inventoryRepository.AddAsync(inventory);
             var resInventoryType = await _inventoryTypeRepository.AddAsync(new InventoryType() {
                 Name = _inventorySettings.CustomIdName,
@@ -333,6 +337,11 @@ namespace Infrastructure.Service.Service
 
             var inventoryTypes = data.Select(i => _mapper.Map<InventoryTypeRequestDto,InventoryType>(i));
             await _inventoryTypeRepository.UpdateRangeAsync(inventoryTypes);
+        }
+
+        public async Task UpdateOrderField(long inventoryId, int[] orderField)
+        {
+            await _inventoryRepository.UpdateOrderFieldAsync(inventoryId, orderField);
         }
     }
 }

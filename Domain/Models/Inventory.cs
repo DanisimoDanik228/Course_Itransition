@@ -16,5 +16,6 @@ namespace Domain.Models
         public ICollection<Item> Items { get; set; }
         public ICollection<InventoryType> InventoryType { get; set; }
         public string StructCustomId { get; set; }
+        public int[] OrderField { get; set; }
     }
 }

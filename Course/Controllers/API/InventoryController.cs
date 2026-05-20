@@ -77,7 +77,14 @@ namespace Course.Controllers.API
 
             return Ok(res);
         }
+        [HttpGet]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> GetOrderField(long idInventory)
+        {
+            var res = await _service.GetOrderField(idInventory);
 
+            return Ok(res);
+        }
         [HttpPost]
         [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> SetStructCustomId(long idInventory, [FromBody] List<PartCustomId> structCustomId)
@@ -160,6 +167,15 @@ namespace Course.Controllers.API
         public async Task<IActionResult> UpdateInvertoryTypes([FromBody] List<InventoryTypeRequestDto> request)
         {
             await _service.UpdateInvertoryTypes(request);
+
+            return StatusCode(204);
+        }
+
+        [HttpPatch]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> UpdateOrderField(long inventoryId, [FromBody] int[] orderField)
+        {
+            await _service.UpdateOrderField(inventoryId, orderField);
 
             return StatusCode(204);
         }

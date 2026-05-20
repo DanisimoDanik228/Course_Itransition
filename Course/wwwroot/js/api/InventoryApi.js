@@ -79,6 +79,11 @@ async function GetPartInventory(id, page) {
     return response;
 }
 
+async function GetOrderField(idInventory) {
+    const response = await fetch(`/api/inventory/GetOrderField?idInventory=${idInventory}`);
+    return response;
+}
+
 async function AddItemOnInventory(id, items) {
     const response = await fetch(`/api/inventory/AddItem?idInventory=${id}`, {
         method: 'POST',
@@ -154,5 +159,14 @@ async function UpdateInvertoryTypes(items) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(items)
+    });
+}
+async function UpdateOrderField(inventoryId, orderField) {
+    await fetch(`/api/inventory/UpdateOrderField?inventoryId=${inventoryId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderField)
     });
 }

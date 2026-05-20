@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
 
 namespace Infrastructure.Repository.PostgresDbContext
 {
@@ -24,7 +25,11 @@ namespace Infrastructure.Repository.PostgresDbContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
+            modelBuilder.Entity<Inventory>()
+                .Property(e => e.OrderField)
+                .HasColumnType("integer[]");
+
             modelBuilder.Entity<EditorInventory>()
                 .HasIndex(e => new { e.EditorId, e.InventoryId })
                 .IsUnique();
