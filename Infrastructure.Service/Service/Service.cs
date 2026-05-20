@@ -295,7 +295,7 @@ namespace Infrastructure.Service.Service
             await _inventoryRepository.UpdateCustomIdAsync(idInventory, str);
         }
 
-        public async Task<IEnumerable<PartCustomId>> GetStructCustomIdAsync(long inventoryId)
+        public async Task<List<PartCustomId>> GetStructCustomIdAsync(long inventoryId)
         {
             var str = await _inventoryRepository.GetStructCustomIdAsync(inventoryId);
             return JsonSerializer.Deserialize<List<PartCustomId>>(str);
