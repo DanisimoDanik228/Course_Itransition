@@ -68,8 +68,9 @@ namespace Infrastructure.Service.Service
             return response;
         }
 
-        public async Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Count, int Page)
+        public async Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Page)
         {
+            int Count = _inventorySettings.CountItemPerPage;
             var res = await _inventoryRepository.GetPartByIdAsync(Id, Page, Count);
             var response = _mapper.Map<Inventory, InventoryFullResponseDto>(res); 
 
@@ -115,18 +116,15 @@ namespace Infrastructure.Service.Service
 
             if (string.IsNullOrEmpty(inventory.StructCustomId))
             {
-                // default value
-                inventory.StructCustomId = "[" +
-                    "{\"id\":\"7\"," +
-                    "\"name\":\"Sequence\"," +
-                    "\"format\":\"\"}" +
-                    "]";
+                inventory.StructCustomId = _inventorySettings.DefaultStructCustomId;
             }
             
             var res = await _inventoryRepository.AddAsync(inventory);
             var resInventoryType = await _inventoryTypeRepository.AddAsync(new InventoryType() {
                 Name = _inventorySettings.CustomIdName,
-                Type = "string",
+                Type = FieldType.SingleLine,
+                Description = "",
+                IsShowInventoryTab = false,
                 InventoryId = res.Id
             });
 
@@ -298,12 +296,8 @@ namespace Infrastructure.Service.Service
 
         public async Task<List<PartCustomId>> GetStructCustomIdAsync(long inventoryId)
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
             var str = await _inventoryRepository.GetStructCustomIdAsync(inventoryId);
-            return JsonSerializer.Deserialize<List<PartCustomId>>(str, options);
+            return JsonSerializer.Deserialize<List<PartCustomId>>(str, new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
         }
     }
 }

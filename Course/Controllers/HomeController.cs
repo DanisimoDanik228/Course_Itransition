@@ -60,8 +60,7 @@ namespace Course.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPartInventory(long idInventory, int Page)
         {
-            int Count = 5;
-            var res = await _service.GetPartInventoryAsync(idInventory, Count, Page);
+            var res = await _service.GetPartInventoryAsync(idInventory, Page);
 
             return Json(res);
         }

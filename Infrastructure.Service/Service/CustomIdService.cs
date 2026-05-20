@@ -16,7 +16,7 @@ namespace Infrastructure.Service.Service
 
         public string GenerateCustomId(string structCustomId, long sequence)
         {
-            var parts = JsonSerializer.Deserialize<List<PartCustomId>>(structCustomId);
+            var parts = JsonSerializer.Deserialize<List<PartCustomId>>(structCustomId,new JsonSerializerOptions() {PropertyNameCaseInsensitive = true });
             var result = new StringBuilder();
 
             foreach (var part in parts)

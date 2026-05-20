@@ -152,14 +152,7 @@ async function AddItemValueOnInventory(id, items) {
     return response;
 }
 
-async function AddFieldOnInventory(id,fieldName,fieldType){
-    const item = {
-        id: 0,
-        inventoryId: id,
-        name: fieldName,
-        type: fieldType
-    };
-
+async function AddFieldOnInventory(item){
     const response = await fetch(`/Home/AddField`, {
         method: 'POST',
         headers: {

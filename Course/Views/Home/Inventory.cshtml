@@ -126,8 +126,13 @@
                 resHtmlField += `
                     <th><input type="checkbox" class="@classNameFieldCheckBox" data-inventory-type-id="${id}"> </th>
                 `;
+                const visible = `<i title="Show on Inventory Tab" class="bi bi-eye"> </i>`;
+                const unVisible = `<i title="UnShow on Inventory Tab" class="bi bi-eye-slash"></i>`;
                 resHtmlName += `
-                    <th class="drag-item" draggable="true" data-id="${field.id}"> ${field.name} </th>
+                    <th class="drag-item" title="${field.description}" draggable="true" data-id="${field.id}"> 
+                        ${field.name} 
+                        ${field.isShowInventoryTab ? visible : unVisible}
+                    </th>
                 `;
             }else{
                 
@@ -240,8 +245,16 @@
     async function addField() {
         const nameField = document.getElementById('fieldName').value;
         const typeField = document.getElementById('fieldType').value;
-       
-        const response = await AddFieldOnInventory(@Model, nameField, typeField);
+        const item = {
+            id: 0,
+            inventoryId: @Model,
+            name: nameField,
+            type: 0,
+            isShowInventoryTab: false,
+            description : ""
+        };
+
+        const response = await AddFieldOnInventory(item);
         const result = await response.json();
         inventory.inventoryType.push(result);
 
