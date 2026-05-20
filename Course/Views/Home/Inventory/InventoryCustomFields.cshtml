@@ -49,11 +49,12 @@
     loadInventoryTypes();
 
     createClickSelectAll('selectAll', '@classNameFieldCheckBox');
-
+    
     async function loadInventoryTypes() {
         await getInventoryTypes();
         const allIds = inventoryTypes.map(i => i.id);
-        orderInventoryTypes = updateInventoryTypeOrder(allIds);
+        const tableOrderField = await (await GetOrderField(@Model)).json();
+        orderInventoryTypes = collapseFieldOrder(tableOrderField, allIds);
         loadTableBody();
     }
 
@@ -103,7 +104,7 @@
             el.ondragenter = (e) => el.classList.add('drag-over');
             el.ondragleave = (e) => el.classList.remove('drag-over');
 
-            el.ondrop = (e) => {
+            el.ondrop = async (e) => {
                 let targetId = parseInt(el.dataset.id);
 
                 let from = orderInventoryTypes.indexOf(draggedId);
@@ -112,35 +113,12 @@
                 orderInventoryTypes.splice(from, 1);
                 orderInventoryTypes.splice(to, 0, draggedId);
 
-                setInventoryTypeOrder(orderInventoryTypes);
+                await UpdateOrderField(@Model,orderInventoryTypes);
                 loadInventoryTypes();
 
                 render();
             }
         }
-    }
-
-    function getInventoryTypeOrder() {
-        const data = localStorage.getItem(`field_order_${@Model}`);
-        return data ? JSON.parse(data) : null;
-    }
-
-    function setInventoryTypeOrder(order) {
-        localStorage.setItem(`field_order_${@Model}`, JSON.stringify(order));
-    }
-
-    function updateInventoryTypeOrder(allIds) {
-        let currentOrder = getInventoryTypeOrder() || [];
-        let newOrder = currentOrder.filter(id => allIds.includes(id));
-
-        allIds.forEach(id => {
-            if (!newOrder.includes(id)) {
-                newOrder.push(id);
-            }
-        });
-
-        setInventoryTypeOrder(newOrder);
-        return newOrder;
     }
 
     async function addField() {
@@ -188,6 +166,7 @@
         }
 
         await UpdateInvertoryTypes(updatedFields);
+        await UpdateOrderField(@Model,orderInventoryTypes);
         loadInventoryTypes();
     }
 </script>

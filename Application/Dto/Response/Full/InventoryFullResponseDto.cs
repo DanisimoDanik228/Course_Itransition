@@ -12,5 +12,6 @@ namespace Application.Dto.Response.Full
         public string CreatorName { get; set; }
         public List<ItemFullResponseDto> Items { get; set; }
         public List<InventoryTypeResponseDto> InventoryType { get; set; }
+        public List<int> OrderField { get; set; }
     }
 }

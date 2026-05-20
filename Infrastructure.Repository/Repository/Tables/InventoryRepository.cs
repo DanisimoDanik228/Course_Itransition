@@ -99,6 +99,14 @@ namespace Infrastructure.Repository.Repository.Tables
                 .Max(i => i.Sequence);
         }
 
+        public async Task<int[]> GetOrderField(long inventoryId)
+        {
+            var inventory = await _context.Inventory
+                .FindAsync(inventoryId);
+
+            return inventory.OrderField;
+        }
+
         public async Task<Inventory?> GetPartByIdAsync(long Id, int page, int countItem)
         {
             var inventory = await _context.Inventory
@@ -137,6 +145,13 @@ namespace Infrastructure.Repository.Repository.Tables
             await _context.Inventory
                 .Where(i => i.Id == inventoryId)
                 .ExecuteUpdateAsync(i => i.SetProperty(i => i.StructCustomId, structCustomId));
+        }
+
+        public async Task UpdateOrderFieldAsync(long inventoryId, int[] orderField)
+        {
+            await _context.Inventory
+                .Where(i => i.Id == inventoryId)
+                .ExecuteUpdateAsync(i => i.SetProperty(inv => inv.OrderField, orderField));
         }
     }
 }

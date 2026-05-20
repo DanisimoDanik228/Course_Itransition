@@ -1,8 +1,4 @@
-﻿
-
-
-
-// funcToId : i => i.dataset.id
+﻿// funcToId : i => i.dataset.id
 function getSelected(className, funcToId = i => i.dataset.id) {
     const res = document.getElementsByClassName(className);
     const iDs = Array.from(res)
@@ -22,4 +18,18 @@ function createClickSelectAll(idMainCheckBox, checkBoxClassName) {
             item.checked = event.target.checked;
         }
     });
+}
+
+function collapseFieldOrder(currentIds, allIds) {
+    let newOrder = [];
+
+    for (let id of currentIds)
+        if (allIds.includes(id))
+            newOrder.push(id);
+
+    for (let id of allIds)
+        if (!currentIds.includes(id))
+            newOrder.push(id);
+
+    return newOrder;
 }

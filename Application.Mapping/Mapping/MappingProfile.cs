@@ -1,9 +1,10 @@
-﻿using AutoMapper;
-using Domain.Models;
-using Application.Dto.Request;
-using Application.Dto.Response;
+﻿using Application.Dto.Request;
 using Application.Dto.Request.Full;
+using Application.Dto.Response;
 using Application.Dto.Response.Full;
+using AutoMapper;
+using Domain.Models;
+using System.Text.Json;
 
 namespace Application.Mapping
 {
