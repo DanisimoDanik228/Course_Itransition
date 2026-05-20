@@ -314,10 +314,21 @@ namespace Infrastructure.Service.Service
                 return;
             }
 
+            var invertoryId = setId.First();
             var myId = _authenticationService.MyId();
-            if (!(await _authenticationService.MayEditCutomIdInventory(myId, setId.First())))
+            if (!(await _authenticationService.MayEditCutomIdInventory(myId, invertoryId)))
             {
                 return;
+            }
+
+            var id = await _inventoryTypeRepository.GetIdItemValueCustomIdAsync(invertoryId);
+            foreach (var item in data)
+            {
+                if (item.Id == id) 
+                {
+                    item.Name = _inventorySettings.CustomIdName;
+                    item.Type = (int)FieldType.SingleLine;
+                }
             }
 
             var inventoryTypes = data.Select(i => _mapper.Map<InventoryTypeRequestDto,InventoryType>(i));
