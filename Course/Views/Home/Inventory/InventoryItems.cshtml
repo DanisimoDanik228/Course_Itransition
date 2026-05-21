@@ -18,12 +18,16 @@
         <tbody id="inventoryTableBody">
         </tbody>
     </table>
-    @if (@Model.isEditor || @Model.isCreator)
-    {
+    <div>
+        <button onclick="prevPage()">Previous</button>
+        <div id="pageDisplay">Page: 1</div>
+        <button onclick="nextPage()">Next</button>
+    </div>
+    <div id="btnEditInventory">
         <button onclick="addItem()" type="submit">Add Item</button>
         <button onclick="applyChanges()">Change</button>
         <button onclick="deleteItem()">Delete Item</button>
-    }
+    </div>
 </div>
 
 <script>
@@ -34,6 +38,9 @@
     loadFullInventory();
 
     async function loadFullInventory() {
+        const isPublic = await (await GetStatusInventory(@Model.Id)).json();
+        document.getElementById('btnEditInventory').hidden = !(isPublic || '@Model.isEditor' === 'True' || '@Model.isCreator' === 'True');
+        
         await getInventory();
 
         const allIds = inventory.inventoryType.map(i => i.id);
@@ -111,10 +118,8 @@
         }
 
         const response = await AddItemOnInventory(@Model.Id, item);
-        const result = await response.json();
-        inventory.items.push(result);
 
-        loadBodyTable();
+        loadFullInventory();
     }
 
     async function addField() {
@@ -213,5 +218,23 @@
 
         const result = await response.json();
         inventory = result;
+    }
+
+    async function nextPage() {
+        page++;
+        await updatePage();
+    }
+
+    async function prevPage() {
+        if (page > 1) {
+            page--;
+            await updatePage();
+        }
+    }
+
+    async function updatePage() {
+        await getInventory();
+        loadBodyTable();
+        document.getElementById('pageDisplay').innerText = `Page: ${page}`;
     }
 </script>
