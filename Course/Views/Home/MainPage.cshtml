@@ -1,0 +1,39 @@
+﻿<a href="/Home/PersonalPage">My PersonalPage</a>
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Creator</th>
+            </tr>
+        </thead>
+        <tbody id="inventoryTableBody">
+        </tbody>
+    </table>
+</div>
+<script>
+    let inventories = [];
+    
+    loadInventories();
+
+    async function loadInventories() {
+        inventories = await (await GetAllInventory()).json();
+        
+        let resHtml = "";
+
+        for(let item of inventories){
+            resHtml += `
+                <tr>
+                    <td>
+                        <a href="/Home/Inventory?Id=0&InventoryId=${item.id}">${item.name}</a>
+                    </td>
+                    <td>${item.description}</td>
+                    <td>${item.creatorName}</td>
+                </tr>
+                `;
+        }
+
+        document.getElementById('inventoryTableBody').innerHTML = resHtml;
+    }
+</script>

@@ -8,6 +8,7 @@ namespace Application.Repository.Tables
     public interface IInventoryRepository
     {
         Task<IEnumerable<Inventory>> GetAllAsync();
+        Task<IEnumerable<Inventory>> GetAllInventoryWithCreatorNameAsync();
         Task<Inventory?> GetFullByIdAsync(long Id);
         Task<Inventory?> GetPartByIdAsync(long Id, int page, int countItem);
         Task<IEnumerable<Inventory>> GetAllInventoryUserAsync(string userId);

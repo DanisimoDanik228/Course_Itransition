@@ -5,6 +5,7 @@ using Infrastructure.Repository.PostgresDbContext;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text;
 
 namespace Infrastructure.Repository.Repository.Tables
@@ -64,6 +65,16 @@ namespace Infrastructure.Repository.Repository.Tables
                 .FirstOrDefaultAsync(u => u.Id == userId);
             
             return inventories.CreatedInventory;
+        }
+
+        public async Task<IEnumerable<Inventory>> GetAllInventoryWithCreatorNameAsync()
+        {
+            var inventories = await _context.Inventory
+                .Include(u => u.Creator)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return inventories;
         }
 
         public Task<Inventory?> GetFullByIdAsync(long Id)

@@ -52,7 +52,7 @@ namespace Infrastructure.Service.Service
         }
         public async Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync()
         {
-            return (await _inventoryRepository.GetAllAsync()).Select(i => _mapper.Map<Inventory,InventoryResponseDto>(i));
+            return (await _inventoryRepository.GetAllInventoryWithCreatorNameAsync()).Select(i => _mapper.Map<Inventory,InventoryResponseDto>(i));
         }
 
         public async Task<IEnumerable<Item>> GetAllItemsFromInventoryAsync(long idInventory)
@@ -131,6 +131,7 @@ namespace Infrastructure.Service.Service
 
             inventory.OrderField = [1];
             inventory.IsPublic = false;
+            inventory.Description = "";
             var res = await _inventoryRepository.AddAsync(inventory);
             var resInventoryType = await _inventoryTypeRepository.AddAsync(new InventoryType() {
                 Name = _inventorySettings.CustomIdName,

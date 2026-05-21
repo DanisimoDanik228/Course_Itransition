@@ -20,6 +20,11 @@ namespace Course.Controllers
             _authenticationService = authenticationService;
         }
 
+        public async Task<IActionResult> MainPage()
+        {
+            return View();
+        }
+
         public async Task<IActionResult> PersonalPage()
         {
             return View();

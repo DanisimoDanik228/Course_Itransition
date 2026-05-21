@@ -12,7 +12,8 @@ namespace Application.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<Inventory, InventoryResponseDto>().ReverseMap();
+            CreateMap<Inventory, InventoryResponseDto>()
+                .ForMember(dest => dest.CreatorName, opt => opt.MapFrom(src => src.Creator == null ? "_NULL_" : src.Creator.Name));
             CreateMap<InventoryRequestDto, Inventory>()
                 .ForMember(dest => dest.Items, opt => opt.Ignore())
                 .ForMember(dest => dest.InventoryType, opt => opt.Ignore());
