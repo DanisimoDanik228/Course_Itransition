@@ -42,7 +42,7 @@ namespace Course.Controllers
                 case 0:
                     return View("Inventory/InventoryItems", model);
                 case 1:
-                    return View("Inventory/InventoryDiscussion.cshtml", model);
+                    return View("Inventory/InventoryDiscussion", model);
                 case 2:
                     return View("Inventory/InventoryGeneralSettings", model);
                 case 3:
