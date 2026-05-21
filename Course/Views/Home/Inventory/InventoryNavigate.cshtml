@@ -1,7 +1,7 @@
 ﻿@model (long Id,bool isEditor, bool isCreator)
-<a href="/Home/PersonalPage">My PersonalPage</a>
-<a href="/Home/MainPage">Main Page</a>
-<ul class="nav nav-tabs">
+<a class="btn btn-outline-info text-decoration-none btn-sm rounded-2" href="/Home/PersonalPage">My PersonalPage</a>
+<a class="btn btn-outline-info text-decoration-none btn-sm rounded-2" href="/Home/MainPage">Main Page</a>
+<ul class="nav nav-underline border-bottom">
     <li class="nav-item">
         <a class="nav-link"
            href="/Home/Inventory?Id=0&InventoryId=@Model.Id">Items</a>

@@ -9,13 +9,19 @@
     }
 </style>
 <partial name="Inventory/InventoryNavigate" model="@Model" />
-<div id="listPartsCustomId"></div>
-<div id="container" class="border border-black border-3 m-3">
-    
+<div class="table-responsive rounded border">
+    <div class="p-2">
+        <div class="d-grid" id="listPartsCustomId"></div>
+        <div id="container" class="border border-info border-3 m-3">
+    </div>
+    <div class="p-2">
+        <div class="btn-group">
+            <button class="btn btn-outline-success btn-sm" onclick="saveCustomId()">Save</button>
+            <button class="btn btn-outline-primary btn-sm" onclick="getCustomIdExample()">Generate Example</button>
+        </div>
+        <pre id="exampleCustomId"></pre>
+    </div>
 </div>
-<button onclick="saveCustomId()">Save</button>
-<button onclick="getCustomIdExample()">Generate Example</button>
-<pre id="exampleCustomId"></pre>
 
 <script>
     let partsCustomId = [];
@@ -30,6 +36,7 @@
         for (let part of partsCustomId) { 
             resHtml += `
             <div
+                class="col-3 btn btn-outline-info btn-sm"
                 onclick="addItem('${part.typePartCustomId}','${part.name}')">
                 ${part.name}
             </div>`;
@@ -99,7 +106,7 @@
             resHtml += 
                 `<div draggable="true"
                     data-index="${i}"
-                    class="drag-item" margin: 5px;">
+                    class="m-2 drag-item"">
                     ${el.name}
                     ${resSelect}
                     <button onclick="removeItem(${i})">Delete</button>

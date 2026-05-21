@@ -2,37 +2,59 @@
 @{
     var classNameUserCheckBox = "userCheckBox";
 }
-<partial name="Inventory/InventoryNavigate" model="@Model"/>
-<input type="checkbox" id="checkBoxIsPublic">Is Public</input>
+
+<partial name="Inventory/InventoryNavigate" model="@Model" />
+
 <div>
-    <input type="text" name="name" id="inputUser" oninput="searchEditor()" />
-    <div>
-        <div>
-            <input type="radio" name="searchField" value="UserName" onchange="changedSearchField()" checked>
-            <label for="userName">Name</label>
-        </div>
-        <div>
-            <input type="radio" name="searchField" value="Email" onchange="changedSearchField()">
-            <label for="email">Email</label>
+    <div class="card bg-light-subtle">
+        <div class="form-switch m-3">
+            <input class="form-check-input" type="checkbox" id="checkBoxIsPublic">
+            <label class="form-check-label fw-bold">
+                Public Access
+            </label>
         </div>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th>
-                    <input type="checkbox" id="selectAllUser">
-                </th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Current Role</th>
-            </tr>
-        </thead>
-        <tbody id="userList">
-        </tbody>
-    </table>
-    <button onclick="removeEditorRole()">Remove Editor</button>
-    <button onclick="addEditorRole()">Make Editor</button>
-    <button onclick="applyChanges()">Change</button>
+
+    <div class="row align-items-end">
+        <div class="col-4">
+            <label class="small text-muted text-uppercase fw-bold">Find User</label>
+            <div class="input-group">
+                <input type="text" class="form-control form-control-sm" id="inputUser" oninput="searchEditor()" placeholder="Enter name or email..." />
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="btn-group">
+                <input type="radio" class="btn-check" name="searchField" id="userName" value="UserName" onchange="changedSearchField()" checked autocomplete="off">
+                <label class="btn btn-outline-info btn-sm" for="userName">By Name</label>
+
+                <input type="radio" class="btn-check" name="searchField" id="email" value="Email" onchange="changedSearchField()" autocomplete="off">
+                <label class="btn btn-outline-info btn-sm" for="email">By Email</label>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive rounded border">
+        <div class="p-2">
+            <table class="table table-bordered table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox" class="form-check-input" id="selectAllUser">
+                        </th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Current Role</th>
+                    </tr>
+                </thead>
+                <tbody id="userList">
+                </tbody>
+            </table>
+        </div>
+        <div class="border-top p-2 btn-group" id="btnEditInventory">
+            <button class="btn btn-outline-primary btn-sm" onclick="addEditorRole()">Make Editor</button>
+            <button class="btn btn-outline-danger btn-sm" onclick="removeEditorRole()">Remove Editor</button>
+            <button class="btn btn-outline-success btn-sm" onclick="applyChanges()">Change</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -57,7 +79,7 @@
             resHtml += `
                 <tr>
                     <td>
-                        <input type="checkbox" class="@classNameUserCheckBox" data-id="${item.id}">
+                        <input type="checkbox" class="form-check-input @classNameUserCheckBox" data-id="${item.id}">
                     </td>
                     <td>${item.name}</td>
                     <td>${item.email}</td>
