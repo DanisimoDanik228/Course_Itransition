@@ -1,4 +1,5 @@
-﻿<div class="d-flex justify-content-between border-bottom p-2">
+﻿@model string
+<div class="d-flex justify-content-between border-bottom p-2">
     <div>
         <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2 p-1" href="/Home/MainPage">Main Page</a>
         <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2 p-1" href="/User/Register">Go to Register</a>
@@ -11,6 +12,10 @@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="rounded border">
         <div class="p-2">
+            @if (!string.IsNullOrEmpty(Model))
+            {
+                <h3 class="text-danger">@Model</h3>
+            }
             <h3>Login</h3>
             <form class="d-flex flex-column gap-2" asp-action="Login" method="post">
                 <input type="text" name="email" placeholder="Email"/> 

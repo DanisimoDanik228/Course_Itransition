@@ -60,6 +60,15 @@ namespace Infrastructure.Service.Service
         }
         public async Task<bool> LoginAsync(string email, string password)
         {
+            if (email == null || email.Length < 4)
+            {
+                return false;
+            }
+            if (email == null || email.Length < 4)
+            {
+                return false;
+            }
+
             return await _userRepository.LoginAsync(email, password);
         }
 
@@ -70,6 +79,19 @@ namespace Infrastructure.Service.Service
 
         public async Task<bool> RegisterAsync(string name, string email, string password)
         {
+            if (name == null || name.Length < 4)
+            {
+                return false;
+            }
+            if (email == null || email.Length < 4)
+            {
+                return false;
+            }
+            if (email == null || email.Length < 4)
+            {
+                return false;
+            }
+
             var user = await _userRepository.RegisterAsync(name, email, password);
             
             if (user != null)

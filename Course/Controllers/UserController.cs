@@ -36,7 +36,8 @@ namespace Course.Controllers
             {
                 return RedirectToAction("Login", "User");
             }
-            return View();
+
+            return View("Register","Invalid login or password");
         }
 
 
@@ -50,7 +51,7 @@ namespace Course.Controllers
                 return RedirectToAction("PersonalPage", "Home");
             }
 
-            return View();
+            return View("Login","Invalid login or password");
         }
 
         [HttpPost]
