@@ -1,28 +1,34 @@
 ﻿@model string
-<div class="d-flex justify-content-between border-bottom p-2">
-    <div>
-        <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2 p-1" href="/Home/MainPage">Main Page</a>
-        <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2 p-1" href="/User/Login">Go to Login</a>
-    </div>
-    <button onclick="changeTheme()" class="btn btn-outline-secondary btn-sm rounded-2">
-        Theme
-    </button>
-</div>
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="rounded border">
-        <div class="p-2">
-            @if (!string.IsNullOrEmpty(Model))
-            {
-                <h3 class="text-danger">@Model</h3>
-            }
-            <h3>Registration</h3>
-            <form class="d-flex flex-column gap-2" asp-action="Register" asp-controller="User" method="post">
-                <input type="text" name="name" placeholder="Name" />
-                <input type="text" name="email" placeholder="Email" />
-                <input type="password" name="password" placeholder="Password" />
-                <button class="btn btn-outline-success btn-sm" type="submit">Register</button>
-            </form>
+<div class="d-flex flex-column vh-100">
+    <div class="d-flex justify-content-between border-bottom p-2">
+        <div>
+            <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2 p-1" href="/Home/MainPage">Main Page</a>
+            <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2 p-1" href="/User/Login">Go to Login</a>
+        </div>
+        <button onclick="changeTheme()" class="btn btn-outline-secondary btn-sm rounded-2">
+            Theme
+        </button>
+    </div>
+
+    <div class="flex-grow-1 d-flex justify-content-center align-items-center" style="
+        background-image: url('https://cdn.pixabay.com/photo/2015/10/23/16/26/block-1003250_1280.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;">
+        <div class="rounded border">
+            <div class="p-2">
+                @if (!string.IsNullOrEmpty(Model))
+                {
+                    <h3 class="text-danger">@Model</h3>
+                }
+                <h3>Registration</h3>
+                <form class="d-flex flex-column gap-2" asp-action="Register" asp-controller="User" method="post">
+                    <input type="text" name="name" placeholder="Name" />
+                    <input type="text" name="email" placeholder="Email" />
+                    <input type="password" name="password" placeholder="Password" />
+                    <button class="btn btn-outline-success btn-sm" type="submit">Register</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
