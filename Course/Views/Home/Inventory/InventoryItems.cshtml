@@ -1,4 +1,4 @@
-﻿@model (long Id,bool isEditor)
+﻿@model (long Id,bool isEditor, bool isCreator)
 @{
     var classNameFieldCheckBox = "fieldCheckBox";
     var classNameItemCheckBox = "itemCheckBox";
@@ -18,9 +18,12 @@
         <tbody id="inventoryTableBody">
         </tbody>
     </table>
-    <button onclick="deleteItem()">Delete Item</button>
-    <button onclick="addItem()" type="submit">Add Item</button>
-    <button onclick="applyChanges()">Change</button>
+    @if (@Model.isEditor || @Model.isCreator)
+    {
+        <button onclick="addItem()" type="submit">Add Item</button>
+        <button onclick="applyChanges()">Change</button>
+        <button onclick="deleteItem()">Delete Item</button>
+    }
 </div>
 
 <script>

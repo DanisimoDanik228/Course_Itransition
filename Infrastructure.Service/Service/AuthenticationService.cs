@@ -60,6 +60,17 @@ namespace Infrastructure.Service.Service
 
             return inventory.CreatorId == userId;
         }
+
+        public async Task<bool> IsEditorAsync(string userId, long inventoryId)
+        {
+            if (userId == null)
+            {
+                return false;
+            }
+
+            return await _context.EditorInventory.AnyAsync(ei => ei.InventoryId == inventoryId && ei.EditorId == userId);
+        }
+
         public async Task<bool> MayDropAndCreateField(string userId, long inventoryId)
         {
             if (await _userManager.IsInRoleAsync(new AppUser { Id = userId }, "Admin"))

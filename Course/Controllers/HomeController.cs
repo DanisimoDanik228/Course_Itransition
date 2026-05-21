@@ -29,7 +29,8 @@ namespace Course.Controllers
         {
             var myId = _authenticationService.MyId();
             var isCreator = await _authenticationService.IsCreatorAsync(myId, InventoryId);
-            var model = (InventoryId, isCreator);
+            var isEditor = await _authenticationService.IsEditorAsync(myId, InventoryId);
+            var model = (InventoryId, isEditor, isCreator);
 
             switch (Id)
             {
