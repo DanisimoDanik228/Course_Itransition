@@ -5,83 +5,102 @@
     var classNameMyInventoryCheckBox = "checkboxMyInventoryList";
     var classNameAccessInventoryCheckBox = "checkboxAccessInventoryList";
 }
+<div class="table-responsive rounded border">
+    <div class="d-flex justify-content-between border-bottom p-2">
+        <div>
+        <form asp-controller="User" asp-action="Logout" method="post">
+            @if (@User.IsInRole("Admin"))
+            {
+            <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2" href="/User/AdminPanel">AdminPanel</a>
+            }
+            <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2" href="/Home/MainPage">Main Page</a>
+            <button class="btn btn-outline-info text-decoration-none btn-sm rounded-2" type="submit">Logout</button>
+        </form>
 
-@if (@User.IsInRole("Admin"))
-{
-    <a href="/User/AdminPanel">AdminPanel</a>
-}
-<a href="/Home/MainPage">Main Page</a>
-<form asp-controller="User" asp-action="Logout" method="post">
-    <button type="submit">Logout</button>
-</form>
-
-<h3>Your name is @User.Identity.Name</h3>
-@if (@User.IsInRole("Admin"))
-{
-    <h3>Your role is Admin</h3>
-}
-else
-{
-    @if (@User.IsInRole("Registered"))
-    {
-        <h3>Your role is Registered</h3>
-    }
-    else
-    {
-        <h3>Your role is Anonym</h3>
-    }
-}
-
-
-<div class="row">
-    <div class="col-6 border border-dark">
-        <h4>My Inventory</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>
-                        <input type="checkbox" id="selectMyAll">
-                    </th>
-                    <th>Id</th>
-                    <th>Name</th>
-                </tr>
-            </thead>
-            <tbody id="myInventoryList">
-            </tbody>
-        </table>
-        <button onclick="deleteMyInventory()">Delete</button>
-    </div>
-
-    <div class="col-6 border border-dark">
-        <h4>Access Inventory</h4>
-        <table>
-            <thead>
-                <tr>
-                    @if (@User.IsInRole("Admin"))
-                    {
-                        <th>
-                            <input type="checkbox" id="selectAccessAll">
-                        </th>
-                    }
-                    <th>Id</th>
-                    <th>Name</th>
-                </tr>
-            </thead>
-            <tbody id="accessInventoryList">
-            </tbody>
-        </table>
         @if (@User.IsInRole("Admin"))
         {
-            <button onclick="deleteAccessInventory()">Delete</button>
+            <h3>Your role is Admin</h3>
+            <h3>Your name is @User.Identity.Name</h3>
+        }
+        else
+        {
+            @if (@User.IsInRole("Registered"))
+            {
+                <h3>Your role is Registered</h3>
+                <h3>Your name is @User.Identity.Name</h3>
+            }
+            else
+            {
+                <h3>Your role is Anonym</h3>
+                <h3>You dont have name</h3>
+            }
+        }
+        </div>
+        <div>
+            <button onclick="changeTheme()" class="btn btn-outline-secondary btn-sm rounded-2">
+                Theme
+            </button>
+        </div>
+    </div>
+
+        <div class="table-responsive rounded border mb-0">
+        @if (@User.IsInRole("Registered") || User.IsInRole("Admin"))
+        {
+            <div class="p-2">
+                <div class="col-7 border border-dark">
+                    <h4>My Inventory</h4>
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" class="form-check-input" id="selectMyAll">
+                                </th>
+                                <th>Id</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody id="myInventoryList">
+                        </tbody>
+                    </table>
+                    <div class="border-top p-2">
+                        <button class="btn btn-outline-danger btn-sm" onclick="deleteMyInventory()">Delete</button>
+                    </div>
+                </div>
+
+                <div class="col-7 border border-dark">
+                    <h4>Access Inventory</h4>
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead>
+                            <tr>
+                                @if (@User.IsInRole("Admin"))
+                                {
+                                    <th>
+                                        <input type="checkbox" class="form-check-input" id="selectAccessAll">
+                                    </th>
+                                }
+                                <th>Id</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accessInventoryList">
+                        </tbody>
+                    </table>
+                    <div class="border-top p-2">
+                    @if (@User.IsInRole("Admin"))
+                    {
+                        <button class="btn btn-outline-danger btn-sm" onclick="deleteAccessInventory()">Delete</button>
+                    }
+                    </div>
+                </div>
+            </div>
+
+            <div class ="btn-group p-2">
+                <input id="nameInventory" type="text">
+                <button class="btn btn-outline-primary btn-sm" onclick="addInventory()">Add inventory</button>
+            </div>
         }
     </div>
 </div>
-
-<div>
-    <input id="nameInventory" type="text">
-    <button onclick="addInventory()">Add inventory</button>
-</div>
-
 <script>
     const myId = "@UserManager.GetUserId(User)";
     const isAdmin = @(User.IsInRole("Admin") ? "true" : "false");
@@ -105,10 +124,10 @@ else
             resHtml += `
             <tr>
                 <td>
-                    <input type="checkbox" class="@classNameMyInventoryCheckBox" data-id="${item.id}">
+                    <input type="checkbox" class="form-check-input @classNameMyInventoryCheckBox" data-id="${item.id}">
                 </td>
                 <td>
-                    <a href="/Home/Inventory?Id=0&InventoryId=${item.id}">${item.id}</a>
+                    <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2" href="/Home/Inventory?Id=0&InventoryId=${item.id}">${item.id}</a>
                 </td>
                 <td>${item.name}</td>
             </tr>`;
@@ -124,14 +143,14 @@ else
         for (let item of accessInventory) {
             let checkbox = isAdmin
             ? ` <td>
-                    <input type="checkbox" class="@classNameAccessInventoryCheckBox" data-id="${item.id}">
+                    <input type="checkbox" class="form-check-input @classNameAccessInventoryCheckBox" data-id="${item.id}">
                 </td>`
             : ``;
             resHtml += `
             <tr>
                 ${checkbox}
                 <td>
-                    <a href="/Home/Inventory?Id=0&InventoryId=${item.id}"">${item.id}</a>
+                    <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2" href="/Home/Inventory?Id=0&InventoryId=${item.id}"">${item.id}</a>
                 </td>
                 <td>${item.name}</td>
             </tr>`;

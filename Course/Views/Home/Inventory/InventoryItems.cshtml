@@ -43,7 +43,7 @@
 
     async function loadFullInventory() {
         const isPublic = await (await GetStatusInventory(@Model.Id)).json();
-        document.getElementById('btnEditInventory').hidden = !(isPublic || '@Model.isEditor' === 'True' || '@Model.isCreator' === 'True');
+        document.getElementById('btnEditInventory').hidden = !(isPublic || '@User.IsInRole("Admin")' === 'True' || '@Model.isEditor' === 'True' || '@Model.isCreator' === 'True');
         
         await getInventory();
 

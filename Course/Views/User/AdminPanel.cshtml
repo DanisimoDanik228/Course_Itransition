@@ -1,35 +1,51 @@
 ﻿@{
     var classNameCheckBox = "checkboxUserList";
 }
-<a href="/Home/PersonalPage">My PersonalPage</a>
-<a href="/Home/MainPage">Main Page</a>
-<div>
-    <table>
-        <thead>
-            <tr>
-                @if (@User.IsInRole("Admin"))
-                {
-                    <th>
-                        <input type="checkbox" id="selectAll">
-                    </th>
-                }
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>StatusBlock</th>
-            </tr>
-        </thead>
-        <tbody id="userList">
-        </tbody>
-    </table>
-    @if (@User.IsInRole("Admin"))
-    {
-        <button onclick="btnDelete()">Delete</button>
-        <button onclick="btnBlock()">Block</button>
-        <button onclick="btnUnBlock()">Unblock</button>
-        <button onclick="btnMakeAdmin()">MakeAdmin</button>
-        <button onclick="btnRemoveAdmin()">RemoveAdmin</button>
-    }
+<div class="d-flex justify-content-between border-bottom p-2">
+    <div>
+        <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2 p-1" href="/Home/PersonalPage">My PersonalPage</a>
+        <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2 p-1" href="/Home/MainPage">Main Page</a>
+    </div>
+    <button onclick="changeTheme()" class="btn btn-outline-secondary btn-sm rounded-2">
+        Theme
+    </button>
+</div>
+
+<div class="table-responsive rounded border">
+    <div class="p-2">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    @if (@User.IsInRole("Admin"))
+                    {
+                        <th>
+                            <input type="checkbox" class="form-check-input" id="selectAll">
+                        </th>
+                    }
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>StatusBlock</th>
+                </tr>
+            </thead>
+            <tbody id="userList">
+            </tbody>
+        </table>
+        <div class="border-top p-2">
+            @if (@User.IsInRole("Admin"))
+            {
+                <button class="btn btn-outline-danger btn-sm" onclick="btnDelete()">Delete</button>
+                <div class="btn-group">
+                    <button class="btn btn-outline-warning btn-sm" onclick="btnBlock()">Block</button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="btnUnBlock()">Unblock</button>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-outline-warning btn-sm" onclick="btnMakeAdmin()">MakeAdmin</button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="btnRemoveAdmin()">RemoveAdmin</button>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
 <script>
@@ -51,7 +67,7 @@
         for (let user of allUsers) {
             let checkbox = isAdmin
                 ? `<td>
-                    <input type="checkbox" class="@classNameCheckBox" data-id="${user.id}" >
+                        <input type="checkbox" class="form-check-input @classNameCheckBox" data-id="${user.id}" >
                 </td>`
                 : ``;
 

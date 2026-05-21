@@ -1,7 +1,14 @@
 ﻿@model (long Id,bool isEditor, bool isCreator)
-<a class="btn btn-outline-info text-decoration-none btn-sm rounded-2" href="/Home/PersonalPage">My PersonalPage</a>
-<a class="btn btn-outline-info text-decoration-none btn-sm rounded-2" href="/Home/MainPage">Main Page</a>
-<ul class="nav nav-underline border-bottom">
+<div class="d-flex justify-content-between border-bottom p-2">
+    <div>
+        <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2" href="/Home/PersonalPage">My PersonalPage</a>
+        <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2" href="/Home/MainPage">Main Page</a>
+    </div>
+    <button onclick="changeTheme()" class="btn btn-outline-secondary btn-sm rounded-2">
+        Theme
+    </button>
+</div>
+<ul class="nav nav-underline border-bottom px-2">
     <li class="nav-item">
         <a class="nav-link"
            href="/Home/Inventory?Id=0&InventoryId=@Model.Id">Items</a>

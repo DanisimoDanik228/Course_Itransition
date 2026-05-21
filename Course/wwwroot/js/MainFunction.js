@@ -33,3 +33,11 @@ function collapseFieldOrder(currentIds, allIds) {
 
     return newOrder;
 }
+
+function changeTheme() {
+    const htmlEl = document.documentElement;
+    const currentTheme = htmlEl.getAttribute('data-bs-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    htmlEl.setAttribute('data-bs-theme', newTheme);
+    localStorage.setItem('theme', newTheme)
+}
