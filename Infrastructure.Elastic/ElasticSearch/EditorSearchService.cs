@@ -1,10 +1,12 @@
 ﻿using Application.Dto.Response;
+using Application.Options;
 using Application.Repository.User;
 using Application.Service;
 using Domain.Models;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Nodes;
 using Infrastructure.Elastic.EditorModel;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,22 +15,23 @@ namespace Infrastructure.Elastic.ElasticSearch
 {
     public class EditorSearchService : IEditorSearchService
     {
-        private const string editorIndex = "editor_index";
         private readonly ElasticsearchClient _elasticsearchClient;
         private readonly IEditorRepository _editorRepository;
+        private readonly ElasticsearchSettings _elasticsearchSettings;
 
         public EditorSearchService(
             ElasticsearchClient elasticsearchClient,
-            IEditorRepository editorRepository)
+            IEditorRepository editorRepository,
+            IOptions<ElasticsearchSettings> options)
         {
             _elasticsearchClient = elasticsearchClient;
-            _editorRepository = editorRepository;
+            _elasticsearchSettings = options.Value;
         }
 
         public async Task<List<InventoryEditorResponseDto>> FindEditorInventoryByEmailAsync(long inventoryId, string email)
         {
             var response = await _elasticsearchClient.SearchAsync<EditorSearchModel>(e => e
-                           .Index(editorIndex)
+                           .Index(_elasticsearchSettings.DefaultIndex)
                            .Query(q => q
                                .Wildcard(w => w
                                .Field(f => f.Email)
@@ -48,7 +51,7 @@ namespace Infrastructure.Elastic.ElasticSearch
         public async Task<List<InventoryEditorResponseDto>> FindEditorInventoryByNameAsync(long inventoryId, string userName)
         {
             var response = await _elasticsearchClient.SearchAsync<EditorSearchModel>(e => e
-                .Index(editorIndex)
+                .Index(_elasticsearchSettings.DefaultIndex)
                 .Query(q => q
                     .Wildcard(w => w
                     .Field(f => f.UserName)
@@ -74,13 +77,13 @@ namespace Infrastructure.Elastic.ElasticSearch
                 Email = user.Email
             };
 
-            await _elasticsearchClient.IndexAsync(model, i => i.Index(editorIndex).Id(model.Id));
+            await _elasticsearchClient.IndexAsync(model, i => i.Index(_elasticsearchSettings.DefaultIndex).Id(model.Id));
         }
 
         public async Task DeleteUserAsync(string[] userIds)
         {
             foreach (var userId in userIds)
-                await _elasticsearchClient.DeleteAsync<EditorSearchModel>(userId, d => d.Index(editorIndex));
+                await _elasticsearchClient.DeleteAsync<EditorSearchModel>(userId, d => d.Index(_elasticsearchSettings.DefaultIndex));
         }
 
         private async Task<List<InventoryEditorResponseDto>> MakeEditorResponseAsync(long inventoryId, IEnumerable<EditorSearchModel> response)

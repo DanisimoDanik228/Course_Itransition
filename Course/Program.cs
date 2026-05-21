@@ -46,12 +46,14 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
-var settings = new ElasticsearchClientSettings(new Uri("http://localhost:9200"))
-    .DefaultIndex("editor_index");
-
 builder.Services.Configure<InventorySettings>(
-    builder.Configuration.GetSection("InventorySettings")
-);
+    builder.Configuration.GetSection("InventorySettings"));
+var elasticSettings = builder.Configuration
+    .GetSection("ElasticsearchSettings")
+    .Get<ElasticsearchSettings>();
+
+var settings = new ElasticsearchClientSettings(new Uri(elasticSettings.Url))
+    .DefaultIndex(elasticSettings.DefaultIndex);
 
 var client = new ElasticsearchClient(settings);
 builder.Services.AddSingleton(client);
@@ -72,13 +74,13 @@ builder.Services.AddScoped<ICustomIdService, CustomIdService>();
 var app = builder.Build();
 
 app.UseStaticFiles();
-//using (var scope = app.Services.CreateScope())
-//{
-//    //Thread.Sleep(30 * 1000);
-//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//    db.Database.EnsureDeleted();
-//    db.Database.EnsureCreated();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    Thread.Sleep(30 * 1000);
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureDeleted();
+    db.Database.EnsureCreated();
+}
 
 using (var scope = app.Services.CreateScope())
 {
