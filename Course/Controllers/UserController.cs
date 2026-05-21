@@ -59,7 +59,7 @@ namespace Course.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AllUsers()
+        public async Task<IActionResult> AdminPanel()
         {
             return View();
         }
