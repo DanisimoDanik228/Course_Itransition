@@ -84,11 +84,19 @@ namespace Course.Controllers.API
 
             return Ok(res);
         }
+        [HttpGet]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> GetStatusInventory(long idInventory)
+        {
+            var res = await _service.GetStatusAsync(idInventory);
+
+            return Ok(res);
+        }
         [HttpPost]
         [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> SetStructCustomId(long idInventory, [FromBody] List<PartCustomId> structCustomId)
         {
-            await _service.SetStructCustomIdAsync(idInventory, structCustomId);
+            await _service.UpdateStructCustomIdAsync(idInventory, structCustomId);
 
             return NoContent();
         }
@@ -176,6 +184,14 @@ namespace Course.Controllers.API
         {
             await _service.UpdateOrderField(inventoryId, orderField);
 
+            return StatusCode(204);
+        }
+        [HttpPatch]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> UpdateStatusInventory(long idInventory, bool status)
+        {
+            await _service.UpdateStatusInventoryAsync(idInventory, status);
+            
             return StatusCode(204);
         }
     }

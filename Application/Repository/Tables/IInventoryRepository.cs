@@ -16,8 +16,10 @@ namespace Application.Repository.Tables
         Task<IEnumerable<InventoryType>> GetInventoryTypeOnInventoryAsync(long inventoryId);
         Task<long> GetMaxSequenceAsync(long inventoryId);
         Task<int[]> GetOrderField(long inventoryId);
-        Task UpdateCustomIdAsync(long inventoryId, string structCustomId);
+        Task<bool> GetStatusAsync(long inventoryId);
         Task<Inventory?> AddAsync(Inventory item);
+        Task UpdateCustomIdAsync(long inventoryId, string structCustomId);
+        Task UpdateStatusInventoryAsync(long inventoryId, bool status);
         Task<Inventory?> UpdateAsync(Inventory item);
         Task UpdateOrderFieldAsync(long inventoryId, int[] orderField);
         Task<Inventory?> DeleteAsync(Inventory item);

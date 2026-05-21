@@ -29,13 +29,13 @@ namespace Infrastructure.Service.Service
         public async Task<bool> MayEditInventory(string userId, long inventoryId)
         {
             if (await _userManager.IsInRoleAsync(new AppUser { Id = userId }, "Admin"))
-            { 
+            {
                 return true;
             }
 
             if (await IsPublicInventoryAsync(inventoryId)) {
                 var isExistUser = await _userManager.Users.AnyAsync(u => u.Id == userId);
-                
+
                 return isExistUser;
             }
 
@@ -48,8 +48,17 @@ namespace Infrastructure.Service.Service
         }
         public async Task<bool> IsCreatorAsync(string userId, long inventoryId)
         {
+            if (userId == null)
+            {
+                return false;
+            }
             var inventory = await _context.Inventory.FindAsync(inventoryId);
-            return inventory.CreatorId== userId;
+            if (inventory == null) 
+            {
+                return false;
+            }
+
+            return inventory.CreatorId == userId;
         }
         public async Task<bool> MayDropAndCreateField(string userId, long inventoryId)
         {

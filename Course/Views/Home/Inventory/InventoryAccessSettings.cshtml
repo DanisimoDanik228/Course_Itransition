@@ -32,6 +32,7 @@
     </table>
     <button onclick="removeEditorRole()">Remove Editor</button>
     <button onclick="addEditorRole()">Make Editor</button>
+    <button onclick="applyChanges()">Change</button>
 </div>
 
 <script>
@@ -44,7 +45,7 @@
     createClickSelectAll('selectAllUser', '@classNameUserCheckBox');
 
 	async function loadStatus() {
-		//...
+        isPublic = await(await GetStatusInventory(@Model.Id)).json();
 		document.getElementById('checkBoxIsPublic').checked = isPublic;
 	}
 
@@ -106,5 +107,11 @@
                 return r.value;
             }
         }
+    }
+
+    async function applyChanges() {
+        const isPublic = document.getElementById('checkBoxIsPublic').checked;
+
+        await UpdateStatusInventory(@Model.Id, isPublic);
     }
 </script>
