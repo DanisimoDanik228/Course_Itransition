@@ -100,14 +100,15 @@ namespace Infrastructure.Repository.Repository.Tables
 
         public async Task<long> GetMaxSequenceAsync(long inventoryId)
         {
-            var inventory = await _context.Inventory.Include(i => i.Items).FirstOrDefaultAsync(i => i.Id == inventoryId);
-            if (inventory.Items.Count() == 0)
-            {
+            var max = await _context.Items
+                    .Where(i => i.InventoryId == inventoryId)
+                    .MaxAsync(i => (long?)i.Sequence);
+
+            if (max == null) { 
                 return 0;
             }
 
-            return inventory.Items
-                .Max(i => i.Sequence);
+            return (long)max;
         }
 
         public async Task<int[]> GetOrderField(long inventoryId)
