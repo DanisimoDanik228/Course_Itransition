@@ -33,12 +33,23 @@ namespace Infrastructure.Service.Service
                 return true;
             }
 
+            if (await IsPublicInventoryAsync(inventoryId)) {
+                var isExistUser = await _userManager.Users.AnyAsync(u => u.Id == userId);
+                
+                return isExistUser;
+            }
+
             var res = await _context.Inventory
                 .AnyAsync(i => i.Id == inventoryId &&
                     (i.CreatorId == userId ||
                      _context.EditorInventory.Any(ei => ei.InventoryId == inventoryId && ei.EditorId == userId)));
 
             return res;
+        }
+        public async Task<bool> IsCreatorAsync(string userId, long inventoryId)
+        {
+            var inventory = await _context.Inventory.FindAsync(inventoryId);
+            return inventory.CreatorId== userId;
         }
         public async Task<bool> MayDropAndCreateField(string userId, long inventoryId)
         {
@@ -106,6 +117,13 @@ namespace Infrastructure.Service.Service
                     (i.CreatorId == userId));
 
             return res;
+        }
+
+        private async Task<bool> IsPublicInventoryAsync(long inventoryId) {
+            var inventory = await _context.Inventory
+                .FindAsync(inventoryId);
+
+            return inventory.IsPublic;
         }
     }
 }

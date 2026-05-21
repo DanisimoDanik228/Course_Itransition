@@ -1,8 +1,8 @@
-﻿@model long
+﻿@model (long Id,bool isEditor)
 @{
     var classNameUserCheckBox = "userCheckBox";
 }
-<partial name="Inventory/InventoryNavigate" />
+<partial name="Inventory/InventoryNavigate" model="@Model"/>
 <input type="checkbox" id="checkBoxIsPublic">Is Public</input>
 <div>
     <input type="text" name="name" id="inputUser" oninput="searchEditor()" />
@@ -70,17 +70,17 @@
     async function addEditorRole() {
         const items = await getSelected('@classNameUserCheckBox');
 
-        await MakeEditor(items,@Model);
+        await MakeEditor(items,@Model.Id);
     }
 
     async function removeEditorRole() {
         const items = await getSelected('@classNameUserCheckBox');
 
-        await RemoveEditor(items,@Model);
+        await RemoveEditor(items,@Model.Id);
     }
 
     async function getUsers(userName, searchField) {
-        const response = await GetEditorInventory(@Model, userName, searchField);
+        const response = await GetEditorInventory(@Model.Id, userName, searchField);
         const result = await response.json();
         users = result;
         loadUsers();

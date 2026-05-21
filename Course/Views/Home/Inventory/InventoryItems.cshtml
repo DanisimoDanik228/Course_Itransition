@@ -1,4 +1,4 @@
-﻿@model long
+﻿@model (long Id,bool isEditor)
 @{
     var classNameFieldCheckBox = "fieldCheckBox";
     var classNameItemCheckBox = "itemCheckBox";
@@ -7,7 +7,7 @@
 
     var classNameAddItem = "itemAdd";
 }
-<partial name="Inventory/InventoryNavigate" />
+<partial name="Inventory/InventoryNavigate" model="@Model"/>
 <h3 id="inventoryInfo"></h3>
 
 <div>
@@ -34,7 +34,7 @@
         await getInventory();
 
         const allIds = inventory.inventoryType.map(i => i.id);
-        const tableOrderField = await (await GetOrderField(@Model)).json();
+        const tableOrderField = await (await GetOrderField(@Model.Id)).json();
         orderInventoryTypes = collapseFieldOrder(tableOrderField, allIds);
 
         loadHeadTable();
@@ -93,7 +93,7 @@
 
         const item = {
             id: 0,
-            inventoryId: @Model,
+            inventoryId: @Model.Id,
             itemValue: []
         };
 
@@ -107,7 +107,7 @@
             item.itemValue.push(subItem);
         }
 
-        const response = await AddItemOnInventory(@Model, item);
+        const response = await AddItemOnInventory(@Model.Id, item);
         const result = await response.json();
         inventory.items.push(result);
 
@@ -119,7 +119,7 @@
         const typeField = document.getElementById('fieldType').value;
         const item = {
             id: 0,
-            inventoryId: @Model,
+            inventoryId: @Model.Id,
             name: nameField,
             type: 0,
             isShowInventoryTab: false,
@@ -137,7 +137,7 @@
     async function deleteField() {
         const fields = await getSelected('@classNameFieldCheckBox', i => i.dataset.inventoryTypeId);
 
-        await DeleteFieldOnInventory(@Model, fields);
+        await DeleteFieldOnInventory(@Model.Id, fields);
 
         loadFullInventory();
     }
@@ -145,7 +145,7 @@
     async function deleteItem() {
         const items = await getSelected('@classNameItemCheckBox');
 
-        await DeleteItemsOnInventory(@Model, items);
+        await DeleteItemsOnInventory(@Model.Id, items);
 
         await getInventory();
         loadBodyTable();
@@ -191,12 +191,12 @@
         let needUpdateInventory = false;
 
         if (changes.length > 0) {
-            await UpdateItem(@Model, changes);
+            await UpdateItem(@Model.Id, changes);
             needUpdateInventory = true;
         }
 
         if (addChanges.length > 0) {
-            await AddItemValueOnInventory(@Model, addChanges);
+            await AddItemValueOnInventory(@Model.Id, addChanges);
             needUpdateInventory = true;
         }
 
@@ -206,7 +206,7 @@
     }
 
     async function getInventory() {
-        const response = await GetPartInventory(@Model, page);
+        const response = await GetPartInventory(@Model.Id, page);
 
         const result = await response.json();
         inventory = result;

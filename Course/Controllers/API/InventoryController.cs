@@ -78,7 +78,6 @@ namespace Course.Controllers.API
             return Ok(res);
         }
         [HttpGet]
-        [Authorize(Roles = "Admin,Registered")]
         public async Task<IActionResult> GetOrderField(long idInventory)
         {
             var res = await _service.GetOrderField(idInventory);

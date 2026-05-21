@@ -1,4 +1,5 @@
-﻿@{
+﻿@model (long Id,bool isEditor)
+@{
     var classNameFieldCheckBox = "fieldCheckBox";
     var classNameInputField = "inputField";
 
@@ -16,7 +17,7 @@
         border-top: 3px solid blue;
     }
 </style>
-<partial name="Inventory/InventoryNavigate" />
+<partial name="Inventory/InventoryNavigate" model="@Model" />
 <div>
     <table>
         <thead>
@@ -53,13 +54,13 @@
     async function loadInventoryTypes() {
         await getInventoryTypes();
         const allIds = inventoryTypes.map(i => i.id);
-        const tableOrderField = await (await GetOrderField(@Model)).json();
+        const tableOrderField = await (await GetOrderField(@Model.Id)).json();
         orderInventoryTypes = collapseFieldOrder(tableOrderField, allIds);
         loadTableBody();
     }
 
     async function getInventoryTypes() {
-        const response = await GetInventoryTypes(@Model);
+        const response = await GetInventoryTypes(@Model.Id);
         inventoryTypes = await response.json();
     }
 
@@ -113,7 +114,7 @@
                 orderInventoryTypes.splice(from, 1);
                 orderInventoryTypes.splice(to, 0, draggedId);
 
-                await UpdateOrderField(@Model,orderInventoryTypes);
+                await UpdateOrderField(@Model.Id,orderInventoryTypes);
                 loadInventoryTypes();
 
                 render();
@@ -125,7 +126,7 @@
         const nameField = document.getElementById('fieldName').value;
         const item = {
             id: 0,
-            inventoryId: @Model,
+            inventoryId: @Model.Id,
             name: nameField,
             type: 0,
             isShowInventoryTab: false,
@@ -139,7 +140,7 @@
     async function deleteField() {
         const fields = await getSelected('@classNameFieldCheckBox', i => i.dataset.inventoryTypeId);
 
-        await DeleteFieldOnInventory(@Model, fields);
+        await DeleteFieldOnInventory(@Model.Id, fields);
 
         loadInventoryTypes();
     }
@@ -155,7 +156,7 @@
 
             const updatedItem = {
                 id: id,
-                inventoryId: @Model,
+                inventoryId: @Model.Id,
                 name: nameInput.value,
                 type: parseInt(typeInput.value),
                 isShowInventoryTab: visibleInput.value === '1',
@@ -166,7 +167,7 @@
         }
 
         await UpdateInvertoryTypes(updatedFields);
-        await UpdateOrderField(@Model,orderInventoryTypes);
+        await UpdateOrderField(@Model.Id,orderInventoryTypes);
         loadInventoryTypes();
     }
 </script>

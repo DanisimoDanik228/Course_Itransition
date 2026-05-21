@@ -14,8 +14,10 @@ namespace Course.Controllers
 {
     public class HomeController : Controller
     {
-        public HomeController(IService service)
+        private readonly IAuthenticationService _authenticationService;
+        public HomeController(IAuthenticationService authenticationService)
         {
+            _authenticationService = authenticationService;
         }
 
         public async Task<IActionResult> PersonalPage()
@@ -25,22 +27,26 @@ namespace Course.Controllers
 
         public async Task<IActionResult> Inventory(long Id, long InventoryId)
         {
+            var myId = _authenticationService.MyId();
+            var isCreator = await _authenticationService.IsCreatorAsync(myId, InventoryId);
+            var model = (InventoryId, isCreator);
+
             switch (Id)
             {
                 case 0:
-                    return View("Inventory/InventoryItems", InventoryId);
+                    return View("Inventory/InventoryItems", model);
                 case 1:
-                    return View("Inventory/InventoryDiscussion.cshtml", InventoryId);
+                    return View("Inventory/InventoryDiscussion.cshtml", model);
                 case 2:
-                    return View("Inventory/InventoryGeneralSettings", InventoryId);
+                    return View("Inventory/InventoryGeneralSettings", model);
                 case 3:
-                    return View("Inventory/InventoryCustomId", InventoryId);
+                    return View("Inventory/InventoryCustomId", model);
                 case 4:
-                    return View("Inventory/InventoryAccessSettings", InventoryId);
+                    return View("Inventory/InventoryAccessSettings", model);
                 case 5:
-                    return View("Inventory/InventoryCustomFields", InventoryId);
+                    return View("Inventory/InventoryCustomFields", model);
                 case 6:
-                    return View("Inventory/InventoryStatistics", InventoryId);
+                    return View("Inventory/InventoryStatistics", model);
                 default:
                     return View();
             }
