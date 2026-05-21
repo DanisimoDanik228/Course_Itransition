@@ -48,6 +48,8 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 
 builder.Services.Configure<InventorySettings>(
     builder.Configuration.GetSection("InventorySettings"));
+builder.Services.Configure<ElasticsearchSettings>(
+    builder.Configuration.GetSection("ElasticsearchSettings"));
 var elasticSettings = builder.Configuration
     .GetSection("ElasticsearchSettings")
     .Get<ElasticsearchSettings>();

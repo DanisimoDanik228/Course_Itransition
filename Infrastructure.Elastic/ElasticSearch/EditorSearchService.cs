@@ -24,6 +24,7 @@ namespace Infrastructure.Elastic.ElasticSearch
             IEditorRepository editorRepository,
             IOptions<ElasticsearchSettings> options)
         {
+            _editorRepository = editorRepository;
             _elasticsearchClient = elasticsearchClient;
             _elasticsearchSettings = options.Value;
         }
@@ -31,14 +32,14 @@ namespace Infrastructure.Elastic.ElasticSearch
         public async Task<List<InventoryEditorResponseDto>> FindEditorInventoryByEmailAsync(long inventoryId, string email)
         {
             var response = await _elasticsearchClient.SearchAsync<EditorSearchModel>(e => e
-                           .Index(_elasticsearchSettings.DefaultIndex)
-                           .Query(q => q
-                               .Wildcard(w => w
-                               .Field(f => f.Email)
-                               .Value($"*{email.ToLower()}*")
-                               )
-                           )
-                       );
+                    .Index(_elasticsearchSettings.DefaultIndex)
+                    .Query(q => q
+                        .Wildcard(w => w
+                        .Field(f => f.Email)
+                        .Value($"*{email.ToLower()}*")
+                        )
+                    )
+                );
 
             if (response.IsValidResponse)
             {
@@ -88,6 +89,10 @@ namespace Infrastructure.Elastic.ElasticSearch
 
         private async Task<List<InventoryEditorResponseDto>> MakeEditorResponseAsync(long inventoryId, IEnumerable<EditorSearchModel> response)
         {
+            if (!response.Any()) {
+                return [];
+            }
+
             var res = response
                 .Select(r => new InventoryEditorResponseDto()
                 {
