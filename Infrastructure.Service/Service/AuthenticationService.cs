@@ -99,7 +99,7 @@ namespace Infrastructure.Service.Service
             return res;
         }
 
-        public async Task<bool> IsAdmin(string userId)
+        public async Task<bool> IsAdminAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
 

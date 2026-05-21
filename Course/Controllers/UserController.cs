@@ -9,11 +9,14 @@ namespace Course.Controllers
 {
     public class UserController : Controller
     {
+        private readonly IAuthenticationService _authenticationService;
         private readonly IUserService _userService;
 
-        public UserController(IUserService accountService)
+        public UserController(IUserService accountService,
+            IAuthenticationService authenticationService)
         {
             _userService = accountService;
+            _authenticationService = authenticationService;
         }
 
         public IActionResult Register()
@@ -61,6 +64,12 @@ namespace Course.Controllers
         [HttpGet]
         public async Task<IActionResult> AdminPanel()
         {
+            var myId = _authenticationService.MyId();
+            if (!await _authenticationService.IsAdminAsync(myId))
+            {
+                return RedirectToAction("MainPage", "Home");
+            }
+
             return View();
         }
     }

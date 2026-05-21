@@ -52,7 +52,7 @@
         <div class="border-top p-2 btn-group" id="btnEditInventory">
             <button class="btn btn-outline-primary btn-sm" onclick="addEditorRole()">Make Editor</button>
             <button class="btn btn-outline-danger btn-sm" onclick="removeEditorRole()">Remove Editor</button>
-            <button class="btn btn-outline-success btn-sm" onclick="applyChanges()">Change</button>
+            <button class="btn btn-outline-success btn-sm" onclick="applyChanges()">Save</button>
         </div>
     </div>
 </div>
@@ -60,6 +60,7 @@
 <script>
 	let isPublic = false;
     let users = [];
+    let usersSrc = [];
 
 	loadStatus();
     searchEditor();
@@ -93,19 +94,37 @@
     async function addEditorRole() {
         const items = await getSelected('@classNameUserCheckBox');
 
-        await MakeEditor(items,@Model.Id);
+
+        users.forEach(item => {
+            if (items.includes(item.id)) {
+                if (item.roleInventory === 'Anonym') {
+                    item.roleInventory = 'Editor';
+                }
+            }
+        })
+        
+        loadUsers();
     }
 
     async function removeEditorRole() {
         const items = await getSelected('@classNameUserCheckBox');
 
-        await RemoveEditor(items,@Model.Id);
+        users.forEach(item => {
+            if (items.includes(item.id)) {
+                if (item.roleInventory === 'Editor') {
+                    item.roleInventory = 'Anonym';
+                }
+            }
+        })
+
+        loadUsers();
     }
 
     async function getUsers(userName, searchField) {
         const response = await GetEditorInventory(@Model.Id, userName, searchField);
         const result = await response.json();
         users = result;
+        usersSrc = structuredClone(result);
         loadUsers();
     }
 
@@ -135,5 +154,29 @@
         const isPublic = document.getElementById('checkBoxIsPublic').checked;
 
         await UpdateStatusInventory(@Model.Id, isPublic);
+
+        let editors = [];
+        let anonyms = [];
+
+        for (let user of users) { 
+            if (user.roleInventory == 'Admin' || user.roleInventory == 'Creator') {
+                continue;
+            }
+
+            const userSrc = usersSrc.find(u => u.id == user.id);
+
+            if (user.roleInventory !== userSrc.roleInventory) {
+                if (user.roleInventory === 'Editor') {
+                    editors.push(user.id);
+                } else { 
+                    anonyms.push(user.id);
+                }
+            }
+        }
+
+        await RemoveEditor(anonyms,@Model.Id);
+        await MakeEditor(editors,@Model.Id);
+
+        searchEditor();
     }
 </script>

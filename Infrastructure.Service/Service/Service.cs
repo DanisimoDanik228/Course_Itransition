@@ -98,7 +98,7 @@ namespace Infrastructure.Service.Service
 
             IEnumerable<Inventory> inventories;
 
-            if (await _authenticationService.IsAdmin(userId))
+            if (await _authenticationService.IsAdminAsync(userId))
             {
                 inventories = await _inventoryRepository.GetAllAsync();
             }

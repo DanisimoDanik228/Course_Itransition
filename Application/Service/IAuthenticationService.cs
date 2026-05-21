@@ -13,7 +13,7 @@ namespace Application.Service
         Task<bool> MayDropAndCreateInventory(string userId, long inventoryId);
         Task<bool> MayDropAndCreateField(string userId, long inventoryId);
         Task<bool> MayDropAndCreateEditor(string userId, long inventoryId);
-        Task<bool> IsAdmin(string userId);
+        Task<bool> IsAdminAsync(string userId);
         string MyId();
     }
 }
