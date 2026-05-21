@@ -14,5 +14,9 @@
 <body>
     @RenderBody()
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        let currentTheme = localStorage.getItem('theme');
+        document.documentElement.setAttribute('data-bs-theme', currentTheme === 'dark' ? 'dark' : 'light');
+    </script>
 </body>
 </html>

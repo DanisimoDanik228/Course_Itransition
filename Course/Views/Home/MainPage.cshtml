@@ -1,17 +1,23 @@
-﻿<a href="/Home/PersonalPage">My PersonalPage</a>
-<button id="btnThemeToggle" onclick="changeTheme()">Change theme</button>
-<div>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Creator</th>
-            </tr>
-        </thead>
-        <tbody id="inventoryTableBody">
-        </tbody>
-    </table>
+﻿<div>
+    <div>
+        <a href="/Home/PersonalPage" class="">Personal Page</a>
+        <button onclick="changeTheme()" class="btn btn-outline-secondary btn-sm rounded-2">
+            Theme
+        </button>
+    </div>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Creator</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+            </tbody>
+        </table>
+    </div>
 </div>
 <script>
     let inventories = [];
@@ -43,5 +49,6 @@
         const currentTheme = htmlEl.getAttribute('data-bs-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         htmlEl.setAttribute('data-bs-theme', newTheme);
+        localStorage.setItem('theme', newTheme)
     }
 </script>
