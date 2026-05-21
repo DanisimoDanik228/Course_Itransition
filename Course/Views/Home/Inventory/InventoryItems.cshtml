@@ -1,17 +1,13 @@
-﻿@model long
+﻿@model (long Id,bool isEditor, bool isCreator)
 @{
     var classNameFieldCheckBox = "fieldCheckBox";
     var classNameItemCheckBox = "itemCheckBox";
 
-    var classNameUserCheckBox = "userCheckBox";
-
     var classNameInputField = "inputField";
 
     var classNameAddItem = "itemAdd";
-
-    var CustomIdName = "CustomId";
 }
-<partial name="Inventory/InventoryNavigate" />
+<partial name="Inventory/InventoryNavigate" model="@Model"/>
 <h3 id="inventoryInfo"></h3>
 
 <div>
@@ -22,39 +18,12 @@
         <tbody id="inventoryTableBody">
         </tbody>
     </table>
-    <button onclick="deleteItem()">Delete Item</button>
-    <button onclick="addItem()" type="submit">Add Item</button>
-    <button onclick="applyChanges()">Change</button>
-</div>
-
-<div class="bg-info">
-    <input type="text" name="name" id="inputUser" oninput="searchEditor()" />
-    <div>
-        <div>
-            <input type="radio" name="searchField" value="UserName" onchange="changedSearchField()" checked>
-            <label for="userName">Name</label>
-        </div>
-        <div>
-            <input type="radio" name="searchField" value="Email" onchange="changedSearchField()">
-            <label for="email">Email</label>
-        </div>
-    </div>
-    <table>
-        <thead>
-            <tr>
-                <th>
-                    <input type="checkbox" id="selectAllUser">
-                </th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Current Role in inventory</th>
-            </tr>
-        </thead>
-        <tbody id="userList">
-        </tbody>
-    </table>
-    <button onclick="removeEditorRole()">Remove Editor</button>
-    <button onclick="addEditorRole()">Make Editor</button>
+    @if (@Model.isEditor || @Model.isCreator)
+    {
+        <button onclick="addItem()" type="submit">Add Item</button>
+        <button onclick="applyChanges()">Change</button>
+        <button onclick="deleteItem()">Delete Item</button>
+    }
 </div>
 
 <script>
@@ -63,15 +32,12 @@
     let orderInventoryTypes = [];
 
     loadFullInventory();
-    searchEditor();
-
-    createClickSelectAll('selectAllUser', '@classNameUserCheckBox');
 
     async function loadFullInventory() {
         await getInventory();
 
         const allIds = inventory.inventoryType.map(i => i.id);
-        const tableOrderField = await (await GetOrderField(@Model)).json();
+        const tableOrderField = await (await GetOrderField(@Model.Id)).json();
         orderInventoryTypes = collapseFieldOrder(tableOrderField, allIds);
 
         loadHeadTable();
@@ -125,31 +91,12 @@
         createClickSelectAll('selectAll', '@classNameItemCheckBox');
     }
 
-    function loadUsers() {
-        const userList = document.getElementById('userList');
-        let resHtml = "";
-
-        for (let item of users) {
-            resHtml += `
-                <tr>
-                    <td>
-                        <input type="checkbox" class="@classNameUserCheckBox" data-id="${item.id}">
-                    </td>
-                    <td>${item.name}</td>
-                    <td>${item.email}</td>
-                    <td>${item.roleInventory}</td>
-                </tr>`;
-        }
-
-        userList.innerHTML = resHtml;
-    }
-
     async function addItem() {
         const values = document.getElementsByClassName('@classNameAddItem');
 
         const item = {
             id: 0,
-            inventoryId: @Model,
+            inventoryId: @Model.Id,
             itemValue: []
         };
 
@@ -163,7 +110,7 @@
             item.itemValue.push(subItem);
         }
 
-        const response = await AddItemOnInventory(@Model, item);
+        const response = await AddItemOnInventory(@Model.Id, item);
         const result = await response.json();
         inventory.items.push(result);
 
@@ -175,7 +122,7 @@
         const typeField = document.getElementById('fieldType').value;
         const item = {
             id: 0,
-            inventoryId: @Model,
+            inventoryId: @Model.Id,
             name: nameField,
             type: 0,
             isShowInventoryTab: false,
@@ -193,7 +140,7 @@
     async function deleteField() {
         const fields = await getSelected('@classNameFieldCheckBox', i => i.dataset.inventoryTypeId);
 
-        await DeleteFieldOnInventory(@Model, fields);
+        await DeleteFieldOnInventory(@Model.Id, fields);
 
         loadFullInventory();
     }
@@ -201,7 +148,7 @@
     async function deleteItem() {
         const items = await getSelected('@classNameItemCheckBox');
 
-        await DeleteItemsOnInventory(@Model, items);
+        await DeleteItemsOnInventory(@Model.Id, items);
 
         await getInventory();
         loadBodyTable();
@@ -247,12 +194,12 @@
         let needUpdateInventory = false;
 
         if (changes.length > 0) {
-            await UpdateItem(@Model, changes);
+            await UpdateItem(@Model.Id, changes);
             needUpdateInventory = true;
         }
 
         if (addChanges.length > 0) {
-            await AddItemValueOnInventory(@Model, addChanges);
+            await AddItemValueOnInventory(@Model.Id, addChanges);
             needUpdateInventory = true;
         }
 
@@ -261,83 +208,10 @@
         }
     }
 
-    async function addEditorRole() {
-        const items = await getSelected('@classNameUserCheckBox');
-
-        await MakeEditor(items,@Model);
-
-        //await searchEditor();
-    }
-
-    async function removeEditorRole() {
-        const items = await getSelected('@classNameUserCheckBox');
-
-        await RemoveEditor(items,@Model);
-
-        //await searchEditor();
-    }
-
     async function getInventory() {
-        const response = await GetPartInventory(@Model, page);
+        const response = await GetPartInventory(@Model.Id, page);
 
         const result = await response.json();
         inventory = result;
-    }
-
-    async function getUsers(userName, searchField) {
-        const response = await GetEditorInventory(@Model, userName, searchField);
-        const result = await response.json();
-        users = result;
-        loadUsers();
-    }
-
-    async function searchEditor() {
-        const inputUser = document.getElementById('inputUser');
-
-        const searchField = getSearchField();
-
-        await getUsers(inputUser.value, searchField);
-    }
-
-    function getInventoryTypeOrder() {
-        return JSON.parse(localStorage.getItem(`field_order_${@Model}`));
-    }
-
-    function setInventoryTypeOrder(order) {
-        localStorage.setItem(`field_order_${@Model}`, JSON.stringify(order));
-    }
-
-    function updateInventoryTypeOrder(allIds) {
-        let currentOrder = getInventoryTypeOrder();
-        if (!currentOrder) {
-            currentOrder = [];
-        }
-
-        let newOrder = [];
-
-        for (let id of currentOrder)
-            if (allIds.includes(id))
-                newOrder.push(id);
-
-        for (let id of allIds)
-            if (!currentOrder.includes(id))
-                newOrder.push(id);
-
-        setInventoryTypeOrder(newOrder);
-        return newOrder;
-    }
-
-    async function changedSearchField() {
-        await searchEditor();
-    }
-
-    function getSearchField() {
-        const radio = document.getElementsByName('searchField');
-
-        for (let r of radio) {
-            if (r.checked) {
-                return r.value;
-            }
-        }
     }
 </script>

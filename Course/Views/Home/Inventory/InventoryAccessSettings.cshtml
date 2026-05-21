@@ -1,3 +1,117 @@
-﻿@model long
-<partial name="Inventory/InventoryNavigate" />
-<h3>Empty Page</h3>
+﻿@model (long Id,bool isEditor, bool isCreator)
+@{
+    var classNameUserCheckBox = "userCheckBox";
+}
+<partial name="Inventory/InventoryNavigate" model="@Model"/>
+<input type="checkbox" id="checkBoxIsPublic">Is Public</input>
+<div>
+    <input type="text" name="name" id="inputUser" oninput="searchEditor()" />
+    <div>
+        <div>
+            <input type="radio" name="searchField" value="UserName" onchange="changedSearchField()" checked>
+            <label for="userName">Name</label>
+        </div>
+        <div>
+            <input type="radio" name="searchField" value="Email" onchange="changedSearchField()">
+            <label for="email">Email</label>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="selectAllUser">
+                </th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Current Role</th>
+            </tr>
+        </thead>
+        <tbody id="userList">
+        </tbody>
+    </table>
+    <button onclick="removeEditorRole()">Remove Editor</button>
+    <button onclick="addEditorRole()">Make Editor</button>
+    <button onclick="applyChanges()">Change</button>
+</div>
+
+<script>
+	let isPublic = false;
+    let users = [];
+
+	loadStatus();
+    searchEditor();
+
+    createClickSelectAll('selectAllUser', '@classNameUserCheckBox');
+
+	async function loadStatus() {
+        isPublic = await(await GetStatusInventory(@Model.Id)).json();
+		document.getElementById('checkBoxIsPublic').checked = isPublic;
+	}
+
+    function loadUsers() {
+        const userList = document.getElementById('userList');
+        let resHtml = "";
+
+        for (let item of users) {
+            resHtml += `
+                <tr>
+                    <td>
+                        <input type="checkbox" class="@classNameUserCheckBox" data-id="${item.id}">
+                    </td>
+                    <td>${item.name}</td>
+                    <td>${item.email}</td>
+                    <td>${item.roleInventory}</td>
+                </tr>`;
+        }
+
+        userList.innerHTML = resHtml;
+    }
+
+    async function addEditorRole() {
+        const items = await getSelected('@classNameUserCheckBox');
+
+        await MakeEditor(items,@Model.Id);
+    }
+
+    async function removeEditorRole() {
+        const items = await getSelected('@classNameUserCheckBox');
+
+        await RemoveEditor(items,@Model.Id);
+    }
+
+    async function getUsers(userName, searchField) {
+        const response = await GetEditorInventory(@Model.Id, userName, searchField);
+        const result = await response.json();
+        users = result;
+        loadUsers();
+    }
+
+    async function searchEditor() {
+        const inputUser = document.getElementById('inputUser');
+
+        const searchField = getSearchField();
+
+        await getUsers(inputUser.value, searchField);
+    }
+
+    async function changedSearchField() {
+        await searchEditor();
+    }
+
+    function getSearchField() {
+        const radio = document.getElementsByName('searchField');
+
+        for (let r of radio) {
+            if (r.checked) {
+                return r.value;
+            }
+        }
+    }
+
+    async function applyChanges() {
+        const isPublic = document.getElementById('checkBoxIsPublic').checked;
+
+        await UpdateStatusInventory(@Model.Id, isPublic);
+    }
+</script>

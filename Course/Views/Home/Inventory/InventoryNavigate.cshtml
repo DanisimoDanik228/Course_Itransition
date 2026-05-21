@@ -1,31 +1,35 @@
-﻿@model long
+﻿@model (long Id,bool isEditor, bool isCreator)
+<a href="http://localhost:8080/Home/PersonalPage">My PersonalPage</>
 <ul class="nav nav-tabs">
     <li class="nav-item">
         <a class="nav-link"
-           href="/Home/Inventory?Id=0&InventoryId=@Model">Items</a>
+           href="/Home/Inventory?Id=0&InventoryId=@Model.Id">Items</a>
     </li>
     <li class="nav-item">
         <a class="nav-link"
-           href="/Home/Inventory?Id=1&InventoryId=@Model">Discussion</a>
+           href="/Home/Inventory?Id=1&InventoryId=@Model.Id">Discussion</a>
     </li>
+    @if (Model.isCreator || User.IsInRole("Admin"))
+    {
+        <li class="nav-item">
+            <a class="nav-link"
+               href="/Home/Inventory?Id=2&InventoryId=@Model.Id">General Settings</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               href="/Home/Inventory?Id=3&InventoryId=@Model.Id">Custom Id</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               href="/Home/Inventory?Id=4&InventoryId=@Model.Id">Access Settings</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               href="/Home/Inventory?Id=5&InventoryId=@Model.Id">Custom fields<a>
+        </li>
+    }
     <li class="nav-item">
         <a class="nav-link"
-           href="/Home/Inventory?Id=2&InventoryId=@Model">General Settings</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link"
-           href="/Home/Inventory?Id=3&InventoryId=@Model">Custom Id</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link"
-           href="/Home/Inventory?Id=4&InventoryId=@Model">Access Settings</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link"
-           href="/Home/Inventory?Id=5&InventoryId=@Model">Custom fields<a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link"
-           href="/Home/Inventory?Id=6&InventoryId=@Model">Statistics</a>
+            href="/Home/Inventory?Id=6&InventoryId=@Model.Id">Statistics</a>
     </li>
 </ul>

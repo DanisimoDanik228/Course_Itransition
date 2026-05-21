@@ -29,8 +29,14 @@ namespace Infrastructure.Service.Service
         public async Task<bool> MayEditInventory(string userId, long inventoryId)
         {
             if (await _userManager.IsInRoleAsync(new AppUser { Id = userId }, "Admin"))
-            { 
+            {
                 return true;
+            }
+
+            if (await IsPublicInventoryAsync(inventoryId)) {
+                var isExistUser = await _userManager.Users.AnyAsync(u => u.Id == userId);
+
+                return isExistUser;
             }
 
             var res = await _context.Inventory
@@ -40,6 +46,31 @@ namespace Infrastructure.Service.Service
 
             return res;
         }
+        public async Task<bool> IsCreatorAsync(string userId, long inventoryId)
+        {
+            if (userId == null)
+            {
+                return false;
+            }
+            var inventory = await _context.Inventory.FindAsync(inventoryId);
+            if (inventory == null) 
+            {
+                return false;
+            }
+
+            return inventory.CreatorId == userId;
+        }
+
+        public async Task<bool> IsEditorAsync(string userId, long inventoryId)
+        {
+            if (userId == null)
+            {
+                return false;
+            }
+
+            return await _context.EditorInventory.AnyAsync(ei => ei.InventoryId == inventoryId && ei.EditorId == userId);
+        }
+
         public async Task<bool> MayDropAndCreateField(string userId, long inventoryId)
         {
             if (await _userManager.IsInRoleAsync(new AppUser { Id = userId }, "Admin"))
@@ -106,6 +137,13 @@ namespace Infrastructure.Service.Service
                     (i.CreatorId == userId));
 
             return res;
+        }
+
+        private async Task<bool> IsPublicInventoryAsync(long inventoryId) {
+            var inventory = await _context.Inventory
+                .FindAsync(inventoryId);
+
+            return inventory.IsPublic;
         }
     }
 }

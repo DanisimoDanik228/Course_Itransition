@@ -1,4 +1,4 @@
-﻿@model long
+﻿@model (long Id,bool isEditor, bool isCreator)
 <style>
     .drag-item {
         border: 2px solid green;
@@ -8,7 +8,7 @@
         border-top: 3px solid blue;
     }
 </style>
-<partial name="Inventory/InventoryNavigate" />
+<partial name="Inventory/InventoryNavigate" model="@Model" />
 <div id="listPartsCustomId"></div>
 <div id="container" class="border border-black border-3 m-3">
     
@@ -45,7 +45,7 @@
     loadExistStructCustomId();
 
     async function loadExistStructCustomId(){
-        const response = await GetStructCustomId(@Model);
+        const response = await GetStructCustomId(@Model.Id);
         selectedItems = await response.json();
         
         renderTarget();
@@ -134,7 +134,7 @@
 
     async function saveCustomId() { 
         console.log(selectedItems);
-    await SetStructCustomId(@Model, selectedItems);
+        await SetStructCustomId(@Model.Id, selectedItems);
     }
 
     function addItem(id,name) { 

@@ -21,18 +21,20 @@ namespace Application.Service
         Task<List<PartCustomId>> GetStructCustomIdAsync(long inventoryId);
         Task<IEnumerable<InventoryTypeResponseDto>> GetInventoryTypesAsync(long inventoryId);
         Task<InventoryFullResponseDto?> GetFullInventoryByIdAsync(long Id);
-        Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Page);   
+        Task<bool> GetStatusAsync(long inventoryId);
+        Task<InventoryFullResponseDto?> GetPartInventoryAsync(long Id, int Page);
         Task<InventoryResponseDto?> AddInventoryAsync(InventoryRequestDto item);
         Task<ItemFullResponseDto?> AddItemAsync(ItemFullRequestDto item);
         Task AddItemValueAsync(long inventoryId, AddItemValueRequestDto[] itemValue);
         Task<InventoryTypeResponseDto?> AddFieldAsync(InventoryTypeRequestDto item);
-        Task<int?> DeleteInventoryAsync(long[] idInventory);
-        Task<int?> DeleteItemsAsync(long idInventory, long[] itemsId);
-        Task<int?> DeleteFieldAsync(long idInventory, long[] fieldsId);
-        Task SetStructCustomIdAsync(long idInventory, List<PartCustomId> structCustomId);
+        Task UpdateStructCustomIdAsync(long idInventory, List<PartCustomId> structCustomId);
         Task UpdateItemAsync(List<UpdateItemRequestDto> data, long idInventory);
         Task UpdateInvertoryTypes(List<InventoryTypeRequestDto> data);
         Task UpdateOrderField(long inventoryId, int[] orderField);
+        Task UpdateStatusInventoryAsync(long inventoryId, bool status);
+        Task<int?> DeleteInventoryAsync(long[] idInventory);
+        Task<int?> DeleteItemsAsync(long idInventory, long[] itemsId);
+        Task<int?> DeleteFieldAsync(long idInventory, long[] fieldsId);
     }
 }
  

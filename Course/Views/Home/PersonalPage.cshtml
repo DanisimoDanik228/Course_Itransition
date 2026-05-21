@@ -6,7 +6,10 @@
     var classNameAccessInventoryCheckBox = "checkboxAccessInventoryList";
 }
 
-<a href="/User/AllUsers">All User</a>
+@if (@User.IsInRole("Admin"))
+{
+    <a href="/User/AdminPanel">AdminPanel</a>
+}
 <form asp-controller="User" asp-action="Logout" method="post">
     <button type="submit">Logout</button>
 </form>

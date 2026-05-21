@@ -10,6 +10,7 @@ namespace Domain.Models
     {
         public long Id { get; set;  }
         public string Name { get; set; }
+        public bool IsPublic { get; set; }
         public string CreatorId { get; set; }
         public AppUser Creator { get; set; } 
         public ICollection<EditorInventory> Editors { get; set; }

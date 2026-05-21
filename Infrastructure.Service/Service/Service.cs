@@ -130,6 +130,7 @@ namespace Infrastructure.Service.Service
             }
 
             inventory.OrderField = [1];
+            inventory.IsPublic = false;
             var res = await _inventoryRepository.AddAsync(inventory);
             var resInventoryType = await _inventoryTypeRepository.AddAsync(new InventoryType() {
                 Name = _inventorySettings.CustomIdName,
@@ -287,7 +288,7 @@ namespace Infrastructure.Service.Service
             return _customIdService.GetAllPartCustomId();
         }
 
-        public async Task SetStructCustomIdAsync(long idInventory, List<PartCustomId> structCustomId)
+        public async Task UpdateStructCustomIdAsync(long idInventory, List<PartCustomId> structCustomId)
         {
             if (!structCustomId.Any())
             {
@@ -342,6 +343,16 @@ namespace Infrastructure.Service.Service
         public async Task UpdateOrderField(long inventoryId, int[] orderField)
         {
             await _inventoryRepository.UpdateOrderFieldAsync(inventoryId, orderField);
+        }
+
+        public async Task<bool> GetStatusAsync(long inventoryId)
+        {
+            return await _inventoryRepository.GetStatusAsync(inventoryId);
+        }
+
+        public async Task UpdateStatusInventoryAsync(long inventoryId, bool status)
+        {
+            await _inventoryRepository.UpdateStatusInventoryAsync(inventoryId, status);
         }
     }
 }
