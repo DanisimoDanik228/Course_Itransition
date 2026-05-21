@@ -1,14 +1,16 @@
 ﻿<div>
-    <div>
-        <a href="/Home/PersonalPage" class="">Personal Page</a>
+    <div class="d-flex justify-content-between border-bottom">
+        <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2" href="/Home/PersonalPage" class="">
+            Personal Page
+        </a>
         <button onclick="changeTheme()" class="btn btn-outline-secondary btn-sm rounded-2">
             Theme
         </button>
     </div>
-    <div>
-        <table>
+    <div class="table-responsive rounded border p-2">
+        <table class="table table-bordered table-hover mb-0">
             <thead>
-                <tr>
+                <tr class="text-uppercase">
                     <th>Name</th>
                     <th>Description</th>
                     <th>Creator</th>
@@ -33,7 +35,9 @@
             resHtml += `
                 <tr>
                     <td>
-                        <a href="/Home/Inventory?Id=0&InventoryId=${item.id}">${item.name}</a>
+                        <a class="btn btn-outline-info text-decoration-none btn-sm rounded-2 fw-bold text-decoration-none" href="/Home/Inventory?Id=0&InventoryId=${item.id}">
+                            ${item.name}
+                        </a>
                     </td>
                     <td>${item.description}</td>
                     <td>${item.creatorName}</td>
