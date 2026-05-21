@@ -58,12 +58,18 @@ namespace Infrastructure.Repository.Repository.User
         {
             var adminRole = await _context.Roles
                 .Where(r => r.Name == "Admin")
-                .AsNoTracking()
+                .Select(r => r.Id)
                 .FirstOrDefaultAsync();
 
-            var admins = _context.UserRoles
-                .Where(ur => adminRole.Id == ur.RoleId)
-                .Select(ur => ur.UserId);
+            var admins = await _context.UserRoles
+                .Where(ur => ur.RoleId == adminRole)
+                .Select(ur => ur.UserId)
+                .ToHashSetAsync();
+
+            var editorIds = await _context.EditorInventory
+                .Where(e => e.InventoryId == inventoryId)
+                .Select(e => e.EditorId)
+                .ToHashSetAsync();
 
             var inventory = await _context.Inventory
                 .AsNoTracking()
@@ -75,10 +81,9 @@ namespace Infrastructure.Repository.Repository.User
                     Id = u.Id,
                     Name = u.Name,
                     Email = u.Email,
-                    RoleInventory = (u.Id == inventory.CreatorId) ? ("Creator") : 
-                        ((admins.Any(id => id == u.Id)) ? ("Admin") : 
-                        ((_context.EditorInventory.Any(e => e.InventoryId == inventoryId && e.EditorId == u.Id)) ? ("Editor") : 
-                        ("Anonym")))
+                    RoleInventory = u.Id == inventory.CreatorId ? "Creator" :
+                           admins.Contains(u.Id) ? "Admin" :
+                           editorIds.Contains(u.Id) ? "Editor" : "Anonym"
                 })
                 .ToListAsync();
 
