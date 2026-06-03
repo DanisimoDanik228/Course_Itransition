@@ -1,5 +1,6 @@
 ﻿using Application.Dto.Request;
 using Application.Service;
+using Application.Service.Salesforce;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +12,15 @@ namespace Course.Controllers
     {
         private readonly IAuthenticationService _authenticationService;
         private readonly IUserService _userService;
+        private readonly ISalesforceService _salesforceService;
 
         public UserController(IUserService accountService,
-            IAuthenticationService authenticationService)
+            IAuthenticationService authenticationService,
+            ISalesforceService salesforceService)
         {
             _userService = accountService;
             _authenticationService = authenticationService;
+            _salesforceService = salesforceService;
         }
 
         public IActionResult Register()
@@ -72,6 +76,12 @@ namespace Course.Controllers
             }
 
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Profile(string id)
+        {
+            return View(await _salesforceService.GetContactByIdAsync(id));
         }
     }
 }
