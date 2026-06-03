@@ -12,15 +12,12 @@ namespace Course.Controllers
     {
         private readonly IAuthenticationService _authenticationService;
         private readonly IUserService _userService;
-        private readonly ISalesforceService _salesforceService;
 
         public UserController(IUserService accountService,
-            IAuthenticationService authenticationService,
-            ISalesforceService salesforceService)
+            IAuthenticationService authenticationService)
         {
             _userService = accountService;
             _authenticationService = authenticationService;
-            _salesforceService = salesforceService;
         }
 
         public IActionResult Register()
@@ -79,9 +76,9 @@ namespace Course.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Profile(string id)
+        public async Task<IActionResult> Profile()
         {
-            return View(await _salesforceService.GetContactByIdAsync(id));
+            return View();
         }
     }
 }

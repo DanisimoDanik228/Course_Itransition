@@ -1,4 +1,8 @@
 ﻿using Application.Service;
+using Application.Service.Salesforce;
+using Domain.Models.Salesforce;
+using Elastic.Clients.Elasticsearch;
+using Infrastructure.Service.Service.Salesforce;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +13,13 @@ namespace Course.Controllers.API
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ISalesforceService _salesforceService;
 
-        public UserController(IUserService accountService)
+        public UserController(IUserService accountService,
+            ISalesforceService salesforceService)
         {
             _userService = accountService;
+            _salesforceService = salesforceService;
         }
 
         [HttpGet]
@@ -24,11 +31,28 @@ namespace Course.Controllers.API
         }
 
         [HttpGet]
+        public async Task<IActionResult> UserByEmail(string email)
+        {
+            var user = await _salesforceService.GetContactByEmailAsync(email);
+
+            return Ok(user);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetEditorInventory(long idInventory, string? userName, string searchField)
         {
             var editors = await _userService.FindEditorInventoryAsync(idInventory, userName, searchField);
 
             return Ok(editors);
+        }
+
+        [HttpPatch]
+        [Authorize(Roles = "Admin,Registered")]
+        public async Task<IActionResult> UpdateContact(string id, string lastName, string description)
+        {
+            await _salesforceService.UpdateContactAsync(id, lastName, description);
+
+            return StatusCode(204);
         }
 
         [HttpDelete]

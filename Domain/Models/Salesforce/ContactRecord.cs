@@ -33,10 +33,10 @@ namespace Domain.Models.Salesforce
         public bool success { get; set; }
     }
 
-    public class SalesforceIdResponse
+    public class SalesforceContatResponse
     {
         public int totalSize { get; set; }
         public bool done { get; set; }
-        public List<string> records { get; set; }
+        public List<ContactRecord> records { get; set; }
     }
 }

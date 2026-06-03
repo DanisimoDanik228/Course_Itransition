@@ -1,7 +1,37 @@
-﻿@using Domain.Models.Salesforce
-@model ContactRecord
+﻿
+<div class="table-responsive rounded border">
+	<div class="p-2">
+<h5>Email</h5>
+<input type="text" id="email" data-name="Email">
+<h5>LastName</h5>
+<input type="text" id="lastName" data-name="LastName">
+<h5>Description</h5>
+<input type="text" id="description" data-name="Description">
 
-<h5>@Model.LastName</h5>
-<h5>@Model.Email</h5>
-<h5>@Model.Birthdate</h5>
-<h5>@Model.Description</h5>
+<button class="btn btn-outline-success btn-sm" onclick="applyChanges()">Save</button>
+</div>
+</div>
+<script>
+	const myEmail = '@User.Identity.Name';
+	let myId = "";
+	loadUser();
+
+	async function loadUser()
+	{
+		const response = await UserByEmail(myEmail);
+		const result = await response.json();
+
+		document.getElementById('lastName').value = result.lastName;
+		document.getElementById('email').value = result.email;
+		document.getElementById('description').value = result.description;
+
+		myId = result.id;
+	}
+
+	async function applyChanges() {
+		const lastName = document.getElementById('lastName').value;
+		const description = document.getElementById('description').value;
+
+		await UpdateContact(myId, lastName, description);
+	}
+</script>

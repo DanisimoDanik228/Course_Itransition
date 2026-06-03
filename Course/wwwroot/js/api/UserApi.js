@@ -78,3 +78,26 @@ async function GetEditorInventory(inventoryId, userName, searchField) {
 
     return response;
 }
+
+async function UserByEmail(email) {
+    const response = await fetch(`/api/user/UserByEmail?email=${email}`);
+
+    return response;
+}
+
+async function UserByEmail(email) {
+    const response = await fetch(`/api/user/UserByEmail?email=${email}`);
+
+    return response;
+}
+
+async function UpdateContact(id, lastName, description) {
+    const response = await fetch(`/api/user/UpdateContact?id=${id}&lastName=${lastName}&description=${description}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+
+    return response;
+}

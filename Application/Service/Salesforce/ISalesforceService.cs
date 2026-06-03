@@ -10,6 +10,7 @@ namespace Application.Service.Salesforce
         Task<IEnumerable<ContactRecord>> GetAllContactsAsync();
         Task<ContactRecord> GetContactByIdAsync(string id);
         Task<string> AddContactAsync(string email, string name);
-        Task<string> GetContactIdByEmailAsync(string email);
+        Task<ContactRecord> GetContactByEmailAsync(string email);
+        Task<bool> UpdateContactAsync(string contactId, string newLastName, string newDescription);
     }
 }

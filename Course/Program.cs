@@ -22,7 +22,8 @@ DotNetEnv.Env.Load();
 builder.Services.Configure<SalesforceSettings>(options =>
 {
     options.EndpointUrl = Environment.GetEnvironmentVariable("SALESFORCE_ENDPOINTURL");
-    options.AccessToken = Environment.GetEnvironmentVariable("SALESFORCE_ACCESSTOKEN");
+    options.ClientId = Environment.GetEnvironmentVariable("SALESFORCE_CLIENTID");
+    options.ConsumerSecret = Environment.GetEnvironmentVariable("SALESFORCE_CONSUMERSECRET");
     options.SObjectName = Environment.GetEnvironmentVariable("SALESFORCE_SOBJECTNAME");
     options.ApiVersion = Environment.GetEnvironmentVariable("SALESFORCE_APIVERSION"); 
 });
@@ -100,7 +101,7 @@ using (var scope = app.Services.CreateScope())
 using (var scope = app.Services.CreateScope())
 {
     var nameAdmin = "werty";
-    var emailAdmin = "werty@mail";
+    var emailAdmin = "werty@mail.com";
     var passAdmin = "1111";
     string[] roleNames = { "Admin", "Registered" };
 
@@ -119,7 +120,7 @@ using (var scope = app.Services.CreateScope())
 
     if (await userManager.FindByEmailAsync(emailAdmin) == null)
     {
-        var admin = new AppUser { SalesforceId= "003dL000027eVmVQAU", Name = nameAdmin, UserName = emailAdmin, Email = emailAdmin };
+        var admin = new AppUser { Name = nameAdmin, UserName = emailAdmin, Email = emailAdmin };
         await userManager.CreateAsync(admin, passAdmin);
         await userManager.AddToRoleAsync(admin, "Admin");
         await userManager.AddToRoleAsync(admin, "Registered");
