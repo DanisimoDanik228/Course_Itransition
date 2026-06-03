@@ -47,7 +47,16 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }} 
-
+          
+      - name: Create env file
+            run: |
+              touch .env
+              echo "SALESFORCE_ENDPOINTURL=${{ secrets.SALESFORCE_ENDPOINTURL }}" >> .env
+              echo "SALESFORCE_SOBJECTNAME=${{ secrets.SALESFORCE_SOBJECTNAME }}" >> .env
+              echo "SALESFORCE_APIVERSION=${{ env.SALESFORCE_APIVERSION }}" >> .env
+              echo "SALESFORCE_CLIENTID=${{ env.SALESFORCE_CLIENTID }}" >> .env
+              echo "SALESFORCE_CONSUMERSECRET=${{ env.SALESFORCE_CONSUMERSECRET }}" >> .env
+              
       - name: Deploy
         run: |
           docker compose pull
