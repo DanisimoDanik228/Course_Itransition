@@ -28,6 +28,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create env file for build
+        run: |
+          touch .env
+          echo "SALESFORCE_ENDPOINTURL=${{ secrets.SALESFORCE_ENDPOINTURL }}" >> .env
+          echo "SALESFORCE_SOBJECTNAME=${{ secrets.SALESFORCE_SOBJECTNAME }}" >> .env
+          echo "SALESFORCE_APIVERSION=${{ secrets.SALESFORCE_APIVERSION }}" >> .env
+          echo "SALESFORCE_CLIENTID=${{ secrets.SALESFORCE_CLIENTID }}" >> .env
+          echo "SALESFORCE_CONSUMERSECRET=${{ secrets.SALESFORCE_CONSUMERSECRET }}" >> .env
+          
       - name: Build and Push
         run: |
           docker compose build
@@ -52,7 +61,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Create env file
+      - name: Create env file for deploy
         run: |
           touch .env
           echo "SALESFORCE_ENDPOINTURL=${{ secrets.SALESFORCE_ENDPOINTURL }}" >> .env
