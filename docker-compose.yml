@@ -1,6 +1,8 @@
 services:
     course:
         image: ghcr.io/danisimodanik228/course_itransition 
+        env_file:
+            - .env  
         build:
             context: .
             dockerfile: Course/Dockerfile

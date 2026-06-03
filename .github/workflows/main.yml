@@ -2,9 +2,9 @@ name: CI/CD .NET Docker
 
 on:
   push:
-    branches: [ "master","dev" ]
+    branches: [ "master", "dev" ]
   pull_request:
-    branches: [ "master","dev" ]
+    branches: [ "master", "dev" ]
 
 env:
   REGISTRY: ghcr.io
@@ -28,6 +28,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create env file for build
+        run: |
+          touch .env
+          echo "SALESFORCE_ENDPOINTURL=${{ secrets.SALESFORCE_ENDPOINTURL }}" >> .env
+          echo "SALESFORCE_SOBJECTNAME=${{ secrets.SALESFORCE_SOBJECTNAME }}" >> .env
+          echo "SALESFORCE_APIVERSION=${{ secrets.SALESFORCE_APIVERSION }}" >> .env
+          echo "SALESFORCE_CLIENTID=${{ secrets.SALESFORCE_CLIENTID }}" >> .env
+          echo "SALESFORCE_CONSUMERSECRET=${{ secrets.SALESFORCE_CONSUMERSECRET }}" >> .env
+          
       - name: Build and Push
         run: |
           docker compose build
@@ -36,6 +45,10 @@ jobs:
   deploy:
     needs: build-and-push
     runs-on: self-hosted 
+    
+    permissions:
+      contents: read
+      packages: read
     
     steps:
       - name: Check code
@@ -46,7 +59,16 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.CR_PAT }} 
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Create env file for deploy
+        run: |
+          touch .env
+          echo "SALESFORCE_ENDPOINTURL=${{ secrets.SALESFORCE_ENDPOINTURL }}" >> .env
+          echo "SALESFORCE_SOBJECTNAME=${{ secrets.SALESFORCE_SOBJECTNAME }}" >> .env
+          echo "SALESFORCE_APIVERSION=${{ secrets.SALESFORCE_APIVERSION }}" >> .env
+          echo "SALESFORCE_CLIENTID=${{ secrets.SALESFORCE_CLIENTID }}" >> .env
+          echo "SALESFORCE_CONSUMERSECRET=${{ secrets.SALESFORCE_CONSUMERSECRET }}" >> .env
 
       - name: Deploy
         run: |

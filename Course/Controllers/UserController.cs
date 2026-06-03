@@ -1,5 +1,6 @@
 ﻿using Application.Dto.Request;
 using Application.Service;
+using Application.Service.Salesforce;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -71,6 +72,12 @@ namespace Course.Controllers
                 return RedirectToAction("MainPage", "Home");
             }
 
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
             return View();
         }
     }

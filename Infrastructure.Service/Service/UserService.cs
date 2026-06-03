@@ -2,6 +2,7 @@
 using Application.Dto.Response;
 using Application.Repository.User;
 using Application.Service;
+using Application.Service.Salesforce;
 using Domain.Models;
 using Infrastructure.Repository.PostgresDbContext;
 using Microsoft.AspNetCore.Identity;
@@ -20,18 +21,21 @@ namespace Infrastructure.Service.Service
         private readonly IEditorRepository _editorRepository;
         private readonly IAuthenticationService _authenticationService;
         private readonly IEditorSearchService _editorSearchService;
+        private readonly ISalesforceService _salesforceService;
 
         public UserService(
             IUserRepository userRepository,
             IEditorRepository editorRepository,
             IAuthenticationService authenticationService,
-            IEditorSearchService editorSearchService
+            IEditorSearchService editorSearchService,
+            ISalesforceService salesforceService
             )
         {
             _userRepository = userRepository;
             _editorRepository = editorRepository;
             _authenticationService = authenticationService;
             _editorSearchService = editorSearchService;
+            _salesforceService = salesforceService;
         }
 
         public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
@@ -97,6 +101,7 @@ namespace Infrastructure.Service.Service
             if (user != null)
             { 
                 await _editorSearchService.IndexUserAsync(user);
+                await _salesforceService.AddContactAsync(email, name);
             }
 
             return user != null;

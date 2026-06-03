@@ -2,6 +2,7 @@
 using Application.Repository.Tables;
 using Application.Repository.User;
 using Application.Service;
+using Application.Service.Salesforce;
 using Domain.Models;
 using Elastic.Clients.Elasticsearch;
 using Infrastructure.Elastic.EditorModel;
@@ -10,10 +11,22 @@ using Infrastructure.Repository.PostgresDbContext;
 using Infrastructure.Repository.Repository.Tables;
 using Infrastructure.Repository.Repository.User;
 using Infrastructure.Service.Service;
+using Infrastructure.Service.Service.Salesforce;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+DotNetEnv.Env.Load();
+
+builder.Services.Configure<SalesforceSettings>(options =>
+{
+    options.EndpointUrl = Environment.GetEnvironmentVariable("SALESFORCE_ENDPOINTURL");
+    options.ClientId = Environment.GetEnvironmentVariable("SALESFORCE_CLIENTID");
+    options.ConsumerSecret = Environment.GetEnvironmentVariable("SALESFORCE_CONSUMERSECRET");
+    options.SObjectName = Environment.GetEnvironmentVariable("SALESFORCE_SOBJECTNAME");
+    options.ApiVersion = Environment.GetEnvironmentVariable("SALESFORCE_APIVERSION"); 
+});
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
@@ -68,6 +81,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEditorRepository, EditorRepository>();
 builder.Services.AddScoped<IEditorSearchService, EditorSearchService>();
 
+builder.Services.AddScoped<ISalesforceService, SalesforceService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IService,Service>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -87,7 +101,7 @@ using (var scope = app.Services.CreateScope())
 using (var scope = app.Services.CreateScope())
 {
     var nameAdmin = "werty";
-    var emailAdmin = "werty@mail";
+    var emailAdmin = "werty@mail.com";
     var passAdmin = "1111";
     string[] roleNames = { "Admin", "Registered" };
 
